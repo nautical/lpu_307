@@ -9,6 +9,7 @@ contract MyArray {
     
     
     function getValueOfIndex(uint256 _index) public view returns (uint256) {
+        // TODO : Add a check to make sure index exists
         return arr_2[_index];
     }
     

@@ -10,6 +10,8 @@ contract MyConstructor {
         name = _name;
     }
 
+    // TODO : Write getter and setter functions for name
+
 }
 
 contract MySecondContract is MyConstructor {

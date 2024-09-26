@@ -11,7 +11,7 @@ contract MyOtherContract {
 
 }
 
-contract MyContractCalls {
+contract CONTRACTB {
     
     function getAgeFromOtherContract(address _contractAddess) public view returns (uint256) {
         MyOtherContract other = MyOtherContract(_contractAddess);
