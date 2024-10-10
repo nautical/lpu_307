@@ -3,24 +3,28 @@
 pragma solidity ^0.8.0;
 
 contract MyEnums {
-    // TODO : makeSuperRare : Only allow admin to update the rarity
-    // TODO : makeSuperRare : Update to accept the type of rarity
-    // TODO : Add get function ( without check ) to get the current rarity
-
     enum Rarity {
-        original, // 0
-        rare, // 1
-        super_rare // 2
+        original,
+        rare, 
+        super_rare
     }
     
     Rarity public rarity;
-    
+
+    address public admin;
+
     constructor() {
-        rarity = Rarity.rare;
+        rarity = Rarity.original;
+        admin = msg.sender; 
     }
     
-    function makeSuperRare() public {
-        rarity = Rarity.super_rare;
+    function updateRarity(Rarity _rarity) public {
+        require(msg.sender == admin, "Only admin can update rarity");
+        rarity = _rarity;
+    }
+
+    function getCurrentRarity() public view returns (Rarity) {
+        return rarity;
     }
 }
 

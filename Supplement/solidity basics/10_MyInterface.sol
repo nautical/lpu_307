@@ -7,10 +7,9 @@ interface ICounter {
     function addToCount() external;
 }
 
-contract MyInterface is ICounter {
-
+contract Storage is ICounter {
         uint256 counter = 0;
-        
+
         function count() external view override returns (uint256) {
             return counter;
         }
