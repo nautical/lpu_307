@@ -1,0 +1,728 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome file</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><hr>
+<h3 id="sol">1.sol</h3>
+<h3 id="solidity-array-management-in-smart-contracts">Solidity Array Management in Smart Contracts</h3>
+<p>In this Solidity example, we explore how to manage arrays within a smart contract.</p>
+<ol>
+<li>
+<p><strong>Declaring Arrays</strong>:</p>
+<ul>
+<li><code>arr_1</code>: A dynamic array of unsigned integers (<code>uint256[]</code>), initially empty.</li>
+<li><code>arr_2</code>: Another dynamic array, initialized with three values <code>[3, 2, 4]</code>.</li>
+<li><code>arr_3</code>: A fixed-size array of 5 <code>uint256</code> elements, but uninitialized.</li>
+</ul>
+</li>
+<li>
+<p><strong>Getting Value from an Array</strong>:<br>
+The <code>getValueOfIndex</code> function allows the user to retrieve an element from <code>arr_2</code> at a specific index.</p>
+<ul>
+<li><strong>Task</strong>: Add a check to ensure the index is within the array’s bounds to avoid errors.</li>
+</ul>
+<p>Example of adding a check:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">require(_index &lt; arr_2.length, "Index out of bounds");
+</code></pre>
+</li>
+<li>
+<p><strong>Adding to the Array</strong>:<br>
+The <code>addToArray</code> function demonstrates how to dynamically add elements to <code>arr_2</code> using the <code>push()</code> method. This method appends a new value to the end of the array.</p>
+</li>
+</ol>
+<h3 id="improvements">Improvements:</h3>
+<ul>
+<li>Always validate array indices when accessing elements.</li>
+<li>Dynamic arrays allow for easy appending but remember that fixed-size arrays (like <code>arr_3</code>) don’t support <code>push()</code>.</li>
+</ul>
+<hr>
+<h3 id="sol-1">2.sol</h3>
+<h3 id="constructors-and-inheritance-in-solidity">Constructors and Inheritance in Solidity</h3>
+<p>In this example, we’re exploring how to use constructors and inheritance in Solidity.</p>
+<ol>
+<li>
+<p><strong>Constructor in <code>MyConstructor</code> Contract</strong>:</p>
+<ul>
+<li>The constructor is a special function that runs once when the contract is deployed. It initializes the state variable <code>name</code> with the value passed during deployment.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">constructor(string memory _name) {
+    name = _name;
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Creating Getter and Setter Functions</strong>:<br>
+To access and modify the <code>name</code> variable, we’ll create <strong>getter</strong> and <strong>setter</strong> functions.</p>
+<ul>
+<li><strong>Getter</strong>: Returns the current value of <code>name</code>.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function getName() public view returns (string memory) {
+    return name;
+}
+</code></pre>
+<ul>
+<li><strong>Setter</strong>: Allows the contract owner to update the <code>name</code>.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function setName(string memory _newName) public {
+    name = _newName;
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Inheritance in <code>MySecondContract</code></strong>:<br>
+The <code>MySecondContract</code> inherits from <code>MyConstructor</code>. It calls the parent contract’s constructor to initialize the <code>name</code> variable using the <code>MyConstructor(_name)</code> syntax.</p>
+<ul>
+<li>The constructor in <code>MySecondContract</code> simply passes the provided <code>_name</code> to the parent <code>MyConstructor</code>'s constructor.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">constructor(string memory _name) MyConstructor(_name) {}
+</code></pre>
+</li>
+</ol>
+<h3 id="final-code">Final Code</h3>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.0;
+
+contract MyConstructor {
+    
+    string public name;
+    
+    constructor(string memory _name) {
+        name = _name;
+    }
+
+    // Getter function for 'name'
+    function getName() public view returns (string memory) {
+        return name;
+    }
+    
+    // Setter function for 'name'
+    function setName(string memory _newName) public {
+        name = _newName;
+    }
+}
+
+contract MySecondContract is MyConstructor {
+    constructor(string memory _name) MyConstructor(_name) {}
+}
+</code></pre>
+<h3 id="key-concepts">Key Concepts:</h3>
+<ul>
+<li><strong>Constructors</strong>: Initialize state variables when the contract is deployed.</li>
+<li><strong>Inheritance</strong>: <code>MySecondContract</code> inherits <code>MyConstructor</code>, reusing its functionality.</li>
+<li><strong>Encapsulation</strong>: The getter and setter allow controlled access and modification of the <code>name</code> variable.</li>
+</ul>
+<hr>
+<h3 id="sol-2">3.sol</h3>
+<h3 id="interacting-between-contracts-in-solidity">Interacting Between Contracts in Solidity</h3>
+<p>This Solidity example demonstrates how one contract can interact with another by calling its functions.</p>
+<ol>
+<li>
+<p><strong>Contract <code>MyOtherContract</code></strong>:</p>
+<ul>
+<li>This contract contains a public state variable <code>age</code>, initialized to <code>29</code>.</li>
+<li>It also has a function <code>getAge()</code> that returns the value of <code>age</code>.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">uint256 public age = 29;
+
+function getAge() public view returns (uint256) {
+    return age;
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Contract <code>CONTRACTB</code></strong>:</p>
+<ul>
+<li>The <code>getAgeFromOtherContract</code> function allows <code>CONTRACTB</code> to interact with another contract (<code>MyOtherContract</code>) by using its address.</li>
+<li>We pass the address of the <code>MyOtherContract</code> instance, cast it as <code>MyOtherContract</code>, and call its <code>getAge()</code> function.</li>
+</ul>
+<p>Key steps:</p>
+<ul>
+<li>Use the contract’s address (<code>_contractAddress</code>) to interact with its public functions.</li>
+<li>The function <code>getAgeFromOtherContract</code> retrieves the <code>age</code> from the other contract.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function getAgeFromOtherContract(address _contractAddess) public view returns (uint256) {
+    MyOtherContract other = MyOtherContract(_contractAddess);
+    uint256 age = other.getAge();
+    return age;
+}
+</code></pre>
+</li>
+</ol>
+<h3 id="key-concepts-1">Key Concepts:</h3>
+<ul>
+<li><strong>Contract Interaction</strong>: In Solidity, one contract can call another contract’s public functions by referencing its address and creating an instance.</li>
+<li><strong>Casting</strong>: <code>MyOtherContract(_contractAddress)</code> casts the provided address to a type of the <code>MyOtherContract</code> so that you can call its functions.</li>
+</ul>
+<h3 id="example-use-case">Example Use Case:</h3>
+<p>If you deploy <code>MyOtherContract</code> and pass its address to <code>CONTRACTB</code>, the latter can fetch the <code>age</code> value from <code>MyOtherContract</code> and return it.</p>
+<hr>
+<h3 id="sol-3">4.sol</h3>
+<h3 id="errors-checks-and-conditions-in-solidity">Errors, Checks, and Conditions in Solidity</h3>
+<p>In this Solidity example, we will learn how to use <code>require</code>, <code>revert</code>, and <code>assert</code> to handle errors and add necessary checks to a contract. Additionally, we’ll implement a time-based restriction for a function.</p>
+<ol>
+<li>
+<p><strong>Require Statement</strong>:</p>
+<ul>
+<li>The <code>require</code> function ensures that certain conditions are met before the execution of the function proceeds.</li>
+<li>In <code>myFunc</code>, we check if <code>_x</code> is smaller than <code>_y</code>. If not, an error message <code>"X is bigger than Y"</code> is thrown.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">require(_x &lt; _y, "X is bigger that Y");
+</code></pre>
+</li>
+<li>
+<p><strong>Revert</strong>:</p>
+<ul>
+<li>The <code>revert</code> function is used to explicitly abort a function when a certain condition is met.</li>
+<li>In <code>myPureRevertFunc</code>, if <code>_x == 10</code>, the transaction will revert with the message <code>"X is 10"</code>.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">if(_x == 10) {
+    revert("X is 10");
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Assert</strong>:</p>
+<ul>
+<li>The <code>assert</code> function is used to test for conditions that should <em>never</em> fail.</li>
+<li>In <code>checkMax</code>, we ensure that <code>maxAmount</code> is always <code>100</code>. If it is not, the contract will halt execution with an error.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">assert(maxAmount == 100);
+</code></pre>
+</li>
+<li>
+<p><strong>Adding a Timestamp Check</strong>:</p>
+<ul>
+<li>We can add a time-based check using Solidity’s <code>block.timestamp</code> to restrict function calls to within 2 days of a particular event.</li>
+<li>For this example, we will modify <code>myFunc</code> to ensure it can only be called within a 2-day window after the contract deployment (or after a certain point).</li>
+</ul>
+<p>Here’s how you can add the check in <code>myFunc</code>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">uint256 public startTime;
+
+constructor() {
+    startTime = block.timestamp;
+}
+
+function myFunc(uint256 _x, uint256 _y) public view returns (uint256 xy) {
+    require(block.timestamp &lt;= startTime + 2 days, "Function can only be called within 2 days");
+    require(_x &lt; _y, "X is bigger than Y");
+    checkMax();
+    return _x + _y;
+}
+</code></pre>
+<ul>
+<li><code>startTime</code> stores the block timestamp when the contract is deployed.</li>
+<li>The <code>require(block.timestamp &lt;= startTime + 2 days)</code> ensures that <code>myFunc</code> can only be called within 2 days after the contract is deployed.</li>
+</ul>
+</li>
+</ol>
+<h3 id="final-code-example">Final Code Example</h3>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.0;
+
+contract MyErrorsAndChecks {
+    uint256 public maxAmount = 100;
+    uint256 public startTime;
+    
+    constructor() {
+        startTime = block.timestamp;
+    }
+
+    function updateMax() public {
+        maxAmount = 50;
+    }
+    
+    function myFunc(uint256 _x, uint256 _y) public view returns (uint256 xy) {
+        // Allow calling only within 2 days from contract deployment
+        require(block.timestamp &lt;= startTime + 2 days, "Function can only be called within 2 days");
+        require(_x &lt; _y, "X is bigger than Y");
+        checkMax();
+        return _x + _y;
+    }
+   
+    function myPureRevertFunc(uint256 _x, uint256 _y) public pure returns (uint256 xy) {
+        if(_x == 10) {
+            revert("X is 10");
+        }
+        return _x + _y;
+    }
+   
+    function checkMax() internal view {
+        assert(maxAmount == 100);
+    }
+}
+</code></pre>
+<h3 id="key-concepts-2">Key Concepts:</h3>
+<ul>
+<li><strong><code>require</code></strong> is used for input validation and ensuring certain conditions are met.</li>
+<li><strong><code>revert</code></strong> allows you to abort a transaction explicitly when certain logic fails.</li>
+<li><strong><code>assert</code></strong> is for internal invariants that should never fail.</li>
+<li><strong>Time-based checks</strong> can be performed using <code>block.timestamp</code> for limiting function usage within a specified period.</li>
+</ul>
+<hr>
+<h3 id="sol-4">5.sol</h3>
+<h3 id="enums-access-control-and-function-updates-in-solidity">Enums, Access Control, and Function Updates in Solidity</h3>
+<p>In this Solidity example, we use an <code>enum</code> to represent different levels of rarity and implement access control to allow only an admin to update the rarity. We’ll also modify the function to accept a parameter for setting any rarity and add a getter function to retrieve the current rarity without access control.</p>
+<h3 id="key-features">Key Features:</h3>
+<ol>
+<li>
+<p><strong>Enum Definition</strong>:</p>
+<ul>
+<li><code>enum Rarity { original, rare, super_rare }</code>: Defines three types of rarity.</li>
+<li>Each type has an underlying index, starting from <code>0</code> for <code>original</code>, <code>1</code> for <code>rare</code>, and <code>2</code> for <code>super_rare</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Access Control</strong>:</p>
+<ul>
+<li>We’ll restrict the <code>makeSuperRare</code> (or any function that updates rarity) to be callable <strong>only by the admin</strong>. For simplicity, we’ll define the contract deployer as the admin.</li>
+</ul>
+</li>
+<li>
+<p><strong>Update to Accept Rarity Type</strong>:</p>
+<ul>
+<li>Instead of hardcoding the rarity update to <code>super_rare</code>, we’ll modify the function to accept any <code>Rarity</code> type as a parameter.</li>
+</ul>
+</li>
+<li>
+<p><strong>Get Function</strong>:</p>
+<ul>
+<li>A simple getter function will return the current rarity value.</li>
+</ul>
+</li>
+</ol>
+<h3 id="code-implementation">Code Implementation:</h3>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.0;
+
+contract MyEnums {
+    
+    // Define an enum with 3 rarity types
+    enum Rarity {
+        original,  // 0
+        rare,      // 1
+        super_rare // 2
+    }
+    
+    Rarity public rarity; // State variable to store the current rarity
+    
+    address public admin; // Variable to store the admin address
+
+    // Constructor sets the initial rarity and defines the admin as the contract deployer
+    constructor() {
+        rarity = Rarity.rare; // Default to rare
+        admin = msg.sender; // Set contract deployer as admin
+    }
+    
+    // Function to allow admin to update the rarity to any type
+    function makeSuperRare(Rarity _rarity) public {
+        require(msg.sender == admin, "Only admin can update rarity");
+        rarity = _rarity;
+    }
+    
+    // Getter function to retrieve the current rarity without any access check
+    function getCurrentRarity() public view returns (Rarity) {
+        return rarity;
+    }
+}
+</code></pre>
+<h3 id="breakdown">Breakdown:</h3>
+<ol>
+<li>
+<p><strong>Admin Access Control</strong>:</p>
+<ul>
+<li>The <code>require(msg.sender == admin)</code> ensures that only the address that deployed the contract (the admin) can call the <code>makeSuperRare</code> function.</li>
+</ul>
+</li>
+<li>
+<p><strong>Function to Set Any Rarity</strong>:</p>
+<ul>
+<li><code>makeSuperRare</code> now accepts a parameter of type <code>Rarity</code>:<pre class=" language-solidity"><code class="prism  language-solidity">function makeSuperRare(Rarity _rarity) public {
+    require(msg.sender == admin, "Only admin can update rarity");
+    rarity = _rarity;
+}
+</code></pre>
+</li>
+<li>This allows the admin to update the rarity to any value from the <code>Rarity</code> enum (either <code>original</code>, <code>rare</code>, or <code>super_rare</code>).</li>
+</ul>
+</li>
+<li>
+<p><strong>Getter for Rarity</strong>:</p>
+<ul>
+<li>The <code>getCurrentRarity</code> function returns the current value of <code>rarity</code> without any checks.<pre class=" language-solidity"><code class="prism  language-solidity">function getCurrentRarity() public view returns (Rarity) {
+    return rarity;
+}
+</code></pre>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="key-concepts-3">Key Concepts:</h3>
+<ul>
+<li><strong>Enums</strong> allow you to define a set of named constants. They are particularly useful for defining specific states or options like rarity levels.</li>
+<li><strong>Access Control</strong> ensures that certain functions are only executable by authorized parties (in this case, the admin).</li>
+<li><strong>Function Parameters</strong>: The function now accepts a parameter, allowing flexibility when setting the rarity instead of hardcoding specific changes.</li>
+</ul>
+<hr>
+<h3 id="sol-5">6.sol</h3>
+<h3 id="events-in-solidity-emitting-logs">Events in Solidity: Emitting Logs</h3>
+<p>In this Solidity example, we explore how to use <strong>events</strong> to log important contract actions on the blockchain.</p>
+<ol>
+<li>
+<p><strong>Event Declaration</strong>:</p>
+<ul>
+<li><code>event CreatedNFT(address indexed user, uint256 id, uint256 dna);</code> defines an event that records the address of the user who created the NFT, along with its ID and DNA.</li>
+<li>The <code>indexed</code> keyword allows us to filter logs by the user address, making it easier to search for specific events.</li>
+</ul>
+</li>
+<li>
+<p><strong>Emitting the Event</strong>:</p>
+<ul>
+<li>Inside the <code>createNft</code> function, the event <code>CreatedNFT</code> is <strong>emitted</strong>. This generates a log on the blockchain when the function is called.</li>
+<li>The <code>msg.sender</code> represents the address of the caller (the user creating the NFT).</li>
+</ul>
+</li>
+</ol>
+<h3 id="code-example">Code Example:</h3>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.0;
+
+contract MyEvents {
+    
+    // Declare the event with indexed user
+    event CreatedNFT(address indexed user, uint256 id, uint256 dna);
+    
+    // Function to create an NFT and emit the event
+    function createNft(uint256 _id, uint256 _dna) public {
+        // In real-world scenario, NFT creation logic would go here
+        
+        // Emit the event to log the creation
+        emit CreatedNFT(msg.sender, _id, _dna);
+    }
+
+}
+</code></pre>
+<h3 id="key-concepts-4">Key Concepts:</h3>
+<ol>
+<li>
+<p><strong>Events</strong>:</p>
+<ul>
+<li>Events allow you to write logs to the blockchain, which are stored but not accessible on-chain by smart contracts. They are primarily used to communicate information from the blockchain to external applications like DApps.</li>
+</ul>
+</li>
+<li>
+<p><strong>Indexed Parameters</strong>:</p>
+<ul>
+<li>The <code>indexed</code> keyword allows the user address (<code>msg.sender</code>) to be searchable when querying the logs. Only up to 3 parameters can be indexed in an event.</li>
+</ul>
+</li>
+<li>
+<p><strong>Emitting Events</strong>:</p>
+<ul>
+<li><code>emit CreatedNFT(msg.sender, _id, _dna)</code> broadcasts the event with the provided data, which can be accessed by off-chain applications like web3 or any blockchain explorer.</li>
+</ul>
+</li>
+</ol>
+<h3 id="practical-use">Practical Use:</h3>
+<ul>
+<li>DApps can listen for the <code>CreatedNFT</code> event to update their user interface or backend whenever an NFT is created, without having to constantly query the blockchain.</li>
+</ul>
+<hr>
+<h3 id="sol-6">7.sol</h3>
+<h3 id="functions-in-solidity-types-and-use-cases">Functions in Solidity: Types and Use Cases</h3>
+<p>This Solidity example demonstrates various types of functions in a smart contract, including pure, view, internal, external, and functions that return values.</p>
+<h3 id="key-components">Key Components:</h3>
+<ol>
+<li>
+<p><strong>State Variables</strong>:</p>
+<ul>
+<li><code>myUint</code>, <code>myString</code>, <code>myBool</code>, and <code>myArr</code> are state variables stored on the blockchain.</li>
+<li>These variables represent different types of data: <code>uint256</code>, <code>string</code>, <code>bool</code>, and an array of <code>uint256</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Pure Function</strong>:</p>
+<ul>
+<li>A <strong>pure function</strong> doesn’t read or modify the contract’s state; it only performs computations based on input parameters.</li>
+<li>Example: <code>myPureFunc</code> adds two integers without accessing any contract variables.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function myPureFunc(uint256 _x, uint256 _y) public pure returns (uint256 xy) {
+    return _x + _y;
+}
+</code></pre>
+</li>
+<li>
+<p><strong>View Function</strong>:</p>
+<ul>
+<li>A <strong>view function</strong> reads from the contract’s state but doesn’t modify it. In this example, <code>myViewFunc</code> reads the value of <code>myString</code> but doesn’t change it.</li>
+<li>This function is marked as <code>internal</code>, meaning it can only be called within the contract or by derived contracts.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function myViewFunc() internal view returns (string memory) {
+    return myString;
+}
+</code></pre>
+</li>
+<li>
+<p><strong>State-Modification Function</strong>:</p>
+<ul>
+<li><code>myUpdateFunc</code> is a <strong>public function</strong> that updates the state variable <code>myString</code> and uses the <code>myViewFunc</code> to return the updated value. This shows how internal functions can be called within the same contract.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function myUpdateFunc() public returns (string memory) {
+    myString = "LPU";
+    string memory savedString = myViewFunc();
+    return savedString;
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Function Returning Multiple Values</strong>:</p>
+<ul>
+<li><code>myReturnsFunc</code> is an <strong>external function</strong> that returns multiple state variables at once: <code>myUint</code>, <code>myString</code>, <code>myBool</code>, and <code>myArr</code>.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function myReturnsFunc() external view returns (uint256, string memory, bool, uint256[] memory) {
+    return (myUint, myString, myBool, myArr);
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Function with No Return</strong>:</p>
+<ul>
+<li><code>myNoReturnFunc</code> is an <strong>external function</strong> that simply updates the state variable <code>myBool</code> to <code>false</code> without returning any value.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function myNoReturnFunc() external {
+    myBool = false;
+}
+</code></pre>
+</li>
+</ol>
+<h3 id="final-code-summary">Final Code Summary:</h3>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.0;
+
+contract MyFunctions {
+    
+    uint256 myUint = 42;
+    string myString = "Piyush";
+    bool myBool = true;
+    uint256[] myArr = [3, 3, 3];
+    
+    // Pure function - No state read/write
+    function myPureFunc(uint256 _x, uint256 _y) public pure returns (uint256 xy) {
+        return _x + _y;
+    }
+    
+    // Internal view function - Reads state, no modification
+    function myViewFunc() internal view returns (string memory) {
+        return myString;
+    }
+    
+    // Public function - Modifies state, calls internal view function
+    function myUpdateFunc() public returns (string memory) {
+        myString = "LPU";
+        string memory savedString = myViewFunc();
+        return savedString;
+    }
+    
+    // External function - Returns multiple state variables
+    function myReturnsFunc() external view returns (uint256, string memory, bool, uint256[] memory) {
+        return (myUint, myString, myBool, myArr);
+    }
+    
+    // External function - Modifies state, no return
+    function myNoReturnFunc() external {
+        myBool = false;
+    }
+}
+</code></pre>
+<h3 id="key-concepts-5">Key Concepts:</h3>
+<ul>
+<li><strong>Pure Functions</strong>: Perform calculations without reading or modifying the contract’s state.</li>
+<li><strong>View Functions</strong>: Read the contract’s state without modifying it.</li>
+<li><strong>State-Modifying Functions</strong>: Functions that alter the state of the contract (e.g., updating variables).</li>
+<li><strong>Internal vs. External Functions</strong>: Internal functions are used within the contract, while external functions are called from outside the contract.</li>
+</ul>
+<hr>
+<h3 id="sol-7">8.sol</h3>
+<p>Simple if else</p>
+<hr>
+<h3 id="sol-8">9.sol</h3>
+<h3 id="inheritance-in-solidity-with-function-overrides">Inheritance in Solidity with Function Overrides</h3>
+<p>In this Solidity example, we explore <strong>inheritance</strong> and <strong>function overriding</strong>. In Solidity, contracts can inherit from other contracts, and child contracts can override parent functions.</p>
+<h3 id="key-components-1">Key Components:</h3>
+<ol>
+<li>
+<p><strong>Base Contract (<code>MyInheritance_A</code>)</strong>:</p>
+<ul>
+<li>The contract defines an internal state variable <code>name</code> set to <code>"LPU"</code>.</li>
+<li>The <code>internal</code> keyword allows this variable to be accessible in derived contracts but not from outside the contract itself.</li>
+</ul>
+</li>
+<li>
+<p><strong>Intermediate Contract (<code>MyInheritance_B</code>)</strong>:</p>
+<ul>
+<li>This contract inherits from <code>MyInheritance_A</code> and defines the <code>getName</code> function, which returns the value of <code>name</code>.</li>
+<li>The function is marked <code>virtual</code>, which allows it to be <strong>overridden</strong> by child contracts.</li>
+</ul>
+</li>
+<li>
+<p><strong>Derived Contract (<code>MyInheritance_C</code>)</strong>:</p>
+<ul>
+<li>Inherits from <code>MyInheritance_B</code>.</li>
+<li>It <strong>overrides</strong> the <code>getName</code> function and returns a different value, <code>"Daniel"</code>.</li>
+<li>The <code>override</code> keyword ensures that the function is recognized as an override.</li>
+</ul>
+</li>
+</ol>
+<h3 id="code-example-1">Code Example:</h3>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.0;
+
+// Base contract
+contract MyInheritance_A {
+    string internal name = "LPU";  // Internal variable accessible in child contracts
+}
+
+// Intermediate contract inheriting from MyInheritance_A
+contract MyInheritance_B is MyInheritance_A {
+    
+    // Virtual function that can be overridden in derived contracts
+    function getName() public view virtual returns (string memory) {
+        return name;  // Returns the inherited name "LPU"
+    }
+}
+
+// Derived contract inheriting from MyInheritance_B and overriding getName
+contract MyInheritance_C is MyInheritance_B  {
+    
+    // Override the getName function to return a different value
+    function getName() public view virtual override returns (string memory) {
+        return "Daniel";  // Returns "Daniel" instead of "LPU"
+    }
+}
+</code></pre>
+<h3 id="key-concepts-6">Key Concepts:</h3>
+<ol>
+<li>
+<p><strong>Inheritance</strong>:</p>
+<ul>
+<li><code>MyInheritance_B</code> inherits from <code>MyInheritance_A</code>, and <code>MyInheritance_C</code> inherits from <code>MyInheritance_B</code>. Each child contract has access to the parent’s state variables and functions.</li>
+<li>Inheritance enables code reusability by allowing contracts to share functionality.</li>
+</ul>
+</li>
+<li>
+<p><strong>Function Overriding</strong>:</p>
+<ul>
+<li>The <code>getName</code> function in <code>MyInheritance_B</code> is marked as <code>virtual</code>, allowing it to be overridden in derived contracts.</li>
+<li>In <code>MyInheritance_C</code>, the <code>getName</code> function is marked as <code>override</code>, which indicates that this function replaces the parent’s implementation.</li>
+</ul>
+</li>
+<li>
+<p><strong>Internal Visibility</strong>:</p>
+<ul>
+<li>The <code>internal</code> keyword used for the <code>name</code> variable ensures that it is accessible in derived contracts (<code>MyInheritance_B</code> and <code>MyInheritance_C</code>) but not directly from outside the contract.</li>
+</ul>
+</li>
+</ol>
+<h3 id="practical-use-1">Practical Use:</h3>
+<ul>
+<li>This inheritance structure allows contracts to share and modify behavior in child contracts, making the code modular and easier to maintain. By overriding functions, you can customize behavior for different child contracts.</li>
+</ul>
+<hr>
+<h3 id="sol-9">10.sol</h3>
+<h3 id="interfaces-in-solidity-implementation-example">Interfaces in Solidity: Implementation Example</h3>
+<p>This Solidity example demonstrates how to implement an interface using the <code>ICounter</code> interface and the <code>MyInterface</code> contract.</p>
+<h3 id="key-concepts-7">Key Concepts:</h3>
+<ol>
+<li>
+<p><strong>Interface Definition (<code>ICounter</code>)</strong>:</p>
+<ul>
+<li>An <strong>interface</strong> in Solidity is like a blueprint. It defines functions but does not provide their implementation.</li>
+<li>The <code>ICounter</code> interface has two functions:
+<ul>
+<li><code>count()</code>: Returns the current counter value.</li>
+<li><code>addToCount()</code>: Increases the counter by 1.</li>
+</ul>
+</li>
+<li>Interfaces are used to enforce that contracts implementing them provide certain functionalities.</li>
+</ul>
+</li>
+<li>
+<p><strong>Contract Implementation (<code>MyInterface</code>)</strong>:</p>
+<ul>
+<li>The <code>MyInterface</code> contract implements the <code>ICounter</code> interface by providing concrete implementations for <code>count()</code> and <code>addToCount()</code>.</li>
+<li>The contract uses the keyword <code>override</code> to indicate that these functions are fulfilling the interface’s requirements.</li>
+<li>It maintains an internal <code>counter</code> variable to track the count.</li>
+</ul>
+</li>
+</ol>
+<h3 id="code-example-2">Code Example:</h3>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.0;
+
+// Interface declaration
+interface ICounter {
+    function count() external view returns (uint256);
+    function addToCount() external;
+}
+
+// Contract implementing the interface
+contract MyInterface is ICounter {
+
+    uint256 counter = 0;  // State variable to store the count
+    
+    // Override the count function to return the counter value
+    function count() external view override returns (uint256) {
+        return counter;
+    }
+    
+    // Override the addToCount function to increment the counter
+    function addToCount() external override {
+        counter++;
+    }
+}
+</code></pre>
+<h3 id="key-concepts-8">Key Concepts:</h3>
+<ol>
+<li>
+<p><strong>Interfaces</strong>:</p>
+<ul>
+<li><strong>Interfaces</strong> define the functions that a contract must implement. They do not have state variables or implementation details.</li>
+<li>Functions in interfaces are automatically <code>external</code> and must be marked as <code>override</code> in the implementing contract.</li>
+</ul>
+</li>
+<li>
+<p><strong>Implementing an Interface</strong>:</p>
+<ul>
+<li>The contract <code>MyInterface</code> implements the <code>ICounter</code> interface by providing the actual logic for both <code>count()</code> and <code>addToCount()</code>.</li>
+<li>The <code>count()</code> function is marked <code>view</code> because it only reads the <code>counter</code> value.</li>
+<li>The <code>addToCount()</code> function updates the state by incrementing <code>counter</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Override Keyword</strong>:</p>
+<ul>
+<li>When implementing functions from an interface, you must use the <code>override</code> keyword to explicitly state that the function is fulfilling the interface’s definition.</li>
+</ul>
+</li>
+</ol>
+<h3 id="practical-use-2">Practical Use:</h3>
+<ul>
+<li>Interfaces allow contracts to interact with other contracts in a standardized way. By using interfaces, you ensure that any contract implementing the interface will provide the expected functionality. This is useful when integrating different smart contracts into a larger ecosystem.</li>
+</ul>
+</div>
+</body>
+
+</html>

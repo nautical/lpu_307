@@ -1,0 +1,703 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome file</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="advanced-blockchain-concepts">Advanced Blockchain Concepts</h1>
+<hr>
+<h2 id="slide-1-introduction">Slide 1: Introduction</h2>
+<p>Welcome to the lecture on Advanced Blockchain Concepts. Today, we will explore the intricate details of blockchain technology beyond its fundamental principles. Our agenda includes:</p>
+<ul>
+<li>
+<p>A review of basic blockchain concepts to establish a solid foundation.</p>
+</li>
+<li>
+<p>A deep dive into various blockchain components and their functionalities.</p>
+</li>
+<li>
+<p>An examination of consensus algorithms that are crucial for maintaining the integrity and security of blockchain networks.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-2-review-of-basic-blockchain-concepts">Slide 2: Review of Basic Blockchain Concepts</h2>
+<p>Blockchain technology is fundamentally a distributed ledger system. It consists of a series of blocks linked together in a chain. Each block contains a list of transactions, which are validated and recorded in a decentralized manner.</p>
+<ul>
+<li>
+<p><strong>Distributed Ledger:</strong> The ledger is replicated across multiple nodes in the network, ensuring that each participant has the same information. This redundancy helps prevent data tampering and increases the resilience of the system.</p>
+</li>
+<li>
+<p><strong>Blocks and Chains:</strong> Each block in a blockchain contains a unique identifier (hash), a timestamp, and a reference to the previous block’s hash. This chaining mechanism creates an immutable record of transactions.</p>
+</li>
+<li>
+<p><strong>Transactions:</strong> Transactions are the fundamental units of blockchain. They record the transfer of assets or information and are cryptographically secured to prevent fraud. Once a transaction is included in a block and added to the chain, it becomes part of the permanent ledger.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-3-blockchain-architecture">Slide 3: Blockchain Architecture</h2>
+<p>The architecture of a blockchain consists of several key components:</p>
+<ul>
+<li>
+<p><strong>Nodes:</strong> These are individual computers that participate in the blockchain network. Each node maintains a copy of the entire blockchain and participates in the process of validating and relaying transactions.</p>
+</li>
+<li>
+<p><strong>Ledgers:</strong> The ledger is the database that holds the blockchain’s transaction history. It is distributed across all nodes, ensuring consistency and transparency.</p>
+</li>
+<li>
+<p><strong>Wallets:</strong> Wallets are digital tools used to store and manage blockchain assets. They can be software-based (digital wallets) or hardware-based (physical devices). Wallets generate and store cryptographic keys used to sign transactions.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-4-cryptographic-hash-functions">Slide 4: Cryptographic Hash Functions</h2>
+<p>Cryptographic hash functions are fundamental to blockchain security. They take an input and produce a fixed-size string of characters, which appears random. Key properties include:</p>
+<ul>
+<li>
+<p><strong>Deterministic:</strong> The same input will always produce the same output.</p>
+</li>
+<li>
+<p><strong>Quick Computation:</strong> The hash should be computed quickly.</p>
+</li>
+<li>
+<p><strong>Preimage Resistance:</strong> It should be infeasible to reverse the hash to obtain the original input.</p>
+</li>
+<li>
+<p><strong>Collision Resistance:</strong> It should be infeasible to find two different inputs that produce the same hash.</p>
+</li>
+</ul>
+<p><strong>Example: SHA-256</strong></p>
+<p>SHA-256 (Secure Hash Algorithm 256-bit) produces a 64-character hexadecimal string. For example, hashing the string “Blockchain” using SHA-256 results in:</p>
+<p>text{SHA-256}(“Blockchain”) = text{f0a4b2d34857d3cd351c5c55e4a3b80cfed5e4e6c254fbf43d1cf0baf329a3d6}</p>
+<hr>
+<h2 id="slide-5-hash-functions-contd">Slide 5: Hash Functions (Cont’d)</h2>
+<p>In blockchain technology, hash functions play a crucial role in:</p>
+<ul>
+<li>
+<p><strong>Data Integrity:</strong> Hash functions ensure that any alteration to the data will result in a completely different hash, making tampering evident.</p>
+</li>
+<li>
+<p><strong>Linking Blocks:</strong> Each block contains a hash of the previous block’s header, creating a chain of blocks. This linkage ensures that altering any block would require recalculating the hashes of all subsequent blocks, which is computationally infeasible.</p>
+</li>
+</ul>
+<p><strong>Hash Function in Linking Blocks:</strong></p>
+<p>Blockn​=H(Blockn−1​ Header)</p>
+<p>represents the relationship between blocks in a blockchain. Here’s what it means:</p>
+<ul>
+<li><strong>Blockn</strong>: The hash of the current block nnn.</li>
+<li><strong>H</strong>: A cryptographic hash function (e.g., SHA-256).</li>
+<li><strong>Blockn−1 Header</strong>: The header of the previous block n−1, which is used as input for the hash function.</li>
+</ul>
+<p>In a blockchain, each block contains a reference to the previous block’s header. This reference, or hash of the previous block’s header, is included in the current block’s header. The equation shows that the hash of the current block n is computed by applying a hash function H to the header of the previous block n−1.</p>
+<p>This linkage ensures that the blocks are cryptographically connected and forms the basis of the blockchain’s immutability. If any data in a block were altered, it would change the hash, which would then invalidate all subsequent blocks due to the change in the reference hash.</p>
+<p>If the hash of a previous block changes, it will invalidate all subsequent blocks, thereby maintaining the integrity of the blockchain.</p>
+<hr>
+<h2 id="slide-6-merkle-trees">Slide 6: Merkle Trees</h2>
+<p>Merkle Trees are a type of binary tree used in blockchains to efficiently and securely verify the integrity of data:</p>
+<ul>
+<li>
+<p><strong>Structure:</strong> Each leaf node in a Merkle Tree represents a hash of data. Non-leaf nodes represent the hash of their children. The root node is the Merkle Root, which summarizes all the data in the tree.</p>
+</li>
+<li>
+<p><strong>Merkle Root Calculation:</strong> To compute the Merkle Root, hashes are calculated from the leaves up to the root. For a set of transactions, the Merkle Tree combines them in pairs, hashing each pair until a single hash remains.</p>
+</li>
+</ul>
+<p><strong>Example Calculation:</strong></p>
+<p>
+  Given transactions <code>T<sub>1</sub></code>, <code>T<sub>2</sub></code>, <code>T<sub>3</sub></code>, <code>T<sub>4</sub></code>:
+</p>
+<ol>
+  <li>Calculate <code>H(T<sub>1</sub>)</code> and <code>H(T<sub>2</sub>)</code>.</li>
+  <li>Compute <code>H(H(T<sub>1</sub>) || H(T<sub>2</sub>))</code>.</li>
+  <li>Repeat for <code>T<sub>3</sub></code> and <code>T<sub>4</sub></code>.</li>
+  <li>Compute the root <code>H(H(H(T<sub>1</sub>) || H(T<sub>2</sub>)) || H(H(T<sub>3</sub>) || H(T<sub>4</sub>))</code>.</li>
+</ol>
+<hr>
+<h2 id="slide-7-merkle-trees-contd">Slide 7: Merkle Trees (Cont’d)</h2>
+<p><strong>Benefits for Blockchain:</strong></p>
+<ul>
+<li>
+<p><strong>Efficient Data Verification:</strong> Merkle Trees allow for efficient and secure verification of data integrity. A single hash at the root can confirm the integrity of all transactions in the tree, minimizing the amount of data needed for verification.</p>
+</li>
+<li>
+<p><strong>Scalability:</strong> By allowing only a small portion of the Merkle Tree to be transmitted for verification, blockchains can handle large volumes of transactions without compromising efficiency.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-8-blockchain-transactions">Slide 8: Blockchain Transactions</h2>
+<p>A blockchain transaction involves several stages:</p>
+<ul>
+<li>
+<p><strong>Creation:</strong> A transaction is created when a user initiates a transfer or action on the blockchain. It includes details such as sender, recipient, amount, and any additional data.</p>
+</li>
+<li>
+<p><strong>Verification:</strong> The transaction is broadcasted to the network and validated by nodes. Verification involves checking signatures and ensuring that the sender has sufficient balance.</p>
+</li>
+<li>
+<p><strong>Inclusion in a Block:</strong> Once verified, the transaction is included in a block. Miners or validators add the block to the blockchain after completing the consensus process.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-9-transaction-example">Slide 9: Transaction Example</h2>
+<pre class=" language-mermaid"><svg id="mermaid-svg-bhOfGl4g6VLdPW5p" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="413.0166320800781" style="max-width: 910.9583740234375px;" viewBox="0 0 910.9583740234375 413.0166320800781"><style>#mermaid-svg-bhOfGl4g6VLdPW5p{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#000000;}#mermaid-svg-bhOfGl4g6VLdPW5p .error-icon{fill:#552222;}#mermaid-svg-bhOfGl4g6VLdPW5p .error-text{fill:#552222;stroke:#552222;}#mermaid-svg-bhOfGl4g6VLdPW5p .edge-thickness-normal{stroke-width:2px;}#mermaid-svg-bhOfGl4g6VLdPW5p .edge-thickness-thick{stroke-width:3.5px;}#mermaid-svg-bhOfGl4g6VLdPW5p .edge-pattern-solid{stroke-dasharray:0;}#mermaid-svg-bhOfGl4g6VLdPW5p .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-svg-bhOfGl4g6VLdPW5p .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-svg-bhOfGl4g6VLdPW5p .marker{fill:#666;stroke:#666;}#mermaid-svg-bhOfGl4g6VLdPW5p .marker.cross{stroke:#666;}#mermaid-svg-bhOfGl4g6VLdPW5p svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-svg-bhOfGl4g6VLdPW5p .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#000000;}#mermaid-svg-bhOfGl4g6VLdPW5p .cluster-label text{fill:#333;}#mermaid-svg-bhOfGl4g6VLdPW5p .cluster-label span{color:#333;}#mermaid-svg-bhOfGl4g6VLdPW5p .label text,#mermaid-svg-bhOfGl4g6VLdPW5p span{fill:#000000;color:#000000;}#mermaid-svg-bhOfGl4g6VLdPW5p .node rect,#mermaid-svg-bhOfGl4g6VLdPW5p .node circle,#mermaid-svg-bhOfGl4g6VLdPW5p .node ellipse,#mermaid-svg-bhOfGl4g6VLdPW5p .node polygon,#mermaid-svg-bhOfGl4g6VLdPW5p .node path{fill:#eee;stroke:#999;stroke-width:1px;}#mermaid-svg-bhOfGl4g6VLdPW5p .node .label{text-align:center;}#mermaid-svg-bhOfGl4g6VLdPW5p .node.clickable{cursor:pointer;}#mermaid-svg-bhOfGl4g6VLdPW5p .arrowheadPath{fill:#333333;}#mermaid-svg-bhOfGl4g6VLdPW5p .edgePath .path{stroke:#666;stroke-width:1.5px;}#mermaid-svg-bhOfGl4g6VLdPW5p .flowchart-link{stroke:#666;fill:none;}#mermaid-svg-bhOfGl4g6VLdPW5p .edgeLabel{background-color:white;text-align:center;}#mermaid-svg-bhOfGl4g6VLdPW5p .edgeLabel rect{opacity:0.5;background-color:white;fill:white;}#mermaid-svg-bhOfGl4g6VLdPW5p .cluster rect{fill:hsl(210,66.6666666667%,95%);stroke:#26a;stroke-width:1px;}#mermaid-svg-bhOfGl4g6VLdPW5p .cluster text{fill:#333;}#mermaid-svg-bhOfGl4g6VLdPW5p .cluster span{color:#333;}#mermaid-svg-bhOfGl4g6VLdPW5p div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(-160,0%,93.3333333333%);border:1px solid #26a;border-radius:2px;pointer-events:none;z-index:100;}#mermaid-svg-bhOfGl4g6VLdPW5p:root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}#mermaid-svg-bhOfGl4g6VLdPW5p .stage > *{fill:#f9f !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-bhOfGl4g6VLdPW5p .stage tspan{!important;}#mermaid-svg-bhOfGl4g6VLdPW5p .detail > *{fill:#bbf !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-bhOfGl4g6VLdPW5p .detail tspan{!important;}#mermaid-svg-bhOfGl4g6VLdPW5p flowchart-v2{fill:apa;}</style><g transform="translate(0, 0)"><marker id="flowchart-pointEnd" class="marker flowchart" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker><marker id="flowchart-pointStart" class="marker flowchart" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker><marker id="flowchart-circleEnd" class="marker flowchart" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></circle></marker><marker id="flowchart-circleStart" class="marker flowchart" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></circle></marker><marker id="flowchart-crossEnd" class="marker cross flowchart" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2px; stroke-dasharray: 1px, 0px;"></path></marker><marker id="flowchart-crossStart" class="marker cross flowchart" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2px; stroke-dasharray: 1px, 0px;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M611.8708343505859,43.41758381054004L592.4020830790201,50.8604847285913C572.9333318074545,58.303385646642575,533.9958292643229,73.18918748274511,514.5270779927572,87.02514336295458C495.0583267211914,100.86109924316406,495.0583267211914,113.64720916748047,495.0583267211914,120.04026412963867L495.0583267211914,126.43331909179688" id="L-A-B" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-B" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M446.09165954589844,161.6513505472775L420.5979111989339,169.127510191172C395.1041628519694,176.6036698350665,344.11666615804035,191.55598912285552,318.62291781107587,205.42520372890826C293.1291694641113,219.29441833496094,293.1291694641113,232.08052825927734,293.1291694641113,238.47358322143555L293.1291694641113,244.86663818359375" id="L-B-C" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-B LE-C" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M684.6627751016913,49.71665954589844L695.300924034938,56.10971450805664C705.9390729681849,62.502769470214844,727.2153708346783,75.28887939453125,737.8535197679251,88.07498931884766C748.4916687011719,100.86109924316406,748.4916687011719,113.64720916748047,748.4916687011719,120.04026412963867L748.4916687011719,126.43331909179688" id="L-A-D" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-D" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M504.9840887883551,168.1499786376953L508.02632386313934,174.54303359985352C511.0685589379236,180.93608856201172,517.1530290874921,193.72219848632812,520.1952641622763,206.50830841064453C523.2374992370605,219.29441833496094,523.2374992370605,232.08052825927734,523.2374992370605,238.47358322143555L523.2374992370605,244.86663818359375" id="L-B-E" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-B LE-E" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M544.0249938964844,160.16440707434998L573.4062442779541,167.88839063039907C602.7874946594238,175.61237418644816,661.5499954223633,191.06034129854638,690.931245803833,205.17737981675364C720.3124961853027,219.29441833496094,720.3124961853027,232.08052825927734,720.3124961853027,238.47358322143555L720.3124961853027,244.86663818359375" id="L-B-F" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-B LE-F" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M244.0111132183386,286.5832977294922L228.95648340704648,292.9763526916504C213.90185359575437,299.3694076538086,183.79259397317014,312.155517578125,168.73796416187804,324.9416275024414C153.68333435058594,337.7277374267578,153.68333435058594,350.5138473510742,153.68333435058594,356.9069023132324L153.68333435058594,363.2999572753906" id="L-C-G" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-C LE-G" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M342.24722570988405,286.5832977294922L357.30185552117615,292.9763526916504C372.3564853324683,299.3694076538086,402.4657449550525,312.155517578125,417.52037476634456,324.9416275024414C432.5750045776367,337.7277374267578,432.5750045776367,350.5138473510742,432.5750045776367,356.9069023132324L432.5750045776367,363.2999572753906" id="L-C-H" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-C LE-H" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(748.4916687011719, 88.07498931884766)"><g class="label" transform="translate(-60.85832977294922, -13.358329772949219)"><foreignObject width="121.71665954589844" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">Initiates Transfer</span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(523.2374992370605, 206.50830841064453)"><g class="label" transform="translate(-77.4749984741211, -13.358329772949219)"><foreignObject width="154.9499969482422" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">Broadcast to Network</span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(720.3124961853027, 206.50830841064453)"><g class="label" transform="translate(-99.36666870117188, -13.358329772949219)"><foreignObject width="198.73333740234375" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">Check Signatures &amp; Balance</span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(153.68333435058594, 324.9416275024414)"><g class="label" transform="translate(-45.083335876464844, -13.358329772949219)"><foreignObject width="90.16667175292969" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">Add to Block</span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(432.5750045776367, 324.9416275024414)"><g class="label" transform="translate(-64.2750015258789, -13.358329772949219)"><foreignObject width="128.5500030517578" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">Add to Blockchain</span></div></foreignObject></g></g></g><g class="nodes"><g class="node default stage" id="flowchart-A-1353" transform="translate(649.9541702270508, 28.85832977294922)"><rect class="basic label-container" style="" rx="0" ry="0" x="-38.083335876464844" y="-20.85832977294922" width="76.16667175292969" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-30.583335876464844, -13.358329772949219)"><foreignObject width="61.16667175292969" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Creation</span></div></foreignObject></g></g><g class="node default stage" id="flowchart-B-1354" transform="translate(495.0583267211914, 147.2916488647461)"><rect class="basic label-container" style="" rx="0" ry="0" x="-48.96666717529297" y="-20.85832977294922" width="97.93333435058594" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-41.46666717529297, -13.358329772949219)"><foreignObject width="82.93333435058594" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Verification</span></div></foreignObject></g></g><g class="node default stage" id="flowchart-C-1356" transform="translate(293.1291694641113, 265.72496795654297)"><rect class="basic label-container" style="" rx="0" ry="0" x="-76.23332977294922" y="-20.85832977294922" width="152.46665954589844" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-68.73332977294922, -13.358329772949219)"><foreignObject width="137.46665954589844" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Inclusion in a Block</span></div></foreignObject></g></g><g class="node default detail" id="flowchart-D-1358" transform="translate(748.4916687011719, 147.2916488647461)"><rect class="basic label-container" style="" rx="0" ry="0" x="-154.4666748046875" y="-20.85832977294922" width="308.933349609375" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-146.9666748046875, -13.358329772949219)"><foreignObject width="293.933349609375" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Details: Sender, Recipient, Amount, Data</span></div></foreignObject></g></g><g class="node default detail" id="flowchart-E-1360" transform="translate(523.2374992370605, 265.72496795654297)"><rect class="basic label-container" style="" rx="0" ry="0" x="-103.875" y="-20.85832977294922" width="207.75" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-96.375, -13.358329772949219)"><foreignObject width="192.75" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Nodes Validate Transaction</span></div></foreignObject></g></g><g class="node default detail" id="flowchart-F-1362" transform="translate(720.3124961853027, 265.72496795654297)"><rect class="basic label-container" style="" rx="0" ry="0" x="-43.19999694824219" y="-20.85832977294922" width="86.39999389648438" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-35.69999694824219, -13.358329772949219)"><foreignObject width="71.39999389648438" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Validation</span></div></foreignObject></g></g><g class="node default detail" id="flowchart-G-1364" transform="translate(153.68333435058594, 384.15828704833984)"><rect class="basic label-container" style="" rx="0" ry="0" x="-145.68333435058594" y="-20.85832977294922" width="291.3666687011719" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-138.18333435058594, -13.358329772949219)"><foreignObject width="276.3666687011719" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Miners/Validators Complete Consensus</span></div></foreignObject></g></g><g class="node default detail" id="flowchart-H-1366" transform="translate(432.5750045776367, 384.15828704833984)"><rect class="basic label-container" style="" rx="0" ry="0" x="-83.20833587646484" y="-20.85832977294922" width="166.4166717529297" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-75.70833587646484, -13.358329772949219)"><foreignObject width="151.4166717529297" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Transaction Finalized</span></div></foreignObject></g></g></g></g></g></svg></pre>
+<hr>
+<h2 id="slide-10-blockchain-consensus-mechanisms">Slide 10: Blockchain Consensus Mechanisms</h2>
+<p>Consensus mechanisms are critical for achieving agreement among nodes in a decentralized network. They ensure that all participants have a consistent view of the blockchain and prevent fraudulent transactions.</p>
+<ul>
+<li>
+<p><strong>Need for Consensus:</strong> Consensus is necessary to agree on the state of the blockchain and to prevent double-spending or fraudulent transactions.</p>
+</li>
+<li>
+<p><strong>Types of Consensus Algorithms:</strong> Various algorithms exist, each with its own advantages and trade-offs. Examples include Proof of Work (PoW), Proof of Stake (PoS), and Byzantine Fault Tolerance (BFT).</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-11-proof-of-work-pow">Slide 11: Proof of Work (PoW)</h2>
+<p>Proof of Work is a consensus mechanism used to secure blockchain networks. It requires participants (miners) to solve computationally difficult problems to validate transactions and create new blocks.</p>
+<ul>
+<li>
+<p><strong>Concept and Process:</strong> Miners compete to solve a cryptographic puzzle, and the first to solve it gets to add a new block to the blockchain. This process involves calculating a hash that meets a specific difficulty target.</p>
+</li>
+<li>
+<p><strong>Mining and Miners:</strong> Miners use computational power to solve the puzzle and are rewarded with cryptocurrency for their efforts. The difficulty of the puzzle adjusts to ensure a consistent block creation rate.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-12-proof-of-work-contd">Slide 12: Proof of Work (Cont’d)</h2>
+<p><strong>Mathematical Puzzle (Hashcash):</strong></p>
+<p>In PoW, miners must find a nonce value that, when hashed with the block’s previous hash and transaction data, produces a hash less than a target value.</p>
+<p> <strong>Equation:</strong><br> <code>H(nonce + previous_hash + transaction_data) &lt; target</code> </p> <p> Where:<br> </p><ul> <li><code>H</code> is the hash function (e.g., SHA-256).</li> <li><code>nonce</code> is a variable that miners adjust.</li> <li><code>target</code> is a predefined difficulty level.</li> </ul> <p></p>
+<p>Miners iterate through nonce values until they find one that meets the target criteria.</p>
+<hr>
+<h2 id="slide-13-proof-of-stake-pos">Slide 13: Proof of Stake (PoS)</h2>
+<p>Proof of Stake is an alternative to Proof of Work that relies on validators rather than miners. Validators are chosen based on the number of coins they hold and are willing to “stake” as collateral.</p>
+<ul>
+<li>
+<p><strong>Concept and Process:</strong> Validators are selected to create new blocks based on their stake and other factors such as randomization. They are rewarded for correctly validating transactions and maintaining network security.</p>
+</li>
+<li>
+<p><strong>Validators and Staking:</strong> The probability of being selected to validate a block is proportional to the amount of cryptocurrency staked. This reduces the need for energy-intensive computations.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-14-proof-of-stake-contd">Slide 14: Proof of Stake (Cont’d)</h2>
+<p><strong>Selection of Validators:</strong></p>
+<p>Validators are chosen based on factors including:</p>
+<ul>
+<li>
+<p><strong>Stake Amount:</strong> More staked coins increase the likelihood of being selected.</p>
+</li>
+<li>
+<p><strong>Randomization:</strong> Randomized selection helps ensure fairness and security.</p>
+</li>
+<li>
+<p><strong>Validator Reputation:</strong> Some systems incorporate a reputation mechanism to incentivize honest behavior.</p>
+</li>
+</ul>
+<p><strong>Benefits over PoW:</strong></p>
+<ul>
+<li>
+<p><strong>Energy Efficiency:</strong> PoS does not require extensive computational power, making it more environmentally friendly.</p>
+</li>
+<li>
+<p><strong>Lower Costs:</strong> Reduced operational costs for maintaining the network compared to PoW.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-15-delegated-proof-of-stake-dpos">Slide 15: Delegated Proof of Stake (DPoS)</h2>
+<p>Delegated Proof of Stake is an advanced version of PoS where stakeholders elect delegates to validate transactions and create blocks.</p>
+<ul>
+<li>
+<p><strong>Concept and Process:</strong> Token holders vote for delegates who represent their interests. These delegates are responsible for validating transactions and maintaining the blockchain.</p>
+</li>
+<li>
+<p><strong>Delegates and Voting:</strong> Voting for delegates is often based on their reputation, performance, and ability to maintain network security. DPoS aims to improve scalability and reduce centralization.</p>
+</li>
+</ul>
+<pre class=" language-mermaid"><svg id="mermaid-svg-rlTHlAShdQpQPtdM" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="608.0166015625" style="max-width: 182.88333129882812px;" viewBox="0 0 182.88333129882812 608.0166015625"><style>#mermaid-svg-rlTHlAShdQpQPtdM{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#000000;}#mermaid-svg-rlTHlAShdQpQPtdM .error-icon{fill:#552222;}#mermaid-svg-rlTHlAShdQpQPtdM .error-text{fill:#552222;stroke:#552222;}#mermaid-svg-rlTHlAShdQpQPtdM .edge-thickness-normal{stroke-width:2px;}#mermaid-svg-rlTHlAShdQpQPtdM .edge-thickness-thick{stroke-width:3.5px;}#mermaid-svg-rlTHlAShdQpQPtdM .edge-pattern-solid{stroke-dasharray:0;}#mermaid-svg-rlTHlAShdQpQPtdM .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-svg-rlTHlAShdQpQPtdM .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-svg-rlTHlAShdQpQPtdM .marker{fill:#666;stroke:#666;}#mermaid-svg-rlTHlAShdQpQPtdM .marker.cross{stroke:#666;}#mermaid-svg-rlTHlAShdQpQPtdM svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-svg-rlTHlAShdQpQPtdM .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#000000;}#mermaid-svg-rlTHlAShdQpQPtdM .cluster-label text{fill:#333;}#mermaid-svg-rlTHlAShdQpQPtdM .cluster-label span{color:#333;}#mermaid-svg-rlTHlAShdQpQPtdM .label text,#mermaid-svg-rlTHlAShdQpQPtdM span{fill:#000000;color:#000000;}#mermaid-svg-rlTHlAShdQpQPtdM .node rect,#mermaid-svg-rlTHlAShdQpQPtdM .node circle,#mermaid-svg-rlTHlAShdQpQPtdM .node ellipse,#mermaid-svg-rlTHlAShdQpQPtdM .node polygon,#mermaid-svg-rlTHlAShdQpQPtdM .node path{fill:#eee;stroke:#999;stroke-width:1px;}#mermaid-svg-rlTHlAShdQpQPtdM .node .label{text-align:center;}#mermaid-svg-rlTHlAShdQpQPtdM .node.clickable{cursor:pointer;}#mermaid-svg-rlTHlAShdQpQPtdM .arrowheadPath{fill:#333333;}#mermaid-svg-rlTHlAShdQpQPtdM .edgePath .path{stroke:#666;stroke-width:1.5px;}#mermaid-svg-rlTHlAShdQpQPtdM .flowchart-link{stroke:#666;fill:none;}#mermaid-svg-rlTHlAShdQpQPtdM .edgeLabel{background-color:white;text-align:center;}#mermaid-svg-rlTHlAShdQpQPtdM .edgeLabel rect{opacity:0.5;background-color:white;fill:white;}#mermaid-svg-rlTHlAShdQpQPtdM .cluster rect{fill:hsl(210,66.6666666667%,95%);stroke:#26a;stroke-width:1px;}#mermaid-svg-rlTHlAShdQpQPtdM .cluster text{fill:#333;}#mermaid-svg-rlTHlAShdQpQPtdM .cluster span{color:#333;}#mermaid-svg-rlTHlAShdQpQPtdM div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(-160,0%,93.3333333333%);border:1px solid #26a;border-radius:2px;pointer-events:none;z-index:100;}#mermaid-svg-rlTHlAShdQpQPtdM:root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}#mermaid-svg-rlTHlAShdQpQPtdM .users > *{fill:#f9f !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-rlTHlAShdQpQPtdM .users tspan{!important;}#mermaid-svg-rlTHlAShdQpQPtdM .delegates > *{fill:#bbf !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-rlTHlAShdQpQPtdM .delegates tspan{!important;}#mermaid-svg-rlTHlAShdQpQPtdM .process > *{fill:#cff !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-rlTHlAShdQpQPtdM .process tspan{!important;}#mermaid-svg-rlTHlAShdQpQPtdM flowchart-v2{fill:apa;}</style><g transform="translate(0, 0)"><marker id="flowchart-pointEnd" class="marker flowchart" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker><marker id="flowchart-pointStart" class="marker flowchart" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker><marker id="flowchart-circleEnd" class="marker flowchart" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></circle></marker><marker id="flowchart-circleStart" class="marker flowchart" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></circle></marker><marker id="flowchart-crossEnd" class="marker cross flowchart" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2px; stroke-dasharray: 1px, 0px;"></path></marker><marker id="flowchart-crossStart" class="marker cross flowchart" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2px; stroke-dasharray: 1px, 0px;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M91.44166564941406,49.71665954589844L91.44166564941406,53.8833262125651C91.44166564941406,58.04999287923177,91.44166564941406,66.38332621256511,91.44166564941406,74.71665954589844C91.44166564941406,83.04999287923177,91.44166564941406,91.38332621256511,91.44166564941406,95.54999287923177L91.44166564941406,99.71665954589844" id="L-A-B" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-B" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M91.44166564941406,141.43331909179688L91.44166564941406,145.59998575846353C91.44166564941406,149.76665242513022,91.44166564941406,158.09998575846353,91.44166564941406,166.43331909179688C91.44166564941406,174.76665242513022,91.44166564941406,183.09998575846353,91.44166564941406,187.26665242513022L91.44166564941406,191.43331909179688" id="L-B-C" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-B LE-C" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M91.44166564941406,233.1499786376953L91.44166564941406,237.31664530436197C91.44166564941406,241.48331197102866,91.44166564941406,249.81664530436197,91.44166564941406,258.1499786376953C91.44166564941406,266.4833119710286,91.44166564941406,274.816645304362,91.44166564941406,278.9833119710286L91.44166564941406,283.1499786376953" id="L-C-D" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-C LE-D" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M91.44166564941406,324.86663818359375L91.44166564941406,329.03330485026044C91.44166564941406,333.19997151692706,91.44166564941406,341.53330485026044,91.44166564941406,349.86663818359375C91.44166564941406,358.19997151692706,91.44166564941406,366.53330485026044,91.44166564941406,370.69997151692706L91.44166564941406,374.86663818359375" id="L-D-E" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-D LE-E" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M91.44166564941406,416.5832977294922L91.44166564941406,420.7499643961589C91.44166564941406,424.9166310628255,91.44166564941406,433.2499643961589,91.44166564941406,441.5832977294922C91.44166564941406,449.9166310628255,91.44166564941406,458.2499643961589,91.44166564941406,462.4166310628255L91.44166564941406,466.5832977294922" id="L-E-F" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-E LE-F" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M91.44166564941406,508.2999572753906L91.44166564941406,512.4666239420573C91.44166564941406,516.633290608724,91.44166564941406,524.9666239420573,91.44166564941406,533.2999572753906C91.44166564941406,541.633290608724,91.44166564941406,549.9666239420573,91.44166564941406,554.133290608724L91.44166564941406,558.2999572753906" id="L-F-G" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-F LE-G" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default users" id="flowchart-A-1379" transform="translate(91.44166564941406, 28.85832977294922)"><rect class="basic label-container" style="" rx="0" ry="0" x="-26.650001525878906" y="-20.85832977294922" width="53.30000305175781" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-19.150001525878906, -13.358329772949219)"><foreignObject width="38.30000305175781" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Users</span></div></foreignObject></g></g><g class="node default process" id="flowchart-B-1380" transform="translate(91.44166564941406, 120.57498931884766)"><rect class="basic label-container" style="" rx="0" ry="0" x="-73.69166564941406" y="-20.85832977294922" width="147.38333129882812" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-66.19166564941406, -13.358329772949219)"><foreignObject width="132.38333129882812" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Vote for Delegates</span></div></foreignObject></g></g><g class="node default delegates" id="flowchart-C-1382" transform="translate(91.44166564941406, 212.2916488647461)"><rect class="basic label-container" style="" rx="0" ry="0" x="-42.5" y="-20.85832977294922" width="85" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-35, -13.358329772949219)"><foreignObject width="70" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Delegates</span></div></foreignObject></g></g><g class="node default process" id="flowchart-D-1384" transform="translate(91.44166564941406, 304.00830841064453)"><rect class="basic label-container" style="" rx="0" ry="0" x="-72.01667022705078" y="-20.85832977294922" width="144.03334045410156" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-64.51667022705078, -13.358329772949219)"><foreignObject width="129.03334045410156" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Proposal of Blocks</span></div></foreignObject></g></g><g class="node default process" id="flowchart-E-1386" transform="translate(91.44166564941406, 395.72496795654297)"><rect class="basic label-container" style="" rx="0" ry="0" x="-83.44166564941406" y="-20.85832977294922" width="166.88333129882812" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-75.94166564941406, -13.358329772949219)"><foreignObject width="151.88333129882812" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Verification of Blocks</span></div></foreignObject></g></g><g class="node default process" id="flowchart-F-1388" transform="translate(91.44166564941406, 487.4416275024414)"><rect class="basic label-container" style="" rx="0" ry="0" x="-75.84166717529297" y="-20.85832977294922" width="151.68333435058594" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-68.34166717529297, -13.358329772949219)"><foreignObject width="136.68333435058594" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Block Confirmation</span></div></foreignObject></g></g><g class="node default process" id="flowchart-G-1390" transform="translate(91.44166564941406, 579.1582870483398)"><rect class="basic label-container" style="" rx="0" ry="0" x="-60.125" y="-20.85832977294922" width="120.25" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-52.625, -13.358329772949219)"><foreignObject width="105.25" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Update Ledger</span></div></foreignObject></g></g></g></g></g></svg></pre>
+<hr>
+<h2 id="slide-16-delegated-proof-of-stake-contd">Slide 16: Delegated Proof of Stake (Cont’d)</h2>
+<p><strong>Role of Token Holders:</strong></p>
+<p>Token holders have the power to elect and remove delegates. This voting mechanism ensures that delegates remain accountable to the network.</p>
+<p><strong>Advantages and Disadvantages:</strong></p>
+<ul>
+<li>
+<p><strong>Advantages:</strong> Increased scalability, faster block times, and reduced centralization compared to traditional PoW systems.</p>
+</li>
+<li>
+<p><strong>Disadvantages:</strong> Potential for centralization if a few delegates accumulate significant influence.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-17-byzantine-fault-tolerance-bft">Slide 17: Byzantine Fault Tolerance (BFT)</h2>
+<p>Byzantine Fault Tolerance is a consensus mechanism designed to handle failures and malicious actors in a distributed network.</p>
+<ul>
+<li>
+<p><strong>Concept and Process:</strong> BFT protocols aim to achieve consensus even when some nodes fail or act maliciously. They require a majority of honest nodes to agree on the state of the blockchain.</p>
+</li>
+<li>
+<p><strong>Byzantine Generals Problem:</strong> This problem illustrates the challenge of reaching consensus in a network where some participants may act dishonestly. BFT protocols address this issue by ensuring that consensus can still be achieved despite faulty nodes.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-18-byzantine-fault-tolerance-contd">Slide 18: Byzantine Fault Tolerance (Cont’d)</h2>
+<p><strong>Practical Byzantine Fault Tolerance (PBFT):</strong></p>
+<p>PBFT is a specific BFT protocol that works by having nodes exchange messages and reach agreement on a single value. The algorithm involves several phases:</p>
+<ol>
+<li>
+<p><strong>Pre-prepare:</strong> A primary node proposes a value.</p>
+</li>
+<li>
+<p><strong>Prepare:</strong> Nodes broadcast their agreement on the proposed value.</p>
+</li>
+<li>
+<p><strong>Commit:</strong> Nodes finalize the agreement and commit the value to the blockchain.</p>
+</li>
+</ol>
+<p>PBFT is designed to tolerate up to one-third of nodes being faulty.</p>
+<hr>
+<h2 id="slide-19-comparison-of-consensus-algorithms">Slide 19: Comparison of Consensus Algorithms</h2>
+<p>Here is a comparison of various consensus algorithms:</p>
+
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Proof of Work (PoW)</th>
+<th>Proof of Stake (PoS)</th>
+<th>Delegated PoS (DPoS)</th>
+<th>Byzantine Fault Tolerance (BFT)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Energy Efficiency</strong></td>
+<td>Low</td>
+<td>High</td>
+<td>High</td>
+<td>High</td>
+</tr>
+<tr>
+<td><strong>Scalability</strong></td>
+<td>Low</td>
+<td>High</td>
+<td>High</td>
+<td>Moderate</td>
+</tr>
+<tr>
+<td><strong>Security</strong></td>
+<td>High</td>
+<td>Moderate</td>
+<td>Moderate</td>
+<td>High</td>
+</tr>
+<tr>
+<td><strong>Decentralization</strong></td>
+<td>High</td>
+<td>Moderate</td>
+<td>Low</td>
+<td>High</td>
+</tr>
+<tr>
+<td><strong>Block Time</strong></td>
+<td>Variable</td>
+<td>Variable</td>
+<td>Fixed</td>
+<td>Fixed</td>
+</tr>
+</tbody>
+</table><p><strong>Use Cases:</strong></p>
+<ul>
+<li>
+<p><strong>PoW:</strong> Suitable for cryptocurrencies with high security needs (e.g., Bitcoin).</p>
+</li>
+<li>
+<p><strong>PoS:</strong> Useful for eco-friendly blockchain networks (e.g., Ethereum 2.0).</p>
+</li>
+<li>
+<p><strong>DPoS:</strong> Applied in platforms needing high scalability (e.g., EOS).</p>
+</li>
+<li>
+<p><strong>BFT:</strong> Ideal for permissioned blockchains (e.g., Hyperledger).</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-20-deep-dive-into-blockchain">Slide 20: Deep Dive into Blockchain</h2>
+<p>To understand blockchain more thoroughly, we need to explore its data structure in detail:</p>
+<ul>
+<li>
+<p><strong>Blocks:</strong> Blocks are the fundamental units of a blockchain, containing transactions, timestamps, and references to previous blocks.</p>
+</li>
+<li>
+<p><strong>Headers:</strong> The block header includes metadata such as the previous block’s hash, the Merkle root, and a timestamp. It ensures the integrity and continuity of the blockchain.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-21-block-structure">Slide 21: Block Structure</h2>
+<p>A block consists of:</p>
+<ul>
+<li>
+<p><strong>Block Header:</strong> Contains essential information such as the previous block’s hash, the Merkle root, and the block’s timestamp.</p>
+</li>
+<li>
+<p><strong>Block Body:</strong> Includes a list of transactions that have been validated and are part of the block.</p>
+</li>
+</ul>
+<p><strong>Diagram:</strong></p>
+<pre class=" language-mermaid"><svg id="mermaid-svg-LaZa0HwJBjd44f3r" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="241.14999389648438" style="max-width: 775.9666748046875px;" viewBox="0 0 775.9666748046875 241.14999389648438"><style>#mermaid-svg-LaZa0HwJBjd44f3r{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#000000;}#mermaid-svg-LaZa0HwJBjd44f3r .error-icon{fill:#552222;}#mermaid-svg-LaZa0HwJBjd44f3r .error-text{fill:#552222;stroke:#552222;}#mermaid-svg-LaZa0HwJBjd44f3r .edge-thickness-normal{stroke-width:2px;}#mermaid-svg-LaZa0HwJBjd44f3r .edge-thickness-thick{stroke-width:3.5px;}#mermaid-svg-LaZa0HwJBjd44f3r .edge-pattern-solid{stroke-dasharray:0;}#mermaid-svg-LaZa0HwJBjd44f3r .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-svg-LaZa0HwJBjd44f3r .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-svg-LaZa0HwJBjd44f3r .marker{fill:#666;stroke:#666;}#mermaid-svg-LaZa0HwJBjd44f3r .marker.cross{stroke:#666;}#mermaid-svg-LaZa0HwJBjd44f3r svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-svg-LaZa0HwJBjd44f3r .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#000000;}#mermaid-svg-LaZa0HwJBjd44f3r .cluster-label text{fill:#333;}#mermaid-svg-LaZa0HwJBjd44f3r .cluster-label span{color:#333;}#mermaid-svg-LaZa0HwJBjd44f3r .label text,#mermaid-svg-LaZa0HwJBjd44f3r span{fill:#000000;color:#000000;}#mermaid-svg-LaZa0HwJBjd44f3r .node rect,#mermaid-svg-LaZa0HwJBjd44f3r .node circle,#mermaid-svg-LaZa0HwJBjd44f3r .node ellipse,#mermaid-svg-LaZa0HwJBjd44f3r .node polygon,#mermaid-svg-LaZa0HwJBjd44f3r .node path{fill:#eee;stroke:#999;stroke-width:1px;}#mermaid-svg-LaZa0HwJBjd44f3r .node .label{text-align:center;}#mermaid-svg-LaZa0HwJBjd44f3r .node.clickable{cursor:pointer;}#mermaid-svg-LaZa0HwJBjd44f3r .arrowheadPath{fill:#333333;}#mermaid-svg-LaZa0HwJBjd44f3r .edgePath .path{stroke:#666;stroke-width:1.5px;}#mermaid-svg-LaZa0HwJBjd44f3r .flowchart-link{stroke:#666;fill:none;}#mermaid-svg-LaZa0HwJBjd44f3r .edgeLabel{background-color:white;text-align:center;}#mermaid-svg-LaZa0HwJBjd44f3r .edgeLabel rect{opacity:0.5;background-color:white;fill:white;}#mermaid-svg-LaZa0HwJBjd44f3r .cluster rect{fill:hsl(210,66.6666666667%,95%);stroke:#26a;stroke-width:1px;}#mermaid-svg-LaZa0HwJBjd44f3r .cluster text{fill:#333;}#mermaid-svg-LaZa0HwJBjd44f3r .cluster span{color:#333;}#mermaid-svg-LaZa0HwJBjd44f3r div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(-160,0%,93.3333333333%);border:1px solid #26a;border-radius:2px;pointer-events:none;z-index:100;}#mermaid-svg-LaZa0HwJBjd44f3r:root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}#mermaid-svg-LaZa0HwJBjd44f3r .header > *{fill:#f9f !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-LaZa0HwJBjd44f3r .header tspan{!important;}#mermaid-svg-LaZa0HwJBjd44f3r .body > *{fill:#bbf !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-LaZa0HwJBjd44f3r .body tspan{!important;}#mermaid-svg-LaZa0HwJBjd44f3r flowchart-v2{fill:apa;}</style><g transform="translate(0, 0)"><marker id="flowchart-pointEnd" class="marker flowchart" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker><marker id="flowchart-pointStart" class="marker flowchart" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker><marker id="flowchart-circleEnd" class="marker flowchart" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></circle></marker><marker id="flowchart-circleStart" class="marker flowchart" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></circle></marker><marker id="flowchart-crossEnd" class="marker cross flowchart" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2px; stroke-dasharray: 1px, 0px;"></path></marker><marker id="flowchart-crossStart" class="marker cross flowchart" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2px; stroke-dasharray: 1px, 0px;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M436.40832901000977,33.913677804748815L400.53610674540204,40.71417476160709C364.66388448079425,47.51467171846536,292.9194399515788,61.1156656321819,257.047217686971,72.08282925570684C221.17499542236328,83.04999287923177,221.17499542236328,91.38332621256511,221.17499542236328,95.54999287923177L221.17499542236328,99.71665954589844" id="L-A-B" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-B" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M489.7416572570801,36.820492680383055L510.8951295216878,43.136520491302285C532.0486017862955,49.452548302221516,574.3555463155111,62.08460392405997,595.5090185801188,72.56729840164587C616.6624908447266,83.04999287923177,616.6624908447266,91.38332621256511,616.6624908447266,95.54999287923177L616.6624908447266,99.71665954589844" id="L-A-C" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-C" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M166.36666107177734,136.63089804466625L149.41110610961914,141.59796821918803C132.45555114746094,146.56503839370978,98.54444122314453,156.49917874275334,81.58888626098633,165.63291558394178C64.63333129882812,174.76665242513022,64.63333129882812,183.09998575846353,64.63333129882812,187.26665242513022L64.63333129882812,191.43331909179688" id="L-B-D" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-B LE-D" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M221.17499542236328,141.43331909179688L221.17499542236328,145.59998575846353C221.17499542236328,149.76665242513022,221.17499542236328,158.09998575846353,221.17499542236328,166.43331909179688C221.17499542236328,174.76665242513022,221.17499542236328,183.09998575846353,221.17499542236328,187.26665242513022L221.17499542236328,191.43331909179688" id="L-B-E" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-B LE-E" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M275.9833297729492,137.70512185995338L291.3027737935384,142.4931547319273C306.6222178141276,147.2811876039012,337.26110585530597,156.85725334784902,352.5805498758952,165.81195288648962C367.8999938964844,174.76665242513022,367.8999938964844,183.09998575846353,367.8999938964844,187.26665242513022L367.8999938964844,191.43331909179688" id="L-B-F" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-B LE-F" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M576.4941886585409,141.43331909179688L568.4701556895719,145.59998575846353C560.4461227206028,149.76665242513022,544.3980567826646,158.09998575846353,536.3740238136957,166.43331909179688C528.3499908447266,174.76665242513022,528.3499908447266,183.09998575846353,528.3499908447266,187.26665242513022L528.3499908447266,191.43331909179688" id="L-C-G" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-C LE-G" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path><path d="M656.8307930309122,141.43331909179688L664.8548259998812,145.59998575846353C672.8788589688503,149.76665242513022,688.9269249067884,158.09998575846353,696.9509578757575,166.43331909179688C704.9749908447266,174.76665242513022,704.9749908447266,183.09998575846353,704.9749908447266,187.26665242513022L704.9749908447266,191.43331909179688" id="L-C-H" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-C LE-H" style="fill:none;" marker-end="url(#flowchart-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignObject width="0" height="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default header" id="flowchart-A-1405" transform="translate(463.0749931335449, 28.85832977294922)"><rect class="basic label-container" style="" rx="0" ry="0" x="-26.666664123535156" y="-20.85832977294922" width="53.33332824707031" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-19.166664123535156, -13.358329772949219)"><foreignObject width="38.33332824707031" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Block</span></div></foreignObject></g></g><g class="node default header" id="flowchart-B-1406" transform="translate(221.17499542236328, 120.57498931884766)"><rect class="basic label-container" style="" rx="0" ry="0" x="-54.80833435058594" y="-20.85832977294922" width="109.61666870117188" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-47.30833435058594, -13.358329772949219)"><foreignObject width="94.61666870117188" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Block Header</span></div></foreignObject></g></g><g class="node default body" id="flowchart-C-1408" transform="translate(616.6624908447266, 120.57498931884766)"><rect class="basic label-container" style="" rx="0" ry="0" x="-46.291664123535156" y="-20.85832977294922" width="92.58332824707031" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-38.791664123535156, -13.358329772949219)"><foreignObject width="77.58332824707031" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Block Body</span></div></foreignObject></g></g><g class="node default header" id="flowchart-D-1410" transform="translate(64.63333129882812, 212.2916488647461)"><rect class="basic label-container" style="" rx="0" ry="0" x="-56.633331298828125" y="-20.85832977294922" width="113.26666259765625" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-49.133331298828125, -13.358329772949219)"><foreignObject width="98.26666259765625" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Previous Hash</span></div></foreignObject></g></g><g class="node default header" id="flowchart-E-1412" transform="translate(221.17499542236328, 212.2916488647461)"><rect class="basic label-container" style="" rx="0" ry="0" x="-49.90833282470703" y="-20.85832977294922" width="99.81666564941406" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-42.40833282470703, -13.358329772949219)"><foreignObject width="84.81666564941406" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Merkle Root</span></div></foreignObject></g></g><g class="node default header" id="flowchart-F-1414" transform="translate(367.8999938964844, 212.2916488647461)"><rect class="basic label-container" style="" rx="0" ry="0" x="-46.81666564941406" y="-20.85832977294922" width="93.63333129882812" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-39.31666564941406, -13.358329772949219)"><foreignObject width="78.63333129882812" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Timestamp</span></div></foreignObject></g></g><g class="node default body" id="flowchart-G-1416" transform="translate(528.3499908447266, 212.2916488647461)"><rect class="basic label-container" style="" rx="0" ry="0" x="-63.633331298828125" y="-20.85832977294922" width="127.26666259765625" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-56.133331298828125, -13.358329772949219)"><foreignObject width="112.26666259765625" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Transaction List</span></div></foreignObject></g></g><g class="node default body" id="flowchart-H-1418" transform="translate(704.9749908447266, 212.2916488647461)"><rect class="basic label-container" style="" rx="0" ry="0" x="-62.991668701171875" y="-20.85832977294922" width="125.98333740234375" height="41.71665954589844"></rect><g class="label" style="" transform="translate(-55.491668701171875, -13.358329772949219)"><foreignObject width="110.98333740234375" height="26.716659545898438"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">Additional Data</span></div></foreignObject></g></g></g></g></g></svg></pre>
+<hr>
+<h2 id="slide-22-block-header-details">Slide 22: Block Header Details</h2>
+<p>Key fields in the block header include:</p>
+<ul>
+<li>
+<p><strong>Version:</strong> Indicates the version of the blockchain protocol used.</p>
+</li>
+<li>
+<p><strong>Previous Block Hash:</strong> A reference to the hash of the previous block, ensuring continuity.</p>
+</li>
+<li>
+<p><strong>Merkle Root:</strong> A hash representing all transactions in the block.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-23-block-header-details-contd">Slide 23: Block Header Details (Cont’d)</h2>
+<p>Additional fields in the block header:</p>
+<ul>
+<li>
+<p><strong>Timestamp:</strong> The time at which the block was created. It helps in ordering blocks and managing the blockchain’s history.</p>
+</li>
+<li>
+<p><strong>Difficulty Target:</strong> Determines the complexity of the cryptographic puzzle in PoW systems.</p>
+</li>
+<li>
+<p><strong>Nonce:</strong> A random value used in PoW to find a hash that meets the difficulty target.</p>
+</li>
+</ul>
+<p><strong>Example Equation:</strong></p>
+<p>To find a valid nonce, miners solve:</p>
+<p>
+  <code>H(Block Header) = SHA-256(Previous Hash + Merkle Root + Timestamp + Nonce)</code>
+</p>
+<p>
+  The goal is to make <code>H(Block Header)</code> less than the difficulty target.
+</p>
+<hr>
+<h2 id="slide-24-block-body">Slide 24: Block Body</h2>
+<p>The block body includes:</p>
+<ul>
+<li>
+<p><strong>Transactions List:</strong> A collection of validated transactions included in the block.</p>
+</li>
+<li>
+<p><strong>Data Storage and Management:</strong> Efficient storage mechanisms ensure that transaction data is accessible and manageable.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-25-blockchain-network">Slide 25: Blockchain Network</h2>
+<p>A blockchain operates as a peer-to-peer network with different types of nodes:</p>
+<ul>
+<li>
+<p><strong>Full Nodes:</strong> Store the entire blockchain and validate transactions.</p>
+</li>
+<li>
+<p><strong>Light Nodes:</strong> Store only a subset of the blockchain and rely on full nodes for transaction verification.</p>
+</li>
+</ul>
+<p><strong>Diagram:</strong></p>
+<pre class=" language-mermaid"><svg id="mermaid-svg-fMhltwgvcHYhHOSP" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="483.0166015625" style="max-width: 438.79998779296875px;" viewBox="0 0 438.79998779296875 483.0166015625"><style>#mermaid-svg-fMhltwgvcHYhHOSP{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#000000;}#mermaid-svg-fMhltwgvcHYhHOSP .error-icon{fill:#552222;}#mermaid-svg-fMhltwgvcHYhHOSP .error-text{fill:#552222;stroke:#552222;}#mermaid-svg-fMhltwgvcHYhHOSP .edge-thickness-normal{stroke-width:2px;}#mermaid-svg-fMhltwgvcHYhHOSP .edge-thickness-thick{stroke-width:3.5px;}#mermaid-svg-fMhltwgvcHYhHOSP .edge-pattern-solid{stroke-dasharray:0;}#mermaid-svg-fMhltwgvcHYhHOSP .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-svg-fMhltwgvcHYhHOSP .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-svg-fMhltwgvcHYhHOSP .marker{fill:#666;stroke:#666;}#mermaid-svg-fMhltwgvcHYhHOSP .marker.cross{stroke:#666;}#mermaid-svg-fMhltwgvcHYhHOSP svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-svg-fMhltwgvcHYhHOSP .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#000000;}#mermaid-svg-fMhltwgvcHYhHOSP .cluster-label text{fill:#333;}#mermaid-svg-fMhltwgvcHYhHOSP .cluster-label span{color:#333;}#mermaid-svg-fMhltwgvcHYhHOSP .label text,#mermaid-svg-fMhltwgvcHYhHOSP span{fill:#000000;color:#000000;}#mermaid-svg-fMhltwgvcHYhHOSP .node rect,#mermaid-svg-fMhltwgvcHYhHOSP .node circle,#mermaid-svg-fMhltwgvcHYhHOSP .node ellipse,#mermaid-svg-fMhltwgvcHYhHOSP .node polygon,#mermaid-svg-fMhltwgvcHYhHOSP .node path{fill:#eee;stroke:#999;stroke-width:1px;}#mermaid-svg-fMhltwgvcHYhHOSP .node .label{text-align:center;}#mermaid-svg-fMhltwgvcHYhHOSP .node.clickable{cursor:pointer;}#mermaid-svg-fMhltwgvcHYhHOSP .arrowheadPath{fill:#333333;}#mermaid-svg-fMhltwgvcHYhHOSP .edgePath .path{stroke:#666;stroke-width:1.5px;}#mermaid-svg-fMhltwgvcHYhHOSP .flowchart-link{stroke:#666;fill:none;}#mermaid-svg-fMhltwgvcHYhHOSP .edgeLabel{background-color:white;text-align:center;}#mermaid-svg-fMhltwgvcHYhHOSP .edgeLabel rect{opacity:0.5;background-color:white;fill:white;}#mermaid-svg-fMhltwgvcHYhHOSP .cluster rect{fill:hsl(210,66.6666666667%,95%);stroke:#26a;stroke-width:1px;}#mermaid-svg-fMhltwgvcHYhHOSP .cluster text{fill:#333;}#mermaid-svg-fMhltwgvcHYhHOSP .cluster span{color:#333;}#mermaid-svg-fMhltwgvcHYhHOSP div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(-160,0%,93.3333333333%);border:1px solid #26a;border-radius:2px;pointer-events:none;z-index:100;}#mermaid-svg-fMhltwgvcHYhHOSP:root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}#mermaid-svg-fMhltwgvcHYhHOSP .fullNode > *{fill:#bbf !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-fMhltwgvcHYhHOSP .fullNode tspan{!important;}#mermaid-svg-fMhltwgvcHYhHOSP .lightNode > *{fill:#cff !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-fMhltwgvcHYhHOSP .lightNode tspan{!important;}#mermaid-svg-fMhltwgvcHYhHOSP flowchart{fill:apa;}</style><g><g class="output"><g class="clusters"><g class="cluster" id="flowchart-Network-1459" style="opacity: 1;" transform="translate(219.39999771118164,241.50830841064453)"><rect width="422.7999954223633" height="467.01661682128906" x="-211.39999771118164" y="-233.50830841064453"></rect><g class="label" transform="translate(0, -219.50830078125)" id="mermaid-svg-fMhltwgvcHYhHOSPText"><g transform="translate(-30.03333282470703,-13.358329772949219)"><foreignObject width="60.06666564941406" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Network</div></foreignObject></g></g></g></g><g class="edgePaths"><g class="edgePath LS-FullNode1 LE-LightNode1" style="opacity: 1;" id="L-FullNode1-LightNode1"><path class="path" d="M169.81631496918803,79.71665954589844L142.00833892822266,118.07498931884766L169.81631496918803,156.43331909179688" marker-end="url(https://stackedit.io/app#arrowhead64)" style="fill:none"></path><defs><marker id="arrowhead64" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g><g class="edgePath LS-FullNode1 LE-LightNode2" style="opacity: 1;" id="L-FullNode1-LightNode2"><path class="path" d="M143.94111036884334,79.71665954589844L73.64167022705078,118.07498931884766L73.64167022705078,179.7916488647461L73.64167022705078,241.50830841064453L73.64167022705078,303.22496795654297L73.64167022705078,364.9416275024414L193.85833740234375,408.90827117533115" marker-end="url(https://stackedit.io/app#arrowhead65)" style="fill:none"></path><defs><marker id="arrowhead65" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g><g class="edgePath LS-FullNode2 LE-LightNode1" style="opacity: 1;" id="L-FullNode2-LightNode1"><path class="path" d="M207.80908666872295,279.86663818359375L242.39167022705078,241.50830841064453L207.80908666872295,203.1499786376953" marker-end="url(https://stackedit.io/app#arrowhead66)" style="fill:none"></path><defs><marker id="arrowhead66" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g><g class="edgePath LS-FullNode2 LE-LightNode2" style="opacity: 1;" id="L-FullNode2-LightNode2"><path class="path" d="M186.75,326.5832977294922L186.75,364.9416275024414L221.33258355832783,403.2999572753906" marker-end="url(https://stackedit.io/app#arrowhead67)" style="fill:none"></path><defs><marker id="arrowhead67" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g><g class="edgePath LS-LightNode1 LE-FullNode1" style="opacity: 1;" id="L-LightNode1-FullNode1"><path class="path" d="M213.93252822817894,156.43331909179688L258.57083892822266,118.07498931884766L213.93252822817894,79.71665954589844" marker-end="url(https://stackedit.io/app#arrowhead68)" style="fill:none"></path><defs><marker id="arrowhead68" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g><g class="edgePath LS-LightNode1 LE-FullNode2" style="opacity: 1;" id="L-LightNode1-FullNode2"><path class="path" d="M175.87509851878315,203.1499786376953L158.01667022705078,241.50830841064453L175.87509851878315,279.86663818359375" marker-end="url(https://stackedit.io/app#arrowhead69)" style="fill:none"></path><defs><marker id="arrowhead69" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g><g class="edgePath LS-LightNode2 LE-FullNode1" style="opacity: 1;" id="L-LightNode2-FullNode1"><path class="path" d="M274.3256583769906,403.2999572753906L326.7666702270508,364.9416275024414L326.7666702270508,303.22496795654297L326.7666702270508,241.50830841064453L326.7666702270508,179.7916488647461L326.7666702270508,118.07498931884766L230.6750030517578,75.71962764199502" marker-end="url(https://stackedit.io/app#arrowhead70)" style="fill:none"></path><defs><marker id="arrowhead70" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g><g class="edgePath LS-LightNode2 LE-FullNode2" style="opacity: 1;" id="L-LightNode2-FullNode2"><path class="path" d="M290.9250030517578,404.6971559826812L378.78333282470703,364.9416275024414L230.6750030517578,317.34181120985704" marker-end="url(https://stackedit.io/app#arrowhead71)" style="fill:none"></path><defs><marker id="arrowhead71" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g></g><g class="edgeLabels"><g class="edgeLabel" style="opacity: 1;" transform="translate(142.00833892822266,118.07498931884766)"><g transform="translate(-32.35833740234375,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="64.7166748046875" height="26.716659545898438"></rect><foreignObject width="64.7166748046875" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-FullNode1-LightNode1" class="edgeLabel L-LS-FullNode1' L-LE-LightNode1">Validates</span></div></foreignObject></g></g><g class="edgeLabel" style="opacity: 1;" transform="translate(73.64167022705078,241.50830841064453)"><g transform="translate(-32.35833740234375,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="64.7166748046875" height="26.716659545898438"></rect><foreignObject width="64.7166748046875" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-FullNode1-LightNode2" class="edgeLabel L-LS-FullNode1' L-LE-LightNode2">Validates</span></div></foreignObject></g></g><g class="edgeLabel" style="opacity: 1;" transform="translate(242.39167022705078,241.50830841064453)"><g transform="translate(-32.35833740234375,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="64.7166748046875" height="26.716659545898438"></rect><foreignObject width="64.7166748046875" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-FullNode2-LightNode1" class="edgeLabel L-LS-FullNode2' L-LE-LightNode1">Validates</span></div></foreignObject></g></g><g class="edgeLabel" style="opacity: 1;" transform="translate(186.75,364.9416275024414)"><g transform="translate(-32.35833740234375,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="64.7166748046875" height="26.716659545898438"></rect><foreignObject width="64.7166748046875" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-FullNode2-LightNode2" class="edgeLabel L-LS-FullNode2' L-LE-LightNode2">Validates</span></div></foreignObject></g></g><g class="edgeLabel" style="opacity: 1;" transform="translate(258.57083892822266,118.07498931884766)"><g transform="translate(-32.01666259765625,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="64.0333251953125" height="26.716659545898438"></rect><foreignObject width="64.0333251953125" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-LightNode1-FullNode1" class="edgeLabel L-LS-LightNode1' L-LE-FullNode1">Relies on</span></div></foreignObject></g></g><g class="edgeLabel" style="opacity: 1;" transform="translate(158.01667022705078,241.50830841064453)"><g transform="translate(-32.01666259765625,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="64.0333251953125" height="26.716659545898438"></rect><foreignObject width="64.0333251953125" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-LightNode1-FullNode2" class="edgeLabel L-LS-LightNode1' L-LE-FullNode2">Relies on</span></div></foreignObject></g></g><g class="edgeLabel" style="opacity: 1;" transform="translate(326.7666702270508,241.50830841064453)"><g transform="translate(-32.01666259765625,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="64.0333251953125" height="26.716659545898438"></rect><foreignObject width="64.0333251953125" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-LightNode2-FullNode1" class="edgeLabel L-LS-LightNode2' L-LE-FullNode1">Relies on</span></div></foreignObject></g></g><g class="edgeLabel" style="opacity: 1;" transform="translate(378.78333282470703,364.9416275024414)"><g transform="translate(-32.01666259765625,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="64.0333251953125" height="26.716659545898438"></rect><foreignObject width="64.0333251953125" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-LightNode2-FullNode2" class="edgeLabel L-LS-LightNode2' L-LE-FullNode2">Relies on</span></div></foreignObject></g></g></g><g class="nodes"><g class="node fullNode" style="opacity: 1;" id="flowchart-FullNode1-1439" transform="translate(186.75,56.35832977294922)"><rect rx="0" ry="0" x="-43.92500305175781" y="-23.35832977294922" width="87.85000610351562" height="46.71665954589844" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-33.92500305175781,-13.358329772949219)"><foreignObject width="67.85000610351562" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Full Node</div></foreignObject></g></g></g><g class="node fullNode" style="opacity: 1;" id="flowchart-FullNode2-1440" transform="translate(186.75,303.22496795654297)"><rect rx="0" ry="0" x="-43.92500305175781" y="-23.35832977294922" width="87.85000610351562" height="46.71665954589844" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-33.92500305175781,-13.358329772949219)"><foreignObject width="67.85000610351562" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Full Node</div></foreignObject></g></g></g><g class="node lightNode" style="opacity: 1;" id="flowchart-LightNode1-1441" transform="translate(186.75,179.7916488647461)"><rect rx="0" ry="0" x="-48.53333282470703" y="-23.35832977294922" width="97.06666564941406" height="46.71665954589844" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-38.53333282470703,-13.358329772949219)"><foreignObject width="77.06666564941406" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Light Node</div></foreignObject></g></g></g><g class="node lightNode" style="opacity: 1;" id="flowchart-LightNode2-1442" transform="translate(242.39167022705078,426.65828704833984)"><rect rx="0" ry="0" x="-48.53333282470703" y="-23.35832977294922" width="97.06666564941406" height="46.71665954589844" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-38.53333282470703,-13.358329772949219)"><foreignObject width="77.06666564941406" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Light Node</div></foreignObject></g></g></g></g></g></g></svg></pre>
+<ul>
+<li><strong>Full Nodes</strong>: Store the entire blockchain and validate transactions. They are directly connected to all Light Nodes.</li>
+<li><strong>Light Nodes</strong>: Store only a subset of the blockchain and rely on Full Nodes for transaction verification. They are connected to multiple Full Nodes for validation.</li>
+</ul>
+<hr>
+<h2 id="slide-26-blockchain-forks">Slide 26: Blockchain Forks</h2>
+<p>Forks occur when there are disagreements on the blockchain protocol or updates:</p>
+<ul>
+<li>
+<p><strong>Hard Fork:</strong> A significant change that is not backward-compatible. Nodes must upgrade to the new version. Example: Bitcoin Cash.</p>
+</li>
+<li>
+<p><strong>Soft Fork:</strong> A backward-compatible change. Older nodes can still recognize new blocks. Example: Segregated Witness (SegWit).</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-27-hard-fork">Slide 27: Hard Fork</h2>
+<p>A hard fork splits the blockchain into two separate chains. This can occur due to disagreements within the community or protocol upgrades.</p>
+<ul>
+<li>
+<p><strong>Concept and Implications:</strong> Hard forks can create new cryptocurrencies and impact the value of the original chain.</p>
+</li>
+<li>
+<p><strong>Example:</strong> Bitcoin Cash was created as a result of a hard fork from Bitcoin, aiming to address scalability issues.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-28-soft-fork">Slide 28: Soft Fork</h2>
+<p>A soft fork is a protocol update that remains compatible with the previous version. Nodes running the older version can still recognize and validate new blocks.</p>
+<ul>
+<li>
+<p><strong>Concept and Implications:</strong> Soft forks allow for incremental improvements without disrupting the network.</p>
+</li>
+<li>
+<p><strong>Example:</strong> Segregated Witness (SegWit) was a soft fork in Bitcoin that increased block capacity by changing how transaction data is stored.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-29-smart-contracts">Slide 29: Smart Contracts</h2>
+<p>Smart contracts are self-executing contracts with the terms written into code. They automatically enforce and execute the contract’s terms without the need for intermediaries.</p>
+<ul>
+<li>
+<p><strong>Definition and Purpose:</strong> Smart contracts streamline processes by automating contractual agreements and reducing the need for trust between parties.</p>
+</li>
+<li>
+<p><strong>Platform:</strong> Ethereum is a prominent platform for deploying smart contracts due to its robust support for decentralized applications (DApps).</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-30-smart-contracts-contd">Slide 30: Smart Contracts (Cont’d)</h2>
+<p><strong>Solidity Programming Language:</strong> Solidity is the primary language for writing smart contracts on Ethereum. It is designed to be high-level and contract-oriented.</p>
+<p><strong>Example Code Snippet:</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">
+pragma solidity ^0.8.0;
+
+  
+
+contract SimpleStorage {
+
+uint256 public storedData;
+
+  
+
+function set(uint256 x) public {
+
+storedData = x;
+
+}
+
+}
+
+  
+
+</code></pre>
+<h2 id="slide-31-decentralized-applications-dapps">Slide 31: Decentralized Applications (DApps)</h2>
+<p>DApps are applications that run on a decentralized network, leveraging blockchain technology to ensure transparency and security.</p>
+<ul>
+<li>
+<p><strong>Definition and Examples:</strong> DApps operate on decentralized networks and interact with smart contracts to perform various functions. Examples include decentralized exchanges and games.</p>
+</li>
+<li>
+<p><strong>Interaction with Smart Contracts:</strong> DApps use smart contracts to manage data and enforce rules, allowing for trustless transactions.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-32-dapps-contd">Slide 32: DApps (Cont’d)</h2>
+<p><strong>Architecture of a DApp:</strong></p>
+<ul>
+<li>
+<p><strong>Frontend:</strong> The user interface that interacts with the blockchain via web3 libraries (e.g., Web3.js).</p>
+</li>
+<li>
+<p><strong>Backend:</strong> The smart contracts deployed on the blockchain that handle business logic and data management.</p>
+</li>
+</ul>
+<p><strong>Diagram:</strong></p>
+<pre class=" language-mermaid"><svg id="mermaid-svg-fGflKblR5mfqemNs" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="309.58331298828125" style="max-width: 211.64999389648438px;" viewBox="0 0 211.64999389648438 309.58331298828125"><style>#mermaid-svg-fGflKblR5mfqemNs{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#000000;}#mermaid-svg-fGflKblR5mfqemNs .error-icon{fill:#552222;}#mermaid-svg-fGflKblR5mfqemNs .error-text{fill:#552222;stroke:#552222;}#mermaid-svg-fGflKblR5mfqemNs .edge-thickness-normal{stroke-width:2px;}#mermaid-svg-fGflKblR5mfqemNs .edge-thickness-thick{stroke-width:3.5px;}#mermaid-svg-fGflKblR5mfqemNs .edge-pattern-solid{stroke-dasharray:0;}#mermaid-svg-fGflKblR5mfqemNs .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-svg-fGflKblR5mfqemNs .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-svg-fGflKblR5mfqemNs .marker{fill:#666;stroke:#666;}#mermaid-svg-fGflKblR5mfqemNs .marker.cross{stroke:#666;}#mermaid-svg-fGflKblR5mfqemNs svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-svg-fGflKblR5mfqemNs .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#000000;}#mermaid-svg-fGflKblR5mfqemNs .cluster-label text{fill:#333;}#mermaid-svg-fGflKblR5mfqemNs .cluster-label span{color:#333;}#mermaid-svg-fGflKblR5mfqemNs .label text,#mermaid-svg-fGflKblR5mfqemNs span{fill:#000000;color:#000000;}#mermaid-svg-fGflKblR5mfqemNs .node rect,#mermaid-svg-fGflKblR5mfqemNs .node circle,#mermaid-svg-fGflKblR5mfqemNs .node ellipse,#mermaid-svg-fGflKblR5mfqemNs .node polygon,#mermaid-svg-fGflKblR5mfqemNs .node path{fill:#eee;stroke:#999;stroke-width:1px;}#mermaid-svg-fGflKblR5mfqemNs .node .label{text-align:center;}#mermaid-svg-fGflKblR5mfqemNs .node.clickable{cursor:pointer;}#mermaid-svg-fGflKblR5mfqemNs .arrowheadPath{fill:#333333;}#mermaid-svg-fGflKblR5mfqemNs .edgePath .path{stroke:#666;stroke-width:1.5px;}#mermaid-svg-fGflKblR5mfqemNs .flowchart-link{stroke:#666;fill:none;}#mermaid-svg-fGflKblR5mfqemNs .edgeLabel{background-color:white;text-align:center;}#mermaid-svg-fGflKblR5mfqemNs .edgeLabel rect{opacity:0.5;background-color:white;fill:white;}#mermaid-svg-fGflKblR5mfqemNs .cluster rect{fill:hsl(210,66.6666666667%,95%);stroke:#26a;stroke-width:1px;}#mermaid-svg-fGflKblR5mfqemNs .cluster text{fill:#333;}#mermaid-svg-fGflKblR5mfqemNs .cluster span{color:#333;}#mermaid-svg-fGflKblR5mfqemNs div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(-160,0%,93.3333333333%);border:1px solid #26a;border-radius:2px;pointer-events:none;z-index:100;}#mermaid-svg-fGflKblR5mfqemNs:root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}#mermaid-svg-fGflKblR5mfqemNs .frontend > *{fill:#bbf !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-fGflKblR5mfqemNs .frontend tspan{!important;}#mermaid-svg-fGflKblR5mfqemNs .backend > *{fill:#cff !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-fGflKblR5mfqemNs .backend tspan{!important;}#mermaid-svg-fGflKblR5mfqemNs .blockchain > *{fill:#fcf !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-fGflKblR5mfqemNs .blockchain tspan{!important;}#mermaid-svg-fGflKblR5mfqemNs flowchart{fill:apa;}</style><g><g class="output"><g class="clusters"></g><g class="edgePaths"><g class="edgePath LS-Frontend LE-Backend" style="opacity: 1;" id="L-Frontend-Backend"><path class="path" d="M105.82499694824219,54.71665954589844L105.82499694824219,93.07498931884766L105.82499694824219,131.43331909179688" marker-end="url(https://stackedit.io/app#arrowhead72)" style="fill:none"></path><defs><marker id="arrowhead72" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g><g class="edgePath LS-Backend LE-Blockchain" style="opacity: 1;" id="L-Backend-Blockchain"><path class="path" d="M105.82499694824219,178.1499786376953L105.82499694824219,216.50830841064453L105.82499694824219,254.86663818359375" marker-end="url(https://stackedit.io/app#arrowhead73)" style="fill:none"></path><defs><marker id="arrowhead73" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g></g><g class="edgeLabels"><g class="edgeLabel" style="opacity: 1;" transform="translate(105.82499694824219,93.07498931884766)"><g transform="translate(-97.82499694824219,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="195.64999389648438" height="26.716659545898438"></rect><foreignObject width="195.64999389648438" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-Frontend-Backend" class="edgeLabel L-LS-Frontend' L-LE-Backend">Interacts via web3 libraries</span></div></foreignObject></g></g><g class="edgeLabel" style="opacity: 1;" transform="translate(105.82499694824219,216.50830841064453)"><g transform="translate(-86.23333740234375,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="172.4666748046875" height="26.716659545898438"></rect><foreignObject width="172.4666748046875" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-Backend-Blockchain" class="edgeLabel L-LS-Backend' L-LE-Blockchain">Deploys smart contracts</span></div></foreignObject></g></g></g><g class="nodes"><g class="node frontend" style="opacity: 1;" id="flowchart-Frontend-1467" transform="translate(105.82499694824219,31.35832977294922)"><rect rx="0" ry="0" x="-42.349998474121094" y="-23.35832977294922" width="84.69999694824219" height="46.71665954589844" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-32.349998474121094,-13.358329772949219)"><foreignObject width="64.69999694824219" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Frontend</div></foreignObject></g></g></g><g class="node backend" style="opacity: 1;" id="flowchart-Backend-1468" transform="translate(105.82499694824219,154.7916488647461)"><rect rx="0" ry="0" x="-39.916664123535156" y="-23.35832977294922" width="79.83332824707031" height="46.71665954589844" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-29.916664123535156,-13.358329772949219)"><foreignObject width="59.83332824707031" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Backend</div></foreignObject></g></g></g><g class="node blockchain" style="opacity: 1;" id="flowchart-Blockchain-1469" transform="translate(105.82499694824219,278.22496795654297)"><rect rx="0" ry="0" x="-48.35832977294922" y="-23.35832977294922" width="96.71665954589844" height="46.71665954589844" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-38.35832977294922,-13.358329772949219)"><foreignObject width="76.71665954589844" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Blockchain</div></foreignObject></g></g></g></g></g></g></svg></pre>
+<ul>
+<li><strong>Frontend</strong>: The user interface that interacts with the blockchain using web3 libraries (e.g., Web3.js).</li>
+<li><strong>Backend</strong>: The smart contracts deployed on the blockchain that manage business logic and data.</li>
+<li><strong>Blockchain</strong>: The decentralized ledger where smart contracts are deployed and executed.</li>
+</ul>
+<hr>
+<h2 id="slide-33-token-standards">Slide 33: Token Standards</h2>
+<p>Tokens are digital assets created and managed on a blockchain. Two common token standards are:</p>
+<ul>
+<li>
+<p><strong>ERC-20:</strong> Defines a standard for fungible tokens on Ethereum. It includes functions for transferring tokens and querying balances.</p>
+</li>
+<li>
+<p><strong>ERC-721:</strong> Defines a standard for non-fungible tokens (NFTs) on Ethereum, allowing for unique, indivisible assets.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-34-token-standards-contd">Slide 34: Token Standards (Cont’d)</h2>
+<p><strong>Use Cases of Tokens:</strong></p>
+<ul>
+<li>
+<p><strong>Utility Tokens:</strong> Provide access to a product or service within a blockchain ecosystem (e.g., Binance Coin).</p>
+</li>
+<li>
+<p><strong>Security Tokens:</strong> Represent ownership of an asset or investment (e.g., security tokens representing shares in a company).</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-35-blockchain-interoperability">Slide 35: Blockchain Interoperability</h2>
+<p>Blockchain interoperability is crucial for connecting different blockchain networks, enabling them to work together and share information.</p>
+<ul>
+<li>
+<p><strong>Need for Interoperability:</strong> Enables seamless interactions between various blockchain platforms and improves the overall ecosystem.</p>
+</li>
+<li>
+<p><strong>Solutions:</strong> Platforms like Polkadot and Cosmos offer frameworks for connecting disparate blockchains, allowing for cross-chain transactions and communication.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-36-blockchain-security">Slide 36: Blockchain Security</h2>
+<p><strong>Common Threats:</strong></p>
+<ul>
+<li>
+<p><strong>51% Attack:</strong> Occurs when a single entity controls more than 50% of the network’s computing power, allowing them to manipulate the blockchain.</p>
+</li>
+<li>
+<p><strong>Sybil Attack:</strong> Involves creating multiple fake identities to gain control over the network.</p>
+</li>
+</ul>
+<p><strong>Mitigation Strategies:</strong></p>
+<ul>
+<li>
+<p><strong>Enhanced Consensus Algorithms:</strong> Implementing more robust consensus mechanisms to prevent attacks.</p>
+</li>
+<li>
+<p><strong>Network Monitoring:</strong> Regularly monitoring network activity to detect and respond to malicious behavior.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-37-blockchain-security-contd">Slide 37: Blockchain Security (Cont’d)</h2>
+<p><strong>Mitigation Strategies (Cont’d):</strong></p>
+<ul>
+<li>
+<p><strong>Cryptographic Techniques:</strong> Employing advanced cryptographic methods to secure transactions and data.</p>
+</li>
+<li>
+<p><strong>Decentralization:</strong> Ensuring that the network remains decentralized to prevent single points of failure.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-38-scaling-solutions">Slide 38: Scaling Solutions</h2>
+<p>Scaling solutions are necessary to handle the growing number of transactions on blockchain networks:</p>
+<ul>
+<li>
+<p><strong>Layer 1 Solutions:</strong> Involve improving the base layer of the blockchain (e.g., increasing block size).</p>
+</li>
+<li>
+<p><strong>Layer 2 Solutions:</strong> Build on top of the base layer to enhance scalability (e.g., Lightning Network for Bitcoin).</p>
+</li>
+</ul>
+<p><strong>Example:</strong> The Lightning Network allows for off-chain transactions, reducing the load on the main blockchain.</p>
+<hr>
+<h2 id="slide-39-privacy-in-blockchain">Slide 39: Privacy in Blockchain</h2>
+<p>Privacy techniques in blockchain ensure that transactions and user data remain confidential:</p>
+<ul>
+<li>
+<p><strong>Zero-Knowledge Proofs:</strong> Allow one party to prove to another that a statement is true without revealing any additional information (e.g., zk-SNARKs).</p>
+</li>
+<li>
+<p><strong>Ring Signatures:</strong> Provide anonymity by allowing a transaction to be signed by any member of a group without revealing which member signed it.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-40-privacy-in-blockchain-contd">Slide 40: Privacy in Blockchain (Cont’d)</h2>
+<p><strong>Example: zk-SNARKs in Zcash:</strong></p>
+<p>Zcash uses zk-SNARKs (Zero-Knowledge Succinct Non-Interactive Arguments of Knowledge) to enable shielded transactions, allowing users to make private transactions while still maintaining the security of the blockchain.</p>
+<pre class=" language-mermaid"><svg id="mermaid-svg-LrIvo0KdKYYgl8ag" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="433.0166320800781" style="max-width: 179.53334045410156px;" viewBox="0 0 179.53334045410156 433.0166320800781"><style>#mermaid-svg-LrIvo0KdKYYgl8ag{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#000000;}#mermaid-svg-LrIvo0KdKYYgl8ag .error-icon{fill:#552222;}#mermaid-svg-LrIvo0KdKYYgl8ag .error-text{fill:#552222;stroke:#552222;}#mermaid-svg-LrIvo0KdKYYgl8ag .edge-thickness-normal{stroke-width:2px;}#mermaid-svg-LrIvo0KdKYYgl8ag .edge-thickness-thick{stroke-width:3.5px;}#mermaid-svg-LrIvo0KdKYYgl8ag .edge-pattern-solid{stroke-dasharray:0;}#mermaid-svg-LrIvo0KdKYYgl8ag .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-svg-LrIvo0KdKYYgl8ag .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-svg-LrIvo0KdKYYgl8ag .marker{fill:#666;stroke:#666;}#mermaid-svg-LrIvo0KdKYYgl8ag .marker.cross{stroke:#666;}#mermaid-svg-LrIvo0KdKYYgl8ag svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-svg-LrIvo0KdKYYgl8ag .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#000000;}#mermaid-svg-LrIvo0KdKYYgl8ag .cluster-label text{fill:#333;}#mermaid-svg-LrIvo0KdKYYgl8ag .cluster-label span{color:#333;}#mermaid-svg-LrIvo0KdKYYgl8ag .label text,#mermaid-svg-LrIvo0KdKYYgl8ag span{fill:#000000;color:#000000;}#mermaid-svg-LrIvo0KdKYYgl8ag .node rect,#mermaid-svg-LrIvo0KdKYYgl8ag .node circle,#mermaid-svg-LrIvo0KdKYYgl8ag .node ellipse,#mermaid-svg-LrIvo0KdKYYgl8ag .node polygon,#mermaid-svg-LrIvo0KdKYYgl8ag .node path{fill:#eee;stroke:#999;stroke-width:1px;}#mermaid-svg-LrIvo0KdKYYgl8ag .node .label{text-align:center;}#mermaid-svg-LrIvo0KdKYYgl8ag .node.clickable{cursor:pointer;}#mermaid-svg-LrIvo0KdKYYgl8ag .arrowheadPath{fill:#333333;}#mermaid-svg-LrIvo0KdKYYgl8ag .edgePath .path{stroke:#666;stroke-width:1.5px;}#mermaid-svg-LrIvo0KdKYYgl8ag .flowchart-link{stroke:#666;fill:none;}#mermaid-svg-LrIvo0KdKYYgl8ag .edgeLabel{background-color:white;text-align:center;}#mermaid-svg-LrIvo0KdKYYgl8ag .edgeLabel rect{opacity:0.5;background-color:white;fill:white;}#mermaid-svg-LrIvo0KdKYYgl8ag .cluster rect{fill:hsl(210,66.6666666667%,95%);stroke:#26a;stroke-width:1px;}#mermaid-svg-LrIvo0KdKYYgl8ag .cluster text{fill:#333;}#mermaid-svg-LrIvo0KdKYYgl8ag .cluster span{color:#333;}#mermaid-svg-LrIvo0KdKYYgl8ag div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(-160,0%,93.3333333333%);border:1px solid #26a;border-radius:2px;pointer-events:none;z-index:100;}#mermaid-svg-LrIvo0KdKYYgl8ag:root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}#mermaid-svg-LrIvo0KdKYYgl8ag .zcash > *{fill:#bbf !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-LrIvo0KdKYYgl8ag .zcash tspan{!important;}#mermaid-svg-LrIvo0KdKYYgl8ag .zkSNARKs > *{fill:#cff !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-LrIvo0KdKYYgl8ag .zkSNARKs tspan{!important;}#mermaid-svg-LrIvo0KdKYYgl8ag .transactions > *{fill:#cfc !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-LrIvo0KdKYYgl8ag .transactions tspan{!important;}#mermaid-svg-LrIvo0KdKYYgl8ag .blockchain > *{fill:#fcf !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-LrIvo0KdKYYgl8ag .blockchain tspan{!important;}#mermaid-svg-LrIvo0KdKYYgl8ag flowchart{fill:apa;}</style><g><g class="output"><g class="clusters"></g><g class="edgePaths"><g class="edgePath LS-Zcash LE-zkSNARKs" style="opacity: 1;" id="L-Zcash-zkSNARKs"><path class="path" d="M89.76667022705078,54.71665954589844L89.76667022705078,93.07498931884766L89.76667022705078,131.43331909179688" marker-end="url(https://stackedit.io/app#arrowhead74)" style="fill:none"></path><defs><marker id="arrowhead74" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g><g class="edgePath LS-zkSNARKs LE-Transactions" style="opacity: 1;" id="L-zkSNARKs-Transactions"><path class="path" d="M89.76667022705078,178.1499786376953L89.76667022705078,216.50830841064453L89.76667022705078,254.86663818359375" marker-end="url(https://stackedit.io/app#arrowhead75)" style="fill:none"></path><defs><marker id="arrowhead75" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g><g class="edgePath LS-Transactions LE-Blockchain" style="opacity: 1;" id="L-Transactions-Blockchain"><path class="path" d="M89.76667022705078,301.5832977294922L89.76667022705078,339.9416275024414L89.76667022705078,378.2999572753906" marker-end="url(https://stackedit.io/app#arrowhead76)" style="fill:none"></path><defs><marker id="arrowhead76" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g></g><g class="edgeLabels"><g class="edgeLabel" style="opacity: 1;" transform="translate(89.76667022705078,93.07498931884766)"><g transform="translate(-16.041671752929688,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="32.083343505859375" height="26.716659545898438"></rect><foreignObject width="32.083343505859375" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-Zcash-zkSNARKs" class="edgeLabel L-LS-Zcash' L-LE-zkSNARKs">Uses</span></div></foreignObject></g></g><g class="edgeLabel" style="opacity: 1;" transform="translate(89.76667022705078,216.50830841064453)"><g transform="translate(-27.283340454101562,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="54.566680908203125" height="26.716659545898438"></rect><foreignObject width="54.566680908203125" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-zkSNARKs-Transactions" class="edgeLabel L-LS-zkSNARKs' L-LE-Transactions">Enables</span></div></foreignObject></g></g><g class="edgeLabel" style="opacity: 1;" transform="translate(89.76667022705078,339.9416275024414)"><g transform="translate(-30.566665649414062,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="61.133331298828125" height="26.716659545898438"></rect><foreignObject width="61.133331298828125" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-Transactions-Blockchain" class="edgeLabel L-LS-Transactions' L-LE-Blockchain">Maintain</span></div></foreignObject></g></g></g><g class="nodes"><g class="node zcash" style="opacity: 1;" id="flowchart-Zcash-1484" transform="translate(89.76667022705078,31.35832977294922)"><rect rx="0" ry="0" x="-30.175003051757812" y="-23.35832977294922" width="60.350006103515625" height="46.71665954589844" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-20.175003051757812,-13.358329772949219)"><foreignObject width="40.350006103515625" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Zcash</div></foreignObject></g></g></g><g class="node zkSNARKs" style="opacity: 1;" id="flowchart-zkSNARKs-1485" transform="translate(89.76667022705078,154.7916488647461)"><rect rx="0" ry="0" x="-46.958335876464844" y="-23.35832977294922" width="93.91667175292969" height="46.71665954589844" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-36.958335876464844,-13.358329772949219)"><foreignObject width="73.91667175292969" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">zk-SNARKs</div></foreignObject></g></g></g><g class="node transactions" style="opacity: 1;" id="flowchart-Transactions-1486" transform="translate(89.76667022705078,278.22496795654297)"><rect rx="0" ry="0" x="-81.76667022705078" y="-23.35832977294922" width="163.53334045410156" height="46.71665954589844" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-71.76667022705078,-13.358329772949219)"><foreignObject width="143.53334045410156" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Private Transactions</div></foreignObject></g></g></g><g class="node blockchain" style="opacity: 1;" id="flowchart-Blockchain-1487" transform="translate(89.76667022705078,401.65828704833984)"><rect rx="0" ry="0" x="-79.82499694824219" y="-23.35832977294922" width="159.64999389648438" height="46.71665954589844" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-69.82499694824219,-13.358329772949219)"><foreignObject width="139.64999389648438" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Blockchain Security</div></foreignObject></g></g></g></g></g></g></svg></pre>
+<hr>
+<h2 id="slide-41-real-world-blockchain-applications">Slide 41: Real-world Blockchain Applications</h2>
+<p>Blockchain technology has various real-world applications:</p>
+<ul>
+<li>
+<p><strong>Finance:</strong> Cryptocurrencies like Bitcoin and Ethereum facilitate digital payments and financial transactions.</p>
+</li>
+<li>
+<p><strong>Supply Chain:</strong> Provenance tracking ensures transparency and traceability in supply chains.</p>
+</li>
+</ul>
+<pre class=" language-mermaid"><svg id="mermaid-svg-heMwY9sUCiH2oVYm" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="309.58331298828125" style="max-width: 423.01666259765625px;" viewBox="0 0 423.01666259765625 309.58331298828125"><style>#mermaid-svg-heMwY9sUCiH2oVYm{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#000000;}#mermaid-svg-heMwY9sUCiH2oVYm .error-icon{fill:#552222;}#mermaid-svg-heMwY9sUCiH2oVYm .error-text{fill:#552222;stroke:#552222;}#mermaid-svg-heMwY9sUCiH2oVYm .edge-thickness-normal{stroke-width:2px;}#mermaid-svg-heMwY9sUCiH2oVYm .edge-thickness-thick{stroke-width:3.5px;}#mermaid-svg-heMwY9sUCiH2oVYm .edge-pattern-solid{stroke-dasharray:0;}#mermaid-svg-heMwY9sUCiH2oVYm .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-svg-heMwY9sUCiH2oVYm .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-svg-heMwY9sUCiH2oVYm .marker{fill:#666;stroke:#666;}#mermaid-svg-heMwY9sUCiH2oVYm .marker.cross{stroke:#666;}#mermaid-svg-heMwY9sUCiH2oVYm svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-svg-heMwY9sUCiH2oVYm .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#000000;}#mermaid-svg-heMwY9sUCiH2oVYm .cluster-label text{fill:#333;}#mermaid-svg-heMwY9sUCiH2oVYm .cluster-label span{color:#333;}#mermaid-svg-heMwY9sUCiH2oVYm .label text,#mermaid-svg-heMwY9sUCiH2oVYm span{fill:#000000;color:#000000;}#mermaid-svg-heMwY9sUCiH2oVYm .node rect,#mermaid-svg-heMwY9sUCiH2oVYm .node circle,#mermaid-svg-heMwY9sUCiH2oVYm .node ellipse,#mermaid-svg-heMwY9sUCiH2oVYm .node polygon,#mermaid-svg-heMwY9sUCiH2oVYm .node path{fill:#eee;stroke:#999;stroke-width:1px;}#mermaid-svg-heMwY9sUCiH2oVYm .node .label{text-align:center;}#mermaid-svg-heMwY9sUCiH2oVYm .node.clickable{cursor:pointer;}#mermaid-svg-heMwY9sUCiH2oVYm .arrowheadPath{fill:#333333;}#mermaid-svg-heMwY9sUCiH2oVYm .edgePath .path{stroke:#666;stroke-width:1.5px;}#mermaid-svg-heMwY9sUCiH2oVYm .flowchart-link{stroke:#666;fill:none;}#mermaid-svg-heMwY9sUCiH2oVYm .edgeLabel{background-color:white;text-align:center;}#mermaid-svg-heMwY9sUCiH2oVYm .edgeLabel rect{opacity:0.5;background-color:white;fill:white;}#mermaid-svg-heMwY9sUCiH2oVYm .cluster rect{fill:hsl(210,66.6666666667%,95%);stroke:#26a;stroke-width:1px;}#mermaid-svg-heMwY9sUCiH2oVYm .cluster text{fill:#333;}#mermaid-svg-heMwY9sUCiH2oVYm .cluster span{color:#333;}#mermaid-svg-heMwY9sUCiH2oVYm div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(-160,0%,93.3333333333%);border:1px solid #26a;border-radius:2px;pointer-events:none;z-index:100;}#mermaid-svg-heMwY9sUCiH2oVYm:root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}#mermaid-svg-heMwY9sUCiH2oVYm .blockchain > *{fill:#bbf !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-heMwY9sUCiH2oVYm .blockchain tspan{!important;}#mermaid-svg-heMwY9sUCiH2oVYm .finance > *{fill:#cfc !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-heMwY9sUCiH2oVYm .finance tspan{!important;}#mermaid-svg-heMwY9sUCiH2oVYm .supplyChain > *{fill:#fcf !important;stroke:#333 !important;stroke-width:2px !important;}#mermaid-svg-heMwY9sUCiH2oVYm .supplyChain tspan{!important;}#mermaid-svg-heMwY9sUCiH2oVYm flowchart{fill:apa;}</style><g><g class="output"><g class="clusters"></g><g class="edgePaths"><g class="edgePath LS-Blockchain LE-Finance" style="opacity: 1;" id="L-Blockchain-Finance"><path class="path" d="M153.94493796231527,54.71665954589844L82.93333435058594,93.07498931884766L82.93333435058594,131.43331909179688" marker-end="url(https://stackedit.io/app#arrowhead77)" style="fill:none"></path><defs><marker id="arrowhead77" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g><g class="edgePath LS-Blockchain LE-SupplyChain" style="opacity: 1;" id="L-Blockchain-SupplyChain"><path class="path" d="M240.43006203768473,54.71665954589844L311.44166564941406,93.07498931884766L311.44166564941406,131.43331909179688" marker-end="url(https://stackedit.io/app#arrowhead78)" style="fill:none"></path><defs><marker id="arrowhead78" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g><g class="edgePath LS-Finance LE-Crypto" style="opacity: 1;" id="L-Finance-Crypto"><path class="path" d="M82.93333435058594,178.1499786376953L82.93333435058594,216.50830841064453L82.93333435058594,254.86663818359375" marker-end="url(https://stackedit.io/app#arrowhead79)" style="fill:none"></path><defs><marker id="arrowhead79" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g><g class="edgePath LS-SupplyChain LE-Tracking" style="opacity: 1;" id="L-SupplyChain-Tracking"><path class="path" d="M311.44166564941406,178.1499786376953L311.44166564941406,216.50830841064453L311.44166564941406,254.86663818359375" marker-end="url(https://stackedit.io/app#arrowhead80)" style="fill:none"></path><defs><marker id="arrowhead80" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowheadPath" style="stroke-width: 1px; stroke-dasharray: 1px, 0px;"></path></marker></defs></g></g><g class="edgeLabels"><g class="edgeLabel" style="opacity: 1;" transform="translate(82.93333435058594,93.07498931884766)"><g transform="translate(-35.758331298828125,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="71.51666259765625" height="26.716659545898438"></rect><foreignObject width="71.51666259765625" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-Blockchain-Finance" class="edgeLabel L-LS-Blockchain' L-LE-Finance">Applies to</span></div></foreignObject></g></g><g class="edgeLabel" style="opacity: 1;" transform="translate(311.44166564941406,93.07498931884766)"><g transform="translate(-35.758331298828125,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="71.51666259765625" height="26.716659545898438"></rect><foreignObject width="71.51666259765625" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-Blockchain-SupplyChain" class="edgeLabel L-LS-Blockchain' L-LE-SupplyChain">Applies to</span></div></foreignObject></g></g><g class="edgeLabel" style="opacity: 1;" transform="translate(82.93333435058594,216.50830841064453)"><g transform="translate(-60.899993896484375,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="121.79998779296875" height="26.716659545898438"></rect><foreignObject width="121.79998779296875" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-Finance-Crypto" class="edgeLabel L-LS-Finance' L-LE-Crypto">Cryptocurrencies</span></div></foreignObject></g></g><g class="edgeLabel" style="opacity: 1;" transform="translate(311.44166564941406,216.50830841064453)"><g transform="translate(-73.19999694824219,-13.358329772949219)" class="label"><rect rx="0" ry="0" width="146.39999389648438" height="26.716659545898438"></rect><foreignObject width="146.39999389648438" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span id="L-L-SupplyChain-Tracking" class="edgeLabel L-LS-SupplyChain' L-LE-Tracking">Provenance Tracking</span></div></foreignObject></g></g></g><g class="nodes"><g class="node blockchain" style="opacity: 1;" id="flowchart-Blockchain-1505" transform="translate(197.1875,31.35832977294922)"><rect rx="0" ry="0" x="-90.39167022705078" y="-23.35832977294922" width="180.78334045410156" height="46.71665954589844" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-80.39167022705078,-13.358329772949219)"><foreignObject width="160.78334045410156" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Blockchain Technology</div></foreignObject></g></g></g><g class="node finance" style="opacity: 1;" id="flowchart-Finance-1506" transform="translate(82.93333435058594,154.7916488647461)"><rect rx="0" ry="0" x="-37.758331298828125" y="-23.35832977294922" width="75.51666259765625" height="46.71665954589844" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-27.758331298828125,-13.358329772949219)"><foreignObject width="55.51666259765625" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Finance</div></foreignObject></g></g></g><g class="node supplyChain" style="opacity: 1;" id="flowchart-SupplyChain-1507" transform="translate(311.44166564941406,154.7916488647461)"><rect rx="0" ry="0" x="-55.866668701171875" y="-23.35832977294922" width="111.73333740234375" height="46.71665954589844" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-45.866668701171875,-13.358329772949219)"><foreignObject width="91.73333740234375" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Supply Chain</div></foreignObject></g></g></g><g class="node finance,supplyChain" style="opacity: 1;" id="flowchart-Crypto-1513" transform="translate(82.93333435058594,278.22496795654297)"><rect rx="0" ry="0" x="-74.93333435058594" y="-23.35832977294922" width="149.86666870117188" height="46.71665954589844" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-64.93333435058594,-13.358329772949219)"><foreignObject width="129.86666870117188" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Bitcoin, Ethereum</div></foreignObject></g></g></g><g class="node finance,supplyChain" style="opacity: 1;" id="flowchart-Tracking-1515" transform="translate(311.44166564941406,278.22496795654297)"><rect rx="0" ry="0" x="-103.57499694824219" y="-23.35832977294922" width="207.14999389648438" height="46.71665954589844" class="label-container"></rect><g class="label" transform="translate(0,0)"><g transform="translate(-93.57499694824219,-13.358329772949219)"><foreignObject width="187.14999389648438" height="26.716659545898438"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">Transparency, Traceability</div></foreignObject></g></g></g></g></g></g></svg></pre>
+<hr>
+<h2 id="slide-42-real-world-blockchain-applications-contd">Slide 42: Real-world Blockchain Applications (Cont’d)</h2>
+<ul>
+<li>
+<p><strong>Healthcare:</strong> Secure patient records and enable secure sharing of medical data between institutions.</p>
+</li>
+<li>
+<p><strong>Voting:</strong> Transparent and secure elections through blockchain-based voting systems.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-43-future-of-blockchain">Slide 43: Future of Blockchain</h2>
+<p>The future of blockchain technology is shaped by emerging trends and challenges:</p>
+<ul>
+<li>
+<p><strong>Quantum Computing Impact:</strong> Quantum computers could potentially break current cryptographic algorithms, necessitating the development of quantum-resistant solutions.</p>
+</li>
+<li>
+<p><strong>Regulation and Compliance:</strong> Increasing regulatory scrutiny may influence how blockchain networks operate and integrate with traditional financial systems.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-44-case-study-bitcoin">Slide 44: Case Study: Bitcoin</h2>
+<p>Bitcoin is the first and most well-known cryptocurrency. Key features include:</p>
+<ul>
+<li>
+<p><strong>Overview and History:</strong> Created by an anonymous entity known as Satoshi Nakamoto, Bitcoin introduced the concept of decentralized digital currency.</p>
+</li>
+<li>
+<p><strong>Key Features and Innovations:</strong> Bitcoin’s innovation includes blockchain technology and a decentralized consensus mechanism (PoW).</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-45-case-study-ethereum">Slide 45: Case Study: Ethereum</h2>
+<p>Ethereum extends the concept of blockchain by introducing smart contracts and decentralized applications (DApps).</p>
+<ul>
+<li>
+<p><strong>Overview and History:</strong> Proposed by Vitalik Buterin, Ethereum enables developers to build and deploy smart contracts and DApps.</p>
+</li>
+<li>
+<p><strong>Smart Contracts and DApps:</strong> Ethereum’s programmability allows for complex interactions and decentralized solutions across various industries.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-46-case-study-hyperledger">Slide 46: Case Study: Hyperledger</h2>
+<p>Hyperledger is a collaborative project to advance cross-industry blockchain technologies.</p>
+<ul>
+<li>
+<p><strong>Overview and History:</strong> Hyperledger is hosted by The Linux Foundation and includes several projects like Hyperledger Fabric and Hyperledger Sawtooth.</p>
+</li>
+<li>
+<p><strong>Enterprise Use Cases:</strong> Hyperledger focuses on permissioned blockchains suitable for enterprise applications.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-47-case-study-polkadot">Slide 47: Case Study: Polkadot</h2>
+<p>Polkadot is a multi-chain network that enables different blockchains to interoperate.</p>
+<ul>
+<li>
+<p><strong>Overview and History:</strong> Developed by Dr. Gavin Wood, Polkadot aims to create a scalable and interoperable blockchain ecosystem.</p>
+</li>
+<li>
+<p><strong>Blockchain Interoperability:</strong> Polkadot allows independent blockchains to share information and collaborate securely.</p>
+</li>
+</ul>
+<hr>
+<h2 id="slide-48-summary">Slide 48: Summary</h2>
+<p>Today, we explored various advanced blockchain concepts, including:</p>
+<ul>
+<li>
+<p>The fundamentals of blockchain technology.</p>
+</li>
+<li>
+<p>Key components and their roles.</p>
+</li>
+<li>
+<p>Different consensus mechanisms and their applications.</p>
+</li>
+</ul>
+<p>Understanding these concepts is essential for advancing in the blockchain industry.</p>
+<hr>
+<h2 id="slide-49-conclusion">Slide 49: Conclusion</h2>
+<p>In conclusion, blockchain technology continues to evolve and present new opportunities and challenges. For further learning, explore resources such as research papers, online courses, and industry publications.</p>
+</div>
+</body>
+
+</html>

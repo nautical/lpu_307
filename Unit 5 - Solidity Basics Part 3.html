@@ -1,0 +1,481 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome file</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h3 id="advanced-solidity-concepts">Advanced Solidity Concepts</h3>
+<hr>
+<h3 id="slide-1-assembly"><strong>Slide 1: Assembly</strong></h3>
+<h3 id="example-1-basic-inline-assembly-block">Example 1: Basic Inline Assembly Block</h3>
+<p>A simple example of using inline assembly to perform arithmetic operations like addition.</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract AssemblyExample {
+    function add(uint a, uint b) public pure returns (uint result) {
+        assembly {
+            // Inline assembly block
+            result := add(a, b)
+        }
+    }
+}
+</code></pre>
+<p>In this example, the <code>assembly</code> block performs an addition using the <code>add</code> opcode of the EVM, where <code>a</code> and <code>b</code> are passed into the inline assembly. The <code>:=</code> operator is used to assign the result of the addition.</p>
+<hr>
+<h3 id="example-2-accessing-storage-using-assembly">Example 2: Accessing Storage Using Assembly</h3>
+<p>In this example, we directly access and manipulate storage using inline assembly.</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract StorageExample {
+    uint256 public storedData;
+
+    function setStoredData(uint256 x) public {
+        storedData = x;
+    }
+
+    function getStoredData() public view returns (uint256) {
+        uint256 result;
+        assembly {
+            // Access the first storage slot where `storedData` is located
+            result := sload(0)
+        }
+        return result;
+    }
+}
+</code></pre>
+<p>Here, the <code>sload</code> assembly instruction is used to read from the first storage slot (<code>0</code>), where the state variable <code>storedData</code> is stored.</p>
+<hr>
+<h3 id="example-3-conditional-logic-with-inline-assembly">Example 3: Conditional Logic with Inline Assembly</h3>
+<p>This example shows how to implement basic conditional logic using inline assembly, such as an <code>if</code> condition.</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract ConditionalAssembly {
+    function isEven(uint256 number) public pure returns (bool) {
+        bool result;
+        assembly {
+            // Check if the number is even by performing a modulus operation
+            // and comparing it to zero.
+            result := iszero(mod(number, 2))
+        }
+        return result;
+    }
+}
+</code></pre>
+<p>Here, the inline assembly checks if the number is even by calculating <code>mod(number, 2)</code> and using the <code>iszero</code> opcode, which returns true if the result is zero (i.e., the number is even).</p>
+<hr>
+<h3 id="example-4-loop-in-inline-assembly">Example 4: Loop in Inline Assembly</h3>
+<p>This example demonstrates how to use loops in inline assembly to compute the factorial of a number.</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract LoopAssembly {
+    function factorial(uint256 n) public pure returns (uint256 result) {
+        result = 1; // Initial value for factorial computation
+        assembly {
+            let i := 1
+            for { } lt(i, add(n, 1)) { i := add(i, 1) } {
+                result := mul(result, i)
+            }
+        }
+    }
+}
+</code></pre>
+<p>Here, we use an inline assembly <code>for</code> loop to calculate the factorial of a number <code>n</code>. The loop starts from <code>i = 1</code> and multiplies <code>result</code> by <code>i</code> in each iteration.</p>
+<hr>
+<h3 id="example-5-calling-functions-using-inline-assembly">Example 5: Calling Functions Using Inline Assembly</h3>
+<p>This example shows how to call an external contract’s function using inline assembly.</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract ExternalContract {
+    function getValue() external pure returns (uint256) {
+        return 42;
+    }
+}
+
+contract CallExternalAssembly {
+    function callExternal(address _contract) public view returns (uint256 result) {
+        assembly {
+            let ptr := mload(0x40) // Get free memory pointer
+            mstore(ptr, 0x4d3c70bc) // Function selector for getValue() (first 4 bytes of the keccak256 hash)
+            let success := staticcall(5000, _contract, ptr, 0x04, ptr, 0x20)
+            result := mload(ptr) // Load the returned data
+        }
+    }
+}
+</code></pre>
+<p>In this example, we use <code>staticcall</code> in inline assembly to call the <code>getValue()</code> function of an external contract. We manually specify the function selector for <code>getValue()</code> using its first four bytes from the <code>keccak256</code> hash.</p>
+<hr>
+<h3 id="example-6-error-handling-with-revert">Example 6: Error Handling with <code>revert</code></h3>
+<p>Here’s an example of how to handle errors and revert transactions using inline assembly.</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract RevertAssembly {
+    function checkCondition(uint256 value) public pure returns (string memory) {
+        assembly {
+            // If the value is less than 10, revert with an error message.
+            if lt(value, 10) {
+                // Error message: "Value too small"
+                let ptr := mload(0x40)
+                mstore(ptr, 0x56616c756520746f6f20736d616c6c0000000000000000000000000000000000) // "Value too small" in hex
+                revert(ptr, 16)
+            }
+        }
+        return "Value is fine";
+    }
+}
+</code></pre>
+<p>In this example, if the input <code>value</code> is less than 10, the transaction reverts with an error message using the <code>revert</code> instruction. The error message “Value too small” is stored in memory and passed to the <code>revert</code> call.</p>
+<hr>
+<h3 id="example-7-returning-multiple-values">Example 7: Returning Multiple Values</h3>
+<p>This example demonstrates returning multiple values from inline assembly.</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract MultipleReturnsAssembly {
+    function sumAndProduct(uint256 a, uint256 b) public pure returns (uint256 sum, uint256 product) {
+        assembly {
+            sum := add(a, b)
+            product := mul(a, b)
+        }
+    }
+}
+</code></pre>
+<p>In this case, the assembly block calculates both the sum and product of two numbers and returns them as multiple values.</p>
+<hr>
+<h3 id="summary">Summary</h3>
+<ul>
+<li><strong>Arithmetic operations:</strong> You can directly use opcodes like <code>add</code>, <code>mul</code>, etc., for arithmetic.</li>
+<li><strong>Storage access:</strong> Use <code>sload</code> and <code>sstore</code> to read and write directly to storage.</li>
+<li><strong>Control flow:</strong> You can use conditional statements and loops within inline assembly.</li>
+<li><strong>Function calls:</strong> Perform external calls with opcodes like <code>staticcall</code> and <code>call</code>.</li>
+<li><strong>Revert and error handling:</strong> Use <code>revert</code> to abort execution with custom messages.</li>
+</ul>
+<hr>
+<h3 id="slide-2-internal-workings-of-solidity"><strong>Slide 2: Internal Workings of Solidity</strong></h3>
+<ul>
+<li><strong>Title</strong>: Solidity Internals: Deep Dive</li>
+<li><strong>Content</strong>:
+<ul>
+<li>Overview of Solidity’s low-level operations.</li>
+<li>Topics:
+<ul>
+<li>Storage Layout</li>
+<li>Memory Layout</li>
+<li>Call Data Layout</li>
+<li>Cleaning Up Variables</li>
+<li>Contract Metadata</li>
+<li>ABI Specification</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Objective</strong>: Understand the inner workings of Solidity and how it manages data storage, memory, and external contract calls.</li>
+</ul>
+<hr>
+<h3 id="slide-2.1-layout-of-state-variables-in-storage"><strong>Slide 2.1: Layout of State Variables in Storage</strong></h3>
+<ul>
+<li>
+<p><strong>Title</strong>: Layout of State Variables in Storage</p>
+</li>
+<li>
+<p><strong>Content</strong>:</p>
+<ul>
+<li>Solidity uses <strong>storage</strong> to persist data between function calls.</li>
+<li>Each <strong>state variable</strong> is assigned a <strong>storage slot</strong> (256 bits).</li>
+<li><strong>Packing of variables</strong>: Solidity tries to fit multiple smaller variables into a single storage slot to save gas.</li>
+<li><strong>Order matters</strong>: Variables are stored in order of declaration.</li>
+</ul>
+</li>
+<li>
+<p><strong>Example</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">contract StorageExample {
+    uint256 a;    // Stored at slot 0
+    uint8 b;      // Stored at slot 1 (partially used)
+    uint8 c;      // Stored in slot 1 (shares space with 'b')
+    uint256 d;    // Stored at slot 2
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Example</strong>:</p>
+<ul>
+<li>Slot 0: [ a (uint256) ]</li>
+<li>Slot 1: [ b (uint8) | c (uint8) | (free space) ]</li>
+<li>Slot 2: [ d (uint256) ]</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-2.2-transient-storage-stack"><strong>Slide 2.2: Transient Storage (Stack)</strong></h3>
+<ul>
+<li>
+<p><strong>Title</strong>: Transient Storage and Stack in Solidity</p>
+</li>
+<li>
+<p><strong>Content</strong>:</p>
+<ul>
+<li><strong>Stack</strong> is used for short-term data like function arguments, local variables, and expressions.</li>
+<li>Each function call gets its own stack frame, but space is limited (1024 slots of 256 bits).</li>
+<li>Used for temporary variables, intermediate results, etc.</li>
+</ul>
+</li>
+<li>
+<p><strong>Example</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">function add(uint a, uint b) public pure returns (uint) {
+    uint result = a + b;  // 'result' is stored in the stack
+    return result;
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Note</strong>: Stack is cheaper to access than storage but very limited in size.</p>
+</li>
+</ul>
+<hr>
+<h3 id="slide-2.3-layout-in-memory"><strong>Slide 2.3: Layout in Memory</strong></h3>
+<ul>
+<li>
+<p><strong>Title</strong>: Layout of Variables in Memory</p>
+</li>
+<li>
+<p><strong>Content</strong>:</p>
+<ul>
+<li><strong>Memory</strong> is used for temporary storage during function execution.</li>
+<li>Resets after each external call or transaction.</li>
+<li>Used primarily for:
+<ul>
+<li>Function arguments (arrays, structs, mappings)</li>
+<li>Dynamic data like arrays or structs</li>
+</ul>
+</li>
+<li>Unlike storage, memory is <strong>not persistent</strong>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Example</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">function processData(uint[] memory data) public pure returns (uint) {
+    return data[0];  // 'data' is stored in memory
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Memory layout</strong>: Arrays are stored contiguously in memory, starting with the length, followed by elements.</p>
+</li>
+</ul>
+<hr>
+<h3 id="slide-2.4-memory-layout-example"><strong>Slide 2.4: Memory Layout Example</strong></h3>
+<ul>
+<li>
+<p><strong>Title</strong>: Example of Memory Layout with Arrays</p>
+</li>
+<li>
+<p><strong>Content</strong>:</p>
+<ul>
+<li>Arrays and structs are stored in memory sequentially.</li>
+<li><strong>Array Example</strong>: For a <code>uint[]</code> array, the first slot holds the length, followed by array elements.</li>
+</ul>
+</li>
+<li>
+<p><strong>Diagram</strong>:</p>
+<ul>
+<li>Example for <code>uint[] memory arr = [1, 2, 3];</code>
+<ul>
+<li>Memory layout:</li>
+</ul>
+<pre><code>[ Length (3) ] [ Element 1 ] [ Element 2 ] [ Element 3 ]
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-2.5-layout-of-call-data"><strong>Slide 2.5: Layout of Call Data</strong></h3>
+<ul>
+<li>
+<p><strong>Title</strong>: Layout of Call Data</p>
+</li>
+<li>
+<p><strong>Content</strong>:</p>
+<ul>
+<li><strong>Call Data</strong> refers to data sent with external function calls.</li>
+<li>It is immutable and does not persist between function calls.</li>
+<li><strong>Cheaper than memory</strong> but not modifiable.</li>
+<li>Functions receive arguments via call data, especially when marked with <code>external</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Example</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">function setData(uint[] calldata data) external pure returns (uint) {
+    return data[0];  // 'data' is immutable and passed in call data
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Call Data Layout</strong>:</p>
+<ul>
+<li>Encodes function signature + arguments (passed in external calls).</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-2.6-cleaning-up-variables-in-solidity"><strong>Slide 2.6: Cleaning Up Variables in Solidity</strong></h3>
+<ul>
+<li>
+<p><strong>Title</strong>: Cleaning Up Variables</p>
+</li>
+<li>
+<p><strong>Content</strong>:</p>
+<ul>
+<li>Solidity automatically manages memory but <strong>storage cleanup</strong> is essential for reducing gas costs.</li>
+<li>When a <strong>state variable</strong> is no longer needed, it should be cleared.</li>
+<li><strong>Best practice</strong>: Set variables to zero when done to avoid gas penalties.</li>
+</ul>
+</li>
+<li>
+<p><strong>Example</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">function clearData() public {
+    uint[] storage data = myData;
+    delete data;  // Frees storage space, reducing gas costs
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Impact on Gas</strong>:</p>
+<ul>
+<li>Deleting variables in storage refunds gas (though it’s less than the cost of setting them).</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-2.7-contract-metadata"><strong>Slide 2.7: Contract Metadata</strong></h3>
+<ul>
+<li>
+<p><strong>Title</strong>: Contract Metadata</p>
+</li>
+<li>
+<p><strong>Content</strong>:</p>
+<ul>
+<li>Solidity contracts come with metadata that includes:
+<ul>
+<li>Compiler version</li>
+<li>ABI (Application Binary Interface)</li>
+<li>IPFS hash of the source code</li>
+</ul>
+</li>
+<li>Helps in verifying contract source code and interactions.</li>
+</ul>
+</li>
+<li>
+<p><strong>Example</strong>:</p>
+<ul>
+<li>When you compile a contract, metadata is embedded, providing info for external tools (e.g., Remix or Etherscan).</li>
+</ul>
+</li>
+<li>
+<p><strong>Metadata format</strong>:</p>
+<ul>
+<li>Stored in a JSON format.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-2.8-contract-abi-specification"><strong>Slide 2.8: Contract ABI Specification</strong></h3>
+<ul>
+<li>
+<p><strong>Title</strong>: Contract ABI Specification</p>
+</li>
+<li>
+<p><strong>Content</strong>:</p>
+<ul>
+<li>ABI stands for <strong>Application Binary Interface</strong>.</li>
+<li>It defines how data structures are encoded/decoded when interacting with contracts.</li>
+<li>Used by wallets, dApps, and other contracts to interact with compiled contracts.</li>
+</ul>
+</li>
+<li>
+<p><strong>Elements of an ABI</strong>:</p>
+<ul>
+<li>Function signatures (name, parameters, return types).</li>
+<li>Event definitions.</li>
+<li>Constructor details.</li>
+</ul>
+</li>
+<li>
+<p><strong>Example</strong>:</p>
+<pre class=" language-json"><code class="prism  language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token string">"inputs"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"x"</span><span class="token punctuation">,</span> <span class="token string">"type"</span><span class="token punctuation">:</span> <span class="token string">"uint256"</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"setData"</span><span class="token punctuation">,</span>
+    <span class="token string">"outputs"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token string">"stateMutability"</span><span class="token punctuation">:</span> <span class="token string">"nonpayable"</span><span class="token punctuation">,</span>
+    <span class="token string">"type"</span><span class="token punctuation">:</span> <span class="token string">"function"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre>
+</li>
+<li>
+<p><strong>Usage</strong>:</p>
+<ul>
+<li>ABI is used to encode function calls and decode results in Ethereum transactions.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-2.9-example-of-abi-in-use"><strong>Slide 2.9: Example of ABI in Use</strong></h3>
+<ul>
+<li>
+<p><strong>Title</strong>: Using ABI for Interactions</p>
+</li>
+<li>
+<p><strong>Content</strong>:</p>
+<ul>
+<li>Example of using the ABI to call a function from an external contract in JavaScript (Web3.js):</li>
+</ul>
+</li>
+<li>
+<p><strong>Code Example</strong> (Web3.js):</p>
+<pre class=" language-javascript"><code class="prism  language-javascript"><span class="token keyword">const</span> contractABI <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token operator">...</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// ABI definition here</span>
+<span class="token keyword">const</span> contract <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">web3<span class="token punctuation">.</span>eth<span class="token punctuation">.</span>Contract</span><span class="token punctuation">(</span>contractABI<span class="token punctuation">,</span> contractAddress<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Call a function</span>
+contract<span class="token punctuation">.</span>methods<span class="token punctuation">.</span><span class="token function">setData</span><span class="token punctuation">(</span><span class="token number">123</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token keyword">from</span><span class="token punctuation">:</span> senderAddress <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+</li>
+<li>
+<p><strong>Explanation</strong>:</p>
+<ul>
+<li>ABI helps encode function calls in the proper format for EVM.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-2.10-summary"><strong>Slide 2.10: Summary</strong></h3>
+<ul>
+<li><strong>Title</strong>: Key Takeaways</li>
+<li><strong>Content</strong>:
+<ul>
+<li><strong>State Variables</strong>: Stored in 256-bit slots, packed for efficiency.</li>
+<li><strong>Transient Storage (Stack)</strong>: Short-lived and space-limited.</li>
+<li><strong>Memory</strong>: Temporary, cleared after function execution.</li>
+<li><strong>Call Data</strong>: Immutable, used in external function calls.</li>
+<li><strong>Cleaning Variables</strong>: Essential for gas optimization.</li>
+<li><strong>Metadata</strong>: Encodes compiler version, ABI, and more.</li>
+<li><strong>ABI</strong>: Defines how contracts interact with external entities.</li>
+</ul>
+</li>
+</ul>
+<hr>
+</div>
+</body>
+
+</html>

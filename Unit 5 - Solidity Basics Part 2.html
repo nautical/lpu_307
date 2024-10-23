@@ -1,0 +1,335 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome file</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h3 id="sol">11.sol</h3>
+<p><strong>NFT Creation and ERC721 Integration in Solidity</strong></p>
+<p>In this Solidity example, we demonstrate how to create and manage NFTs (Non-Fungible Tokens) using custom contracts, while also utilizing ERC721 standards and imports.</p>
+<ol>
+<li>
+<p><strong>Imports:</strong></p>
+<ul>
+<li><code>ERC721</code>: Imported from OpenZeppelin’s library, this standard is used for creating NFTs.</li>
+<li><code>MyLoop</code>: A custom import (assumed to handle looping logic).</li>
+</ul>
+</li>
+<li>
+<p><strong>NFT Contract:</strong></p>
+<ul>
+<li>The <code>NFT</code> contract creates individual NFTs by assigning a <code>name</code> and a unique identifier <code>dna</code>.</li>
+<li>These NFTs are objects with custom metadata.</li>
+</ul>
+</li>
+<li>
+<p><strong>MyImport Contract:</strong></p>
+<ul>
+<li>Inherits from <code>ERC721</code> and <code>MyLoop</code>.</li>
+<li>Stores an array of <code>NFT</code> objects (<code>nfts</code>).</li>
+</ul>
+</li>
+<li>
+<p><strong>Key Functions:</strong></p>
+<ul>
+<li><strong>addNft</strong>: Allows users to create a new <code>NFT</code> object with a name and DNA and stores it in the <code>nfts</code> array.</li>
+<li><strong>myHashedName</strong>: Returns a hashed version of any input name using <code>keccak256</code> for secure identification.</li>
+</ul>
+</li>
+<li>
+<p><strong>Other State Variables:</strong></p>
+<ul>
+<li><code>myName</code> and <code>myBytesName</code>: Demonstrates string and bytes handling in Solidity, where <code>myBytesName</code> stores a fixed-length <code>bytes32</code> value.</li>
+</ul>
+</li>
+</ol>
+<p><strong>Takeaways:</strong></p>
+<ul>
+<li><strong>ERC721</strong> ensures the NFT is compatible with industry standards.</li>
+<li><strong>Custom NFT logic</strong> can be built on top of the ERC721 template.</li>
+<li><strong>Handling secure hashing</strong> of data using <code>keccak256</code>.</li>
+</ul>
+<h3 id="sol-1">12.sol</h3>
+<p>Simple Loop</p>
+<h3 id="sol-2">13.sol</h3>
+<p><strong>Mapping and Minting NFTs in Solidity</strong></p>
+<p>This Solidity example demonstrates the use of mappings to manage ownership of NFTs and how to mint new NFTs.</p>
+<ol>
+<li>
+<p><strong>Mapping Usage:</strong></p>
+<ul>
+<li><code>nfts</code>: A <code>mapping</code> that links each NFT’s unique ID (a <code>uint256</code>) to its owner’s address (<code>address</code>).</li>
+<li>This is a common structure to track ownership of assets in a blockchain context.</li>
+</ul>
+</li>
+<li>
+<p><strong>Functions:</strong></p>
+<ul>
+<li>
+<p><strong>getOwnerOfNFT</strong>:</p>
+<ul>
+<li>This function allows anyone to query the owner of a specific NFT by its ID.</li>
+<li>It takes the NFT’s ID (<code>_id</code>) as an argument and returns the address of the owner.</li>
+</ul>
+</li>
+<li>
+<p><strong>mintNFT</strong>:</p>
+<ul>
+<li>This function mints a new NFT by assigning ownership to the address passed in as <code>_address</code>.</li>
+<li>It uses a <code>counter</code> to automatically assign a unique ID to each newly minted NFT, ensuring each NFT has a distinct identifier.</li>
+<li>After minting, the <code>counter</code> is incremented, ensuring that the next minted NFT gets the next available ID.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Takeaways:</strong></p>
+<ul>
+<li><strong>Mapping:</strong> Efficiently stores and retrieves ownership information.</li>
+<li><strong>Minting Mechanism:</strong> Dynamically assigns IDs to newly minted NFTs and maps them to their owners.</li>
+<li>The system automatically tracks ownership and provides an interface for users to query who owns each NFT.</li>
+</ul>
+</li>
+</ol>
+<h3 id="sol-3">14.sol</h3>
+<p><strong>Solidity Modifiers for Access Control and Contract State Management</strong></p>
+<p>In this Solidity example, we explore how to use <strong>modifiers</strong> for access control and contract state management, such as pausing contract functions and restricting access to the contract owner.</p>
+<ol>
+<li>
+<p><strong>State Variables:</strong></p>
+<ul>
+<li><code>myNum</code>: A <code>uint256</code> variable that starts at 0 and is modified by contract functions.</li>
+<li><code>paused</code>: A <code>bool</code> indicating whether the contract is paused, preventing certain actions.</li>
+<li><code>owner</code>: The address of the contract owner, set during contract creation.</li>
+</ul>
+</li>
+<li>
+<p><strong>Modifiers:</strong></p>
+<ul>
+<li>
+<p><strong>isNotPaused</strong>:</p>
+<ul>
+<li>This modifier ensures that specific functions cannot be executed if the contract is paused.</li>
+<li>It accepts a <code>_bypass</code> parameter. If <code>_bypass</code> is <code>true</code>, the modifier checks if <code>paused</code> is <code>false</code> and throws an error if the contract is paused. This provides flexibility, allowing different behavior for different functions.</li>
+</ul>
+</li>
+<li>
+<p><strong>onlyOwner</strong>:</p>
+<ul>
+<li>Restricts access to the contract’s owner by requiring that the caller’s address matches the owner’s address.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Functions:</strong></p>
+<ul>
+<li>
+<p><strong>setPaused</strong>: Pauses the contract by setting <code>paused</code> to <code>true</code>, preventing functions protected by the <code>isNotPaused</code> modifier from being executed.</p>
+</li>
+<li>
+<p><strong>addToNum</strong>: Increments <code>myNum</code> by 1, but only if the contract is not paused and the caller is the owner.</p>
+</li>
+<li>
+<p><strong>sunFromNum</strong>: Decrements <code>myNum</code> by 1. Unlike <code>addToNum</code>, it can be executed even when the contract is paused due to the <code>false</code> value passed to the <code>isNotPaused</code> modifier.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Takeaways:</strong></p>
+<ul>
+<li><strong>Modifiers</strong> streamline the enforcement of conditions like access control and state checks.</li>
+<li><strong>isNotPaused</strong> shows flexibility in using parameters within modifiers to allow or restrict function execution based on contract state.</li>
+<li><strong>onlyOwner</strong> ensures only the owner can modify critical state variables.</li>
+</ul>
+</li>
+</ol>
+<h3 id="sol-4">15.sol</h3>
+<p>Simple operators</p>
+<h3 id="sol-5">16.sol</h3>
+<p><strong>Handling Ether Transfers in Solidity Using Payable Functions</strong></p>
+<p>This Solidity example demonstrates how to manage Ether transfers, deposits, and contract balance checks using payable functions.</p>
+<h3 id="key-concepts">Key Concepts:</h3>
+<ol>
+<li>
+<p><strong>Payable Address:</strong></p>
+<ul>
+<li><code>myAddress</code>: A payable address that can receive Ether. It’s set to the address of the contract deployer during initialization using <code>msg.sender</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Functions:</strong></p>
+<ul>
+<li>
+<p><strong>deposit</strong>:</p>
+<ul>
+<li>A simple payable function that allows users to send Ether to the contract. Since the function has no logic, it just accepts any incoming Ether.</li>
+</ul>
+</li>
+<li>
+<p><strong>getThisContractsBalance</strong>:</p>
+<ul>
+<li>This view function returns the balance of Ether stored in the contract using <code>address(this).balance</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>transferEth</strong>:</p>
+<ul>
+<li>Transfers the exact amount of Ether sent with the transaction (<code>msg.value</code>) to the <code>_user</code> address using the built-in <code>transfer</code> function. It forwards the gas stipend (2300 gas) and throws an error if the transfer fails.</li>
+</ul>
+</li>
+<li>
+<p><strong>sendEth</strong>:</p>
+<ul>
+<li>Uses <code>send</code> to transfer Ether, but checks whether the operation was successful by capturing the return value (<code>bool didSend</code>). It reverts the transaction if sending fails.</li>
+</ul>
+</li>
+<li>
+<p><strong>callEth</strong>:</p>
+<ul>
+<li>Uses the low-level <code>call</code> function to transfer Ether, which is more flexible but requires manual checking of the result. This method returns a boolean <code>didSend</code>, and reverts the transaction if the call fails.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Special Functions:</strong></p>
+<ul>
+<li>
+<p><strong>receive</strong>:</p>
+<ul>
+<li>A function that automatically accepts Ether sent to the contract without any data. It ensures the contract can accept plain Ether transfers.</li>
+</ul>
+</li>
+<li>
+<p><strong>fallback</strong>:</p>
+<ul>
+<li>This function is called when Ether is sent to the contract with data or when a function call doesn’t match any existing function. It allows the contract to receive Ether under any circumstances.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="takeaways">Takeaways:</h3>
+<ul>
+<li><strong>Payable Functions:</strong> Allow Ether to be sent and handled within the contract.</li>
+<li><strong>Transfer Mechanisms:</strong> Solidity provides three ways to transfer Ether (<code>transfer</code>, <code>send</code>, and <code>call</code>). Each has different levels of control and safety.</li>
+<li><strong>receive and fallback:</strong> Enable the contract to accept Ether in a flexible manner without calling specific functions.</li>
+</ul>
+<h3 id="sol-6">17.sol</h3>
+<p><strong>Using Structs to Manage NFTs in Solidity</strong></p>
+<p>This Solidity example demonstrates how to define and manage complex data structures using <strong>structs</strong>. In this case, a struct represents an NFT with fields for its name and DNA.</p>
+<h3 id="key-concepts-1">Key Concepts:</h3>
+<ol>
+<li>
+<p><strong>Struct Definition:</strong></p>
+<ul>
+<li><strong>NFT Struct</strong>: Represents an NFT with two properties:
+<ul>
+<li><code>name</code>: A <code>string</code> representing the name of the NFT.</li>
+<li><code>dna</code>: A <code>uint256</code> that uniquely identifies the NFT’s DNA.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Functions:</strong></p>
+<ul>
+<li>
+<p><strong>addNFT</strong>:</p>
+<ul>
+<li>Creates a new NFT instance in memory and adds it to the <code>nftList</code> array using the <code>push()</code> method.</li>
+<li>Demonstrates how to initialize a struct in a single line.</li>
+</ul>
+</li>
+<li>
+<p><strong>addNFTS</strong>:</p>
+<ul>
+<li>Accepts an array of <code>NFT</code> structs (using <code>calldata</code> for gas efficiency) and sets it as the contract’s <code>nftList</code>.</li>
+<li>This batch function allows adding multiple NFTs at once.</li>
+</ul>
+</li>
+<li>
+<p><strong>updateNFTStorage</strong>:</p>
+<ul>
+<li>Modifies an existing NFT’s name directly in <strong>storage</strong> by accessing the struct via its index. Using <code>storage</code> modifies the data in the permanent state.</li>
+</ul>
+</li>
+<li>
+<p><strong>updateNFTMemory</strong>:</p>
+<ul>
+<li>Loads the NFT into <strong>memory</strong> (temporary data storage) and modifies it, but then updates the <code>nftList</code> explicitly.</li>
+<li>This approach is less efficient than directly using <code>storage</code> and requires a reassignment to apply the changes.</li>
+</ul>
+</li>
+<li>
+<p><strong>getNftName</strong>:</p>
+<ul>
+<li>A simple view function that returns the name of an NFT based on its index in the <code>nftList</code>.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="takeaways-1">Takeaways:</h3>
+<ul>
+<li><strong>Structs</strong> allow grouping related data types into a single unit.</li>
+<li><strong>Storage vs. Memory</strong>: Direct updates to struct elements in <strong>storage</strong> are more gas-efficient compared to modifying a <strong>memory</strong> copy.</li>
+<li><strong>Calldata</strong>: Using <code>calldata</code> in function arguments is optimal for read-only operations involving arrays or structs, as it saves gas compared to copying to memory.</li>
+</ul>
+<h3 id="reference.sol">reference.sol</h3>
+<p><strong>Understanding Ether Units and Time Units in Solidity</strong></p>
+<p>This Solidity example demonstrates the use of built-in units for handling Ether and time.</p>
+<h3 id="key-concepts-2">Key Concepts:</h3>
+<ol>
+<li>
+<p><strong>Ether Units:</strong></p>
+<ul>
+<li>Solidity provides convenient units for handling Ether values:
+<ul>
+<li><strong>1 wei</strong>: The smallest unit of Ether, equivalent to 1.</li>
+<li><strong>1 gwei</strong>: Equal to (10^9) wei.</li>
+<li><strong>1 ether</strong>: Equal to (10^{18}) wei, used for larger amounts of Ether in contracts.</li>
+</ul>
+</li>
+<li>Example:
+<ul>
+<li><code>costOfNFT = 0.05 ether</code>: This sets the cost of an NFT to 0.05 Ether, which is automatically converted to wei.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Time Units:</strong></p>
+<ul>
+<li>Solidity also provides built-in units for time:
+<ul>
+<li><strong>1 second</strong>: The basic unit of time.</li>
+<li><strong>1 minute</strong>: Equal to 60 seconds.</li>
+<li><strong>1 hour</strong>: Equal to 60 minutes.</li>
+<li><strong>1 day</strong>: Equal to 24 hours.</li>
+<li><strong>1 week</strong>: Equal to 7 days.</li>
+</ul>
+</li>
+<li>Example:
+<ul>
+<li><code>levelUpRate = 1 hours</code>: This sets the rate for leveling up to 1 hour, meaning you can use this variable in time-based conditions.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="takeaways-2">Takeaways:</h3>
+<ul>
+<li><strong>Ether Units</strong> simplify handling different amounts of Ether within the contract by automatically converting them into wei.</li>
+<li><strong>Time Units</strong> allow easy specification of time intervals, making it convenient to work with deadlines, cooldowns, or time-based logic.</li>
+</ul>
+</div>
+</body>
+
+</html>

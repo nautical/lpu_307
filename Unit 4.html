@@ -1,0 +1,490 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome file</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><hr>
+<h3 id="slide-1-introduction-to-ethereum"><strong>Slide 1: Introduction to Ethereum</strong></h3>
+<ul>
+<li>
+<p><strong>What is Ethereum?</strong></p>
+<ul>
+<li>A decentralized, open-source blockchain platform that allows developers to build and deploy decentralized applications (dApps) using smart contracts.</li>
+<li>Created by Vitalik Buterin in 2015 to overcome the limitations of Bitcoin by providing a platform for programmable transactions.</li>
+</ul>
+<p><strong>Key Features</strong>:</p>
+<ul>
+<li><strong>Smart Contracts</strong>: Self-executing contracts with the terms of the agreement directly written into code.</li>
+<li><strong>Turing Complete</strong>: Ethereum’s programming languages (Solidity, Vyper) enable complex computations.</li>
+<li><strong>Decentralization</strong>: Powered by a global network of nodes without a central authority.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-2-what-is-eth-ether"><strong>Slide 2: What is ETH (Ether)?</strong></h3>
+<ul>
+<li>
+<p><strong>Definition</strong>: Ether (ETH) is the native cryptocurrency of the Ethereum network, used to compensate participants who execute operations on the network.</p>
+<p><strong>Primary Uses</strong>:</p>
+<ul>
+<li><strong>Gas Fees</strong>: Users must pay Ether to run transactions, deploy smart contracts, or interact with dApps. Gas is priced in gwei (1 gwei = 10^-9 ETH).</li>
+<li><strong>Staking</strong>: With Ethereum 2.0, users can stake ETH to participate in the network’s Proof of Stake (PoS) consensus mechanism.</li>
+<li><strong>Medium of Exchange</strong>: ETH is used to transfer value between users, pay for services, or settle transactions in decentralized finance (DeFi).</li>
+</ul>
+<p><strong>Tokenomics</strong>:</p>
+<ul>
+<li><strong>Supply</strong>: ETH has no fixed supply cap, but its issuance rate is controlled. Ethereum recently implemented a fee-burning mechanism (EIP-1559) that reduces ETH supply over time.</li>
+<li><strong>Gas Mechanism</strong>: Gas fees are calculated as <code>Gas Limit * Gas Price</code>, where the Gas Limit is the amount of gas a transaction can consume.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-3-ethereum-network-architecture"><strong>Slide 3: Ethereum Network Architecture</strong></h3>
+<ul>
+<li>
+<p><strong>Core Components</strong>:</p>
+<ul>
+<li><strong>Nodes</strong>: Machines that run the Ethereum client software, validate transactions, and maintain the blockchain. Each node holds a copy of the entire Ethereum blockchain.</li>
+<li><strong>Consensus Mechanism</strong>: Ethereum transitioned from Proof of Work (PoW) to Proof of Stake (PoS) through the Ethereum 2.0 upgrade, using validators instead of miners to secure the network.</li>
+<li><strong>Shard Chains</strong>: Ethereum 2.0 introduces sharding, dividing the blockchain into multiple “shards” to improve scalability by processing transactions in parallel.</li>
+</ul>
+<p><strong>Network Types</strong>:</p>
+<ul>
+<li><strong>Mainnet</strong>: Ethereum’s primary production network where real transactions and dApps operate.</li>
+<li><strong>Testnets</strong>: Used for testing without risking real value. Popular testnets include Goerli, Sepolia, and Rinkeby.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-4-ethereum-ecosystem-overview"><strong>Slide 4: Ethereum Ecosystem Overview</strong></h3>
+<ul>
+<li>
+<p><strong>Decentralized Applications (dApps)</strong>:</p>
+<ul>
+<li>Ethereum serves as the foundation for decentralized applications that operate without a central server.</li>
+<li><strong>Categories of dApps</strong>:
+<ul>
+<li><strong>DeFi (Decentralized Finance)</strong>: Financial services like lending, borrowing, and trading on platforms like Uniswap, Aave, and Compound.</li>
+<li><strong>NFTs (Non-Fungible Tokens)</strong>: Unique digital assets representing ownership of digital art, music, or in-game items. Examples: OpenSea, Rarible.</li>
+<li><strong>Gaming and Virtual Worlds</strong>: Blockchain-based games and virtual worlds like Decentraland and Axie Infinity.</li>
+<li><strong>DAOs (Decentralized Autonomous Organizations)</strong>: Organizations governed by smart contracts where decision-making is decentralized. Example: MakerDAO.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Interoperability</strong>: Ethereum interacts with other blockchains and Layer 2 solutions, improving scalability, transaction speeds, and reducing fees.</p>
+</li>
+</ul>
+<hr>
+<h3 id="slide-5-ethereum-keys-and-addresses"><strong>Slide 5: Ethereum Keys and Addresses</strong></h3>
+<ul>
+<li>
+<p><strong>Private Key</strong>:</p>
+<ul>
+<li>A 256-bit hexadecimal number that controls access to an Ethereum account.</li>
+<li>Must be kept secret, as possession of the private key gives full control over the corresponding funds and smart contracts.</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre class=" language-plaintext"><code class="prism  language-plaintext">0x4c0883a69102937d623141d45729f8aeb94e3b5bbbe917f93e098e12d346f6e9
+</code></pre>
+</li>
+<li>
+<p><strong>Public Key</strong>:</p>
+<ul>
+<li>Derived from the private key using elliptic curve cryptography.</li>
+<li>Used to generate the Ethereum address but does not need to be kept secret.</li>
+</ul>
+</li>
+<li>
+<p><strong>Ethereum Address</strong>:</p>
+<ul>
+<li>A 40-character identifier derived from the public key. It represents the user’s account or a smart contract on Ethereum.</li>
+<li>Typically starts with <code>0x</code> and is used to send or receive Ether.</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre class=" language-plaintext"><code class="prism  language-plaintext">0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae
+</code></pre>
+</li>
+</ul>
+<hr>
+<h3 id="slide-6-understanding-ethereum-transactions"><strong>Slide 6: Understanding Ethereum Transactions</strong></h3>
+<ul>
+<li>
+<p><strong>Transaction</strong>:</p>
+<ul>
+<li>A cryptographically signed instruction to transfer value (Ether) or interact with a smart contract.</li>
+<li>Each transaction on Ethereum contains fields such as:
+<ul>
+<li><strong>Sender Address</strong>: The account initiating the transaction.</li>
+<li><strong>Recipient Address</strong>: The account or contract receiving the transaction.</li>
+<li><strong>Amount</strong>: The quantity of Ether being sent.</li>
+<li><strong>Gas Limit</strong>: The maximum amount of gas the sender is willing to spend.</li>
+<li><strong>Gas Price</strong>: The price per unit of gas (denominated in gwei).</li>
+</ul>
+</li>
+</ul>
+<p><strong>Transaction Lifecycle</strong>:</p>
+<ol>
+<li><strong>Broadcast</strong>: Sent by <code>msg.sender</code> and broadcasted to the Ethereum network.</li>
+<li><strong>Validation</strong>: Verified by validators/miners.</li>
+<li><strong>Execution</strong>: The transaction is executed, and its result is added to the blockchain.</li>
+</ol>
+<p><strong>Example of a Transaction Structure</strong>:</p>
+<pre class=" language-plaintext"><code class="prism  language-plaintext">{
+  "from": "0xSenderAddress",
+  "to": "0xRecipientAddress",
+  "value": "0xAmountInWei",
+  "gas": "0xGasLimit",
+  "gasPrice": "0xGasPrice",
+  "data": "0xOptionalData"
+}
+</code></pre>
+</li>
+</ul>
+<h2 id="section"><img src="https://www.researchgate.net/publication/356927282/figure/fig1/AS:1108599564713985@1641322141627/The-structure-and-transaction-of-Ethereum-blockchain-Full-size-DOI.png" alt="The structure and transaction of Ethereum blockchain. Full-size DOI:... |  Download Scientific Diagram"></h2>
+<h3 id="slide-7-messages-in-ethereum"><strong>Slide 7: Messages in Ethereum</strong></h3>
+<ul>
+<li>
+<p><strong>Message</strong>:</p>
+<ul>
+<li>An internal call made by contracts to interact with other contracts or accounts. It is not a full transaction but an invocation.</li>
+</ul>
+<p><strong>Key Concepts</strong>:</p>
+<ul>
+<li><strong><code>msg.sender</code></strong>: Represents the initiator of the call or transaction. In the context of a contract, it shows who triggered the function.</li>
+<li><strong><code>msg.value</code></strong>: The amount of Ether sent with the message.</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">function sendFunds() public payable {
+    require(msg.value &gt;= 1 ether, "Insufficient funds sent");
+    // Logic here
+}
+</code></pre>
+<ul>
+<li><strong><code>msg.data</code></strong>: Contains the raw data sent in the message. This can be used for low-level function execution.</li>
+</ul>
+</li>
+</ul>
+<h2 id="section-1"><img src="https://images.mirror-media.xyz/nft/9cynfd_ie7p5hhq_cQRhj.png" alt="ETHEREUM TRANSACTIONS — Yusuf.dev"></h2>
+<h3 id="slide-8-understanding-ether"><strong>Slide 8: Understanding Ether</strong></h3>
+<ul>
+<li>
+<p><strong>Ether (ETH)</strong>:</p>
+<ul>
+<li>The native cryptocurrency of Ethereum, used for transactions, paying gas fees, and staking in Ethereum 2.0.</li>
+</ul>
+<p><strong>Denominations</strong>:</p>
+<ul>
+<li><strong>Wei</strong>: The smallest unit of Ether. 1 ETH = 10^18 Wei.</li>
+<li><strong>Gwei</strong>: Used commonly for gas pricing. 1 Gwei = 10^9 Wei.</li>
+</ul>
+<p><strong>Usage in Smart Contracts</strong>:</p>
+<ul>
+<li>Ether can be transferred between accounts or smart contracts, and is necessary for running computations.</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">function depositEther() public payable {
+    require(msg.value &gt; 0, "Must send Ether");
+    // Logic to handle Ether
+}
+</code></pre>
+</li>
+</ul>
+<hr>
+<h3 id="slide-9-gas-and-gas-fees"><strong>Slide 9: Gas and Gas Fees</strong></h3>
+<ul>
+<li>
+<p><strong>Gas</strong>:</p>
+<ul>
+<li>The computational cost of executing operations on the Ethereum network.</li>
+<li><strong>Gas Fee Calculation</strong>: Gas fees are calculated based on the gas limit and gas price set by the user. The total cost is <code>Gas Limit * Gas Price</code>.</li>
+</ul>
+<p><strong>Key Concepts</strong>:</p>
+<ul>
+<li><strong>Gas Limit</strong>: Maximum amount of gas a user is willing to spend for a transaction.</li>
+<li><strong>Base Fee and Priority Fee</strong>: After EIP-1559, Ethereum introduced a base fee (burned) and priority fee (tips to validators) to improve transaction pricing efficiency.</li>
+</ul>
+<p><strong>Example of Gas Use</strong>:</p>
+<ul>
+<li>Sending Ether: 21,000 gas.</li>
+<li>Complex Smart Contract Interaction: Can consume hundreds of thousands of gas units depending on the computation.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-10-ethereum-virtual-machine-evm"><strong>Slide 10: Ethereum Virtual Machine (EVM)</strong></h3>
+<ul>
+<li>
+<p><strong>EVM</strong>:</p>
+<ul>
+<li>The Ethereum Virtual Machine is the decentralized computation engine that executes smart contracts. Every Ethereum node runs the EVM, ensuring consensus across the network.</li>
+</ul>
+<p><strong>Features</strong>:</p>
+<ul>
+<li><strong>Turing Complete</strong>: Capable of executing any computational logic, making Ethereum highly programmable.</li>
+<li><strong>Bytecode Execution</strong>: Solidity code is compiled into EVM bytecode and then executed by nodes.</li>
+<li><strong>Deterministic</strong>: The same input will always produce the same output across all nodes.</li>
+</ul>
+<p><strong>Security</strong>:</p>
+<ul>
+<li>The EVM operates in a sandboxed environment, isolated from the host system, ensuring safe execution of smart contracts.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-11-evm-overview"><strong>Slide 11: EVM Overview</strong></h3>
+<p><strong>Title:</strong> Ethereum Virtual Machine: What is it?</p>
+<ul>
+<li>A <strong>Turing-complete virtual machine</strong> designed to execute smart contracts on Ethereum.</li>
+<li>Operates on the <strong>Ethereum blockchain</strong> at a lower level, interpreting and executing bytecode instructions.</li>
+<li>Each Ethereum node runs its own instance of the EVM to maintain consensus.</li>
+</ul>
+<hr>
+<h3 id="slide-12-evm-instruction-set-opcodes"><strong>Slide 12: EVM Instruction Set (Opcodes)</strong></h3>
+<p><strong>Title:</strong> EVM Instruction Set (Opcodes)</p>
+<ul>
+<li>EVM executes <strong>bytecode</strong>—a compact set of instructions.</li>
+<li>Instructions are <strong>256-bit</strong> (as EVM uses 256-bit words for stack operations).</li>
+<li><strong>Examples of common opcodes:</strong>
+<ul>
+<li><strong>PUSH1, PUSH32:</strong> Pushes 1 to 32 bytes onto the stack.</li>
+<li><strong>ADD, MUL, SUB:</strong> Basic arithmetic operations.</li>
+<li><strong>SLOAD, SSTORE:</strong> Interactions with the Ethereum storage.</li>
+<li><strong>CALL, DELEGATECALL:</strong> Used to invoke other contracts or functions.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-13-bytecode-compilation"><strong>Slide 13: Bytecode Compilation</strong></h3>
+<p><strong>Title:</strong> Compiling Smart Contracts into EVM Bytecode</p>
+<ul>
+<li><strong>Solidity → EVM Bytecode</strong>
+<ul>
+<li>Smart contracts written in Solidity (or Vyper) are compiled into <strong>EVM bytecode</strong>.</li>
+<li>Compiled contracts are distributed to every Ethereum node and stored on-chain.</li>
+</ul>
+</li>
+<li><strong>Example:</strong><pre class=" language-solidity"><code class="prism  language-solidity">function add(uint x, uint y) public pure returns (uint) {
+    return x + y;
+}
+</code></pre>
+Compiles to:<pre class=" language-evm"><code class="prism  language-evm">PUSH1 0x60  
+PUSH1 0x40  
+MSTORE  
+PUSH1 0x04  
+CALLDATASIZE  
+LT  
+PUSH1 0x10  
+JUMPI  
+</code></pre>
+</li>
+<li><strong>Metadata</strong> is also embedded in the bytecode (e.g., contract constructor, deployment info).</li>
+</ul>
+<hr>
+<h3 id="slide-14-evm-stack"><strong>Slide 14: EVM Stack</strong></h3>
+<p><strong>Title:</strong> The EVM Stack Model</p>
+<ul>
+<li>EVM uses a <strong>stack-based architecture</strong> for computation.
+<ul>
+<li><strong>Word size:</strong> 256 bits (to match Ethereum’s cryptography primitives).</li>
+<li><strong>Stack depth limit:</strong> 1024 items.</li>
+</ul>
+</li>
+<li>All operations (e.g., arithmetic, logic) work with the <strong>topmost elements</strong> of the stack.</li>
+<li><strong>Example:</strong>
+<ul>
+<li>Opcode <code>ADD</code> pops the two top values, adds them, and pushes the result.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-15-memory-and-storage"><strong>Slide 15: Memory and Storage</strong></h3>
+<p><strong>Title:</strong> EVM Memory vs Storage</p>
+<ul>
+<li><strong>Memory:</strong>
+<ul>
+<li><strong>Volatile</strong>, temporary storage during execution.</li>
+<li>Unbounded, but gas cost increases as more memory is used.</li>
+<li>Accessed with <strong>MLOAD</strong> and <strong>MSTORE</strong> opcodes.</li>
+</ul>
+</li>
+<li><strong>Storage:</strong>
+<ul>
+<li><strong>Persistent</strong> storage across transactions.</li>
+<li><strong>State variables</strong> in contracts are stored here.</li>
+<li>Accessed with <strong>SLOAD</strong> (read) and <strong>SSTORE</strong> (write) opcodes.</li>
+<li><strong>SSTORE</strong> is one of the most expensive operations in terms of gas.</li>
+</ul>
+</li>
+<li><strong>Mapping:</strong> Stored as a <strong>Keccak256 hash</strong> of key-value pairs.</li>
+</ul>
+<hr>
+<h3 id="slide-16-evm-gas-model"><strong>Slide 16: EVM Gas Model</strong></h3>
+<p><strong>Title:</strong> Gas: The Fuel of the EVM</p>
+<ul>
+<li>Every EVM operation consumes <strong>gas</strong> to prevent abuse (e.g., infinite loops).</li>
+<li><strong>Gas cost</strong> for common operations:
+<ul>
+<li><strong>ADD:</strong> 3 gas</li>
+<li><strong>SLOAD:</strong> 2100 gas</li>
+<li><strong>SSTORE:</strong> 20,000 gas (if changing from zero to non-zero)</li>
+</ul>
+</li>
+<li><strong>Transaction Gas Limit:</strong>
+<ul>
+<li>Defines the maximum gas the sender is willing to pay.</li>
+</ul>
+</li>
+<li><strong>Refunds:</strong>
+<ul>
+<li>Some operations (e.g., clearing storage slots) provide a gas refund.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-17-evm-execution-context"><strong>Slide 17: EVM Execution Context</strong></h3>
+<p><strong>Title:</strong> Execution Context: Transactions and Contracts</p>
+<ul>
+<li><strong>Transaction Execution:</strong>
+<ul>
+<li>A transaction triggers the execution of contract code.</li>
+<li><strong>Transaction data</strong> (input data, sender, value) is passed into the EVM as <strong>msg.data</strong> and processed by <strong>CALLDATA</strong>.</li>
+</ul>
+</li>
+<li><strong>Contract Execution:</strong>
+<ul>
+<li>Contracts execute in isolation within their own <strong>execution context</strong>.</li>
+<li><strong>CALL</strong> and <strong>DELEGATECALL</strong> are used to execute functions in other contracts.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-18-evm-transaction-lifecycle"><strong>Slide 18: EVM Transaction Lifecycle</strong></h3>
+<p><strong>Title:</strong> Transaction Lifecycle in EVM</p>
+<ol>
+<li><strong>Transaction Creation:</strong> Sender signs and broadcasts the transaction.</li>
+<li><strong>Transaction Validation:</strong> The network validates the signature and checks the sender’s balance for gas.</li>
+<li><strong>Gas Allocation:</strong> The gas is allocated and the transaction begins execution.</li>
+<li><strong>Bytecode Execution:</strong> The EVM executes the bytecode, consuming gas for each operation.</li>
+<li><strong>Result Storage:</strong> If successful, storage or state changes are committed.</li>
+<li><strong>Finalization:</strong> Any remaining gas is refunded to the sender.</li>
+</ol>
+<hr>
+<h3 id="slide-19-evm-execution-phases"><strong>Slide 19: EVM Execution Phases</strong></h3>
+<p><strong>Title:</strong> Phases of EVM Execution</p>
+<ol>
+<li><strong>Frontier Phase:</strong>
+<ul>
+<li>First phase where the EVM was introduced.</li>
+<li>Focus on executing smart contracts using proof-of-work.</li>
+</ul>
+</li>
+<li><strong>Metropolis Phase:</strong>
+<ul>
+<li>Added optimizations like gas refunds, precompiled contracts.</li>
+<li>Enhancements for developer usability.</li>
+</ul>
+</li>
+<li><strong>Serenity (Ethereum 2.0):</strong>
+<ul>
+<li>Proof-of-stake is introduced, but EVM remains the execution layer.</li>
+<li>Separation between <strong>consensus layer</strong> and <strong>execution layer</strong> (EVM).</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="slide-20-evm-gas-related-attack-vectors"><strong>Slide 20: EVM Gas-Related Attack Vectors</strong></h3>
+<p><strong>Title:</strong> EVM Attack Vectors: Gas and Reentrancy</p>
+<ul>
+<li><strong>Gas-Related Attacks:</strong>
+<ul>
+<li>Malicious contracts could exhaust the gas limit to cause denial of service.</li>
+<li>Protection: Carefully managing gas and using mechanisms like <strong>gas stipend</strong>.</li>
+</ul>
+</li>
+<li><strong>Reentrancy Attacks:</strong>
+<ul>
+<li>Contracts can call back into themselves before a previous call is completed, causing inconsistent states.</li>
+<li>Protection: Use <strong>checks-effects-interactions</strong> pattern and reentrancy guards.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-21-future-of-evm"><strong>Slide 21: Future of EVM</strong></h3>
+<p><strong>Title:</strong> The Future of the EVM</p>
+<ul>
+<li><strong>EIP-1559:</strong> Gas fee model introduces a more predictable fee mechanism, improving efficiency.</li>
+<li><strong>Ethereum 2.0:</strong> EVM remains in Ethereum 2.0, though it may be improved with better state management.</li>
+<li><strong>EVM Evolution:</strong>
+<ul>
+<li>Introduction of <strong>EVM-Compatible Chains</strong> like Binance Smart Chain, Avalanche, and others.</li>
+<li>Modular execution models may appear in future iterations to optimize performance.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-22-evm-conclusion"><strong>Slide 22: EVM Conclusion</strong></h3>
+<p><strong>Title:</strong> Conclusion: EVM - The Backbone of Ethereum Execution</p>
+<ul>
+<li>The EVM allows Ethereum to execute smart contracts in a <strong>trustless, decentralized manner</strong>.</li>
+<li>Understanding its internals (bytecode, gas, stack, memory) is essential for optimizing smart contract development and avoiding security vulnerabilities.</li>
+</ul>
+<hr>
+<h3 id="slide-23-applications-of-ethereum"><strong>Slide 23: Applications of Ethereum</strong></h3>
+<ul>
+<li>
+<p><strong>DeFi (Decentralized Finance)</strong>:</p>
+<ul>
+<li>Ethereum is the backbone of DeFi applications, which offer services like lending, borrowing, staking, and decentralized trading (e.g., Uniswap, Aave).</li>
+</ul>
+</li>
+<li>
+<p><strong>NFT Marketplaces</strong>:</p>
+<ul>
+<li>Ethereum powers the largest NFT ecosystems, with standards like ERC721 enabling</li>
+</ul>
+</li>
+</ul>
+<p>the creation of unique digital assets (e.g., OpenSea, Foundation).</p>
+<ul>
+<li>
+<p><strong>DAOs (Decentralized Autonomous Organizations)</strong>:</p>
+<ul>
+<li>Organizations governed by smart contracts where decision-making is decentralized (e.g., MakerDAO, Aragon).</li>
+</ul>
+</li>
+<li>
+<p><strong>Supply Chain Tracking</strong>:</p>
+<ul>
+<li>Ethereum smart contracts can track and verify goods in real-time, providing transparency in industries like agriculture, manufacturing, and pharmaceuticals (e.g., VeChain).</li>
+</ul>
+</li>
+<li>
+<p><strong>Gaming</strong>:</p>
+<ul>
+<li>Ethereum-based games, such as Axie Infinity, allow players to own in-game assets as NFTs, which can be traded or sold in decentralized markets.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-24-conclusion"><strong>Slide 24: Conclusion</strong></h3>
+<ul>
+<li>Ethereum is more than just a cryptocurrency platform; it’s a decentralized world computer enabling new financial systems, applications, and organizations.</li>
+<li><strong>Core Takeaways</strong>:
+<ul>
+<li>Programmability via smart contracts.</li>
+<li>Ether (ETH) as both currency and utility.</li>
+<li>The EVM ensures global consensus for computations.</li>
+</ul>
+</li>
+</ul>
+<hr>
+</div>
+</body>
+
+</html>

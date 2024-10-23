@@ -1,0 +1,484 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome file</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><hr>
+<h3 id="slide-1-introduction-to-solidity"><strong>Slide 1: Introduction to Solidity</strong></h3>
+<ul>
+<li><strong>Definition</strong>: Solidity is a high-level programming language used for writing smart contracts on Ethereum and other blockchain platforms.</li>
+<li><strong>Why Solidity?</strong>: Powers decentralized applications (dApps) and automates transactions.</li>
+<li><strong>Key Features</strong>: Static typing, inheritance, libraries, user-defined types.</li>
+</ul>
+<hr>
+<h3 id="slide-2-basic-programming-structure"><strong>Slide 2: Basic Programming Structure</strong></h3>
+<ul>
+<li>Solidity resembles JavaScript and C++, but it’s designed for Ethereum Virtual Machine (EVM).</li>
+</ul>
+<p><strong>Code Example: Basic Smart Contract</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract HelloWorld {
+    string public greeting = "Hello, World!";
+
+    function getGreeting() public view returns (string memory) {
+        return greeting;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="slide-3-control-flow"><strong>Slide 3: Control Flow</strong></h3>
+<ul>
+<li>Solidity supports standard control flow structures like <code>if</code>, <code>else</code>, <code>for</code>, <code>while</code>, and <code>do while</code>.</li>
+</ul>
+<p><strong>Code Example: Control Flow</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract ControlFlow {
+    function checkNumber(uint num) public pure returns (string memory) {
+        if (num &gt; 10) {
+            return "Greater than 10";
+        } else if (num == 10) {
+            return "Equal to 10";
+        } else {
+            return "Less than 10";
+        }
+    }
+}
+</code></pre>
+<hr>
+<h3 id="slide-4-data-types"><strong>Slide 4: Data Types</strong></h3>
+<ul>
+<li>Solidity supports multiple data types: <code>uint</code>, <code>int</code>, <code>bool</code>, <code>address</code>, and <code>bytes</code>.</li>
+</ul>
+<p><strong>Code Example: Data Types</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract DataTypes {
+    uint public number = 42;
+    bool public isTrue = true;
+    address public owner = msg.sender;
+    bytes32 public data = "Hello";
+
+    function updateNumber(uint _number) public {
+        number = _number;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="slide-5-variables"><strong>Slide 5: Variables</strong></h3>
+<ul>
+<li>Solidity supports state variables, local variables, and global variables.</li>
+</ul>
+<p><strong>Code Example: Variables</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract Variables {
+    uint public stateVariable = 10; // State variable
+
+    function getLocalVariable() public pure returns (uint) {
+        uint localVariable = 20; // Local variable
+        return localVariable;
+    }
+
+    function getGlobalVariable() public view returns (address) {
+        return msg.sender; // Global variable
+    }
+}
+</code></pre>
+<hr>
+<h3 id="slide-6-operators"><strong>Slide 6: Operators</strong></h3>
+<ul>
+<li>Solidity supports arithmetic, logical, and comparison operators.</li>
+</ul>
+<p><strong>Code Example: Operators</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract Operators {
+    function calculate(uint a, uint b) public pure returns (uint) {
+        uint sum = a + b;
+        uint product = a * b;
+        return sum + product;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="slide-7-state-variables-and-storage"><strong>Slide 7: State Variables and Storage</strong></h3>
+<ul>
+<li>State variables are stored on the blockchain, while local variables are temporary and exist in memory during function execution.</li>
+</ul>
+<p><strong>Code Example: State Variables and Storage</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract StorageExample {
+    uint public storedData;
+
+    function set(uint x) public {
+        storedData = x;  // Stored permanently in blockchain
+    }
+
+    function get() public view returns (uint) {
+        return storedData;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="slide-8-transactions-and-gas-fees"><strong>Slide 8: Transactions and Gas Fees</strong></h3>
+<ul>
+<li>Every transaction costs gas, measured in Ether. Gas is used to pay for computations and storage on Ethereum.</li>
+</ul>
+<p><strong>Code Example: Transactions and Gas Fees</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract GasExample {
+    uint public data;
+
+    function storeData(uint x) public {
+        data = x;  // This consumes gas
+    }
+
+    function calculateGas() public view returns (uint) {
+        return tx.gasprice;  // Returns the gas price of the transaction
+    }
+}
+</code></pre>
+<hr>
+<h3 id="slide-9-events"><strong>Slide 9: Events</strong></h3>
+<ul>
+<li>Events allow smart contracts to communicate with external applications through logs.</li>
+</ul>
+<p><strong>Code Example: Events</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract EventExample {
+    event DataStored(uint data);
+
+    function store(uint data) public {
+        emit DataStored(data);  // Emits an event
+    }
+}
+</code></pre>
+<hr>
+<h3 id="slide-10-important-solidity-concepts"><strong>Slide 10: Important Solidity Concepts</strong></h3>
+<p>Before diving into scenarios and use cases, let’s briefly explain some fundamental concepts, such as <code>msg.sender</code>, <code>msg.value</code>, <code>tx.gasprice</code>, and <code>block.timestamp</code>, that are frequently used in Solidity smart contracts.</p>
+<ol>
+<li>
+<p><strong><code>msg.sender</code></strong>:</p>
+<ul>
+<li>Refers to the address that initiated the transaction. In the context of a function, <code>msg.sender</code> represents the caller of the function.</li>
+<li>Used to ensure only certain addresses (like the contract owner) can perform specific actions.</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">address public owner;
+
+constructor() {
+    owner = msg.sender;  // Sets the owner as the person who deployed the contract
+}
+</code></pre>
+</li>
+<li>
+<p><strong><code>msg.value</code></strong>:</p>
+<ul>
+<li>Represents the amount of Ether (in wei) sent along with the transaction.</li>
+<li>Used to transfer Ether or check if the correct amount of Ether has been sent.</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">function buyToken() public payable {
+    require(msg.value == 1 ether, "Send exactly 1 Ether");
+    // Process token purchase
+}
+</code></pre>
+</li>
+<li>
+<p><strong><code>tx.gasprice</code></strong>:</p>
+<ul>
+<li>Returns the gas price for the current transaction. Useful for calculating how much gas will be consumed.</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">function getGasPrice() public view returns (uint) {
+    return tx.gasprice;
+}
+</code></pre>
+</li>
+<li>
+<p><strong><code>block.timestamp</code></strong>:</p>
+<ul>
+<li>Returns the current block’s timestamp in seconds since the Unix epoch. Often used in time-based conditions.</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">uint public deadline = block.timestamp + 1 days;
+
+function isExpired() public view returns (bool) {
+    return block.timestamp &gt; deadline;
+}
+</code></pre>
+</li>
+</ol>
+<hr>
+<h3 id="slide-11-basic-use-cases-and-scenarios"><strong>Slide 11: Basic Use Cases and Scenarios</strong></h3>
+<p>Here are five common use cases for Solidity smart contracts, each with an example contract demonstrating how the scenario is implemented.</p>
+<hr>
+<h3 id="scenario-1-simple-wallet-contract"><strong>Scenario 1: Simple Wallet Contract</strong></h3>
+<ul>
+<li><strong>Use Case</strong>: Allow users to deposit and withdraw Ether from a personal wallet.</li>
+<li><strong>Concepts Used</strong>: <code>msg.sender</code>, <code>msg.value</code>, <code>payable</code>.</li>
+</ul>
+<p><strong>Code Example</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract SimpleWallet {
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;  // The deployer of the contract is the owner
+    }
+
+    // Allow anyone to deposit Ether into the contract
+    function deposit() public payable {}
+
+    // Only the owner can withdraw the balance
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only the owner can withdraw");
+        require(address(this).balance &gt;= amount, "Insufficient balance");
+        payable(owner).transfer(amount);
+    }
+
+    // Get the balance of the contract
+    function getBalance() public view returns (uint) {
+        return address(this).balance;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="scenario-2-timed-auction-contract"><strong>Scenario 2: Timed Auction Contract</strong></h3>
+<ul>
+<li><strong>Use Case</strong>: Create an auction where bids are only accepted within a certain time frame.</li>
+<li><strong>Concepts Used</strong>: <code>block.timestamp</code>, <code>payable</code>, <code>msg.value</code>.</li>
+</ul>
+<p><strong>Code Example</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract Auction {
+    address public owner;
+    uint public highestBid;
+    address public highestBidder;
+    uint public auctionEndTime;
+
+    constructor(uint _durationMinutes) {
+        owner = msg.sender;
+        auctionEndTime = block.timestamp + _durationMinutes * 1 minutes;
+    }
+
+    // Place a bid during the auction
+    function bid() public payable {
+        require(block.timestamp &lt; auctionEndTime, "Auction has ended");
+        require(msg.value &gt; highestBid, "There already is a higher bid");
+
+        highestBid = msg.value;
+        highestBidder = msg.sender;
+    }
+
+    // End the auction and send the highest bid to the owner
+    function endAuction() public {
+        require(msg.sender == owner, "Only the owner can end the auction");
+        require(block.timestamp &gt;= auctionEndTime, "Auction is still ongoing");
+
+        payable(owner).transfer(highestBid);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="scenario-3-crowdfunding-contract"><strong>Scenario 3: Crowdfunding Contract</strong></h3>
+<ul>
+<li><strong>Use Case</strong>: Contributors fund a project, and the funds are only released if a target is met.</li>
+<li><strong>Concepts Used</strong>: <code>msg.value</code>, <code>block.timestamp</code>, refunding contributions.</li>
+</ul>
+<p><strong>Code Example</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract Crowdfunding {
+    address public owner;
+    uint public goal;
+    uint public deadline;
+    mapping(address =&gt; uint) public contributions;
+
+    constructor(uint _goal, uint _durationMinutes) {
+        owner = msg.sender;
+        goal = _goal;
+        deadline = block.timestamp + _durationMinutes * 1 minutes;
+    }
+
+    // Contribute to the project
+    function contribute() public payable {
+        require(block.timestamp &lt; deadline, "Deadline has passed");
+        contributions[msg.sender] += msg.value;
+    }
+
+    // Claim funds if the goal is met
+    function claimFunds() public {
+        require(msg.sender == owner, "Only owner can claim funds");
+        require(address(this).balance &gt;= goal, "Goal not reached");
+        require(block.timestamp &gt;= deadline, "Crowdfunding still ongoing");
+
+        payable(owner).transfer(address(this).balance);
+    }
+
+    // Refund contributions if the goal is not met
+    function refund() public {
+        require(block.timestamp &gt;= deadline, "Crowdfunding still ongoing");
+        require(address(this).balance &lt; goal, "Goal was reached");
+
+        uint contribution = contributions[msg.sender];
+        contributions[msg.sender] = 0;
+        payable(msg.sender).transfer(contribution);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="scenario-4-token-vesting-contract"><strong>Scenario 4: Token Vesting Contract</strong></h3>
+<ul>
+<li><strong>Use Case</strong>: Lock tokens for a certain period before they can be claimed.</li>
+<li><strong>Concepts Used</strong>: <code>block.timestamp</code>, <code>require</code>, locking mechanism.</li>
+</ul>
+<p><strong>Code Example</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract TokenVesting {
+    address public beneficiary;
+    uint public releaseTime;
+    uint public tokenAmount;
+
+    constructor(address _beneficiary, uint _tokenAmount, uint _releaseDurationMinutes) {
+        beneficiary = _beneficiary;
+        tokenAmount = _tokenAmount;
+        releaseTime = block.timestamp + _releaseDurationMinutes * 1 minutes;
+    }
+
+    // Claim tokens after the release time
+    function claimTokens() public {
+        require(block.timestamp &gt;= releaseTime, "Tokens are still locked");
+        require(msg.sender == beneficiary, "Only beneficiary can claim tokens");
+        
+        // Transfer the tokens (pseudo-code)
+        // _transferTokens(beneficiary, tokenAmount);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="scenario-5-voting-contract"><strong>Scenario 5: Voting Contract</strong></h3>
+<ul>
+<li><strong>Use Case</strong>: Allow users to vote on proposals, and only the owner can finalize the result.</li>
+<li><strong>Concepts Used</strong>: <code>msg.sender</code>, <code>mapping</code>, <code>require</code>.</li>
+</ul>
+<p><strong>Code Example</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract Voting {
+    address public owner;
+    mapping(string =&gt; uint) public votes;
+    mapping(address =&gt; bool) public hasVoted;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    // Vote for a proposal
+    function vote(string memory proposal) public {
+        require(!hasVoted[msg.sender], "You have already voted");
+        
+        votes[proposal]++;
+        hasVoted[msg.sender] = true;
+    }
+
+    // Get the number of votes for a proposal
+    function getVotes(string memory proposal) public view returns (uint) {
+        return votes[proposal];
+    }
+
+    // Owner can finalize the vote
+    function finalizeVote() public {
+        require(msg.sender == owner, "Only the owner can finalize the vote");
+        // Finalize voting process (e.g., declare winner)
+    }
+}
+</code></pre>
+<hr>
+<h3 id="slide-12-erc20-token-standard"><strong>Slide 12: ERC20 Token Standard</strong></h3>
+<ul>
+<li>ERC20 is a standard interface for tokens that allows for transferability and interaction with decentralized exchanges.</li>
+</ul>
+<p><strong>Code Example: ERC20 Token</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+interface IERC20 {
+    function transfer(address recipient, uint256 amount) external returns (bool);
+    function balanceOf(address account) external view returns (uint256);
+}
+
+contract MyToken is IERC20 {
+    string public name = "MyToken";
+    string public symbol = "MTK";
+    uint8 public decimals = 18;
+    uint256 public totalSupply = 1000000 * 10**18;
+    
+    mapping(address =&gt; uint256) public balances;
+
+    constructor() {
+        balances[msg.sender] = totalSupply;
+    }
+
+    function transfer(address recipient, uint256 amount) public override returns (bool) {
+        require(balances[msg.sender] &gt;= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[recipient] += amount;
+        return true;
+    }
+
+    function balanceOf(address account) public view override returns (uint256) {
+        return balances[account];
+    }
+}
+</code></pre>
+<hr>
+<h3 id="slide-13-erc721-nft-token-standard"><strong>Slide 13: ERC721 (NFT) Token Standard</strong></h3>
+<ul>
+<li>ERC721 is a standard for non-fungible tokens, often used in digital art and collectibles.</li>
+</ul>
+<p><strong>Code Example: ERC721 Token</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
+contract MyNFT is ERC721 {
+    uint public nextTokenId;
+    address public admin;
+
+    constructor() ERC721('MyNFT', 'MNFT') {
+        admin = msg.sender;
+    }
+
+    function mint(address to) external {
+        require(msg.sender == admin, "Only admin can mint");
+        _safeMint(to, nextTokenId);
+        nextTokenId++;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="slide-14-conclusion"><strong>Slide 14: Conclusion</strong></h3>
+<ul>
+<li>Solidity enables decentralized applications by providing smart contract functionality on the Ethereum network.</li>
+<li>Key concepts include data types, control flow, events, and standard token interfaces like ERC20 and ERC721.</li>
+</ul>
+<hr>
+</div>
+</body>
+
+</html>

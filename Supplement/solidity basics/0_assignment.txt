@@ -1,0 +1,18 @@
+## Assignment
+
+    1.sol
+        // TODO : Add a check to make sure index exists
+
+    2.sol
+        // TODO : Write getter and setter functions for name
+
+    3.sol
+        Nil
+
+    4.sol
+        // TODO : Add check for block time stamp in myFunc , only allow calling the function for 2 days 
+
+    5.sol
+        // TODO : makeSuperRare : Only allow admin to update the rarity
+        // TODO : makeSuperRare : Update to accept the type of rarity
+        // TODO : Add get function ( without check ) to get the current rarity

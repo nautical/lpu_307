@@ -1,0 +1,340 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome file</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h3 id="erc-20-and-erc-721-token-standards">ERC-20 and ERC-721 Token Standards</h3>
+<hr>
+<h2 id="introduction-to-erc-and-eip">1. <strong>Introduction to ERC and EIP</strong></h2>
+<ul>
+<li>
+<p><strong>EIP (Ethereum Improvement Proposal)</strong>: A standard procedure for proposing changes, updates, or improvements to the Ethereum network. These proposals outline new features or processes for Ethereum.</p>
+<ul>
+<li><strong>Types of EIPs</strong>:
+<ul>
+<li><strong>Core EIPs</strong>: Changes to the consensus process (hard forks, new features).</li>
+<li><strong>Networking EIPs</strong>: Changes to networking protocol (p2p, devp2p).</li>
+<li><strong>ERC (Ethereum Request for Comments)</strong>: A subset of EIPs specifically related to application-level standards such as token standards (ERC-20, ERC-721, etc.).</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>ERC (Ethereum Request for Comment)</strong>: It defines standards and conventions for Ethereum applications, primarily smart contracts. ERC standards are the blueprint for how specific smart contract functions should be implemented and interacted with.</p>
+<ul>
+<li>ERCs are crucial for ensuring compatibility and interoperability among different Ethereum-based applications, wallets, and exchanges.</li>
+</ul>
+</li>
+</ul>
+<h3 id="key-ercs">Key ERCs:</h3>
+<ul>
+<li><strong>ERC-20</strong>: The most common token standard, used for creating fungible tokens.</li>
+<li><strong>ERC-721</strong>: Standard for creating non-fungible tokens (NFTs), which are unique and distinguishable from each other.</li>
+</ul>
+<hr>
+<h2 id="erc-20-token-standard-fungible-tokens">2. <strong>ERC-20 Token Standard (Fungible Tokens)</strong></h2>
+<h3 id="overview">Overview:</h3>
+<ul>
+<li>ERC-20 is a technical standard used for creating <strong>fungible tokens</strong> on the Ethereum blockchain.</li>
+<li>Fungible tokens are interchangeable and identical in terms of functionality and value.</li>
+<li>Examples: DAI, USDC, UNI, and many other tokens.</li>
+</ul>
+<h3 id="erc-20-functions--events">ERC-20 Functions &amp; Events:</h3>
+<p>Each ERC-20 token implements a set of mandatory functions to ensure compatibility.</p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Function</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>totalSupply()</code></td>
+<td>Returns the total supply of tokens.</td>
+</tr>
+<tr>
+<td><code>balanceOf(address account)</code></td>
+<td>Returns the token balance of a specific address.</td>
+</tr>
+<tr>
+<td><code>transfer(address to, uint256 amount)</code></td>
+<td>Transfers tokens from the caller’s address to another.</td>
+</tr>
+<tr>
+<td><code>transferFrom(address from, address to, uint256 amount)</code></td>
+<td>Transfers tokens from one address to another on behalf of an address that approved the sender.</td>
+</tr>
+<tr>
+<td><code>approve(address spender, uint256 amount)</code></td>
+<td>Allows a spender to withdraw tokens from the caller’s account multiple times, up to a specified amount.</td>
+</tr>
+<tr>
+<td><code>allowance(address owner, address spender)</code></td>
+<td>Returns the remaining number of tokens that the spender is allowed to spend on behalf of the owner.</td>
+</tr>
+<tr>
+<td><strong>Events</strong></td>
+<td>The ERC-20 standard requires the emission of certain events to reflect actions taken by the token.</td>
+</tr>
+<tr>
+<td><code>Transfer(address from, address to, uint256 amount)</code></td>
+<td>Event triggered when tokens are transferred.</td>
+</tr>
+<tr>
+<td><code>Approval(address owner, address spender, uint256 amount)</code></td>
+<td>Event triggered when the <code>approve()</code> function is called, notifying the network of the approval.</td>
+</tr>
+</tbody>
+</table><h3 id="in-depth-explanation-of-functions">In-Depth Explanation of Functions:</h3>
+<ol>
+<li>
+<p><strong>totalSupply()</strong>:</p>
+<ul>
+<li><strong>Definition</strong>: Returns the total amount of tokens in existence.</li>
+<li><strong>Usage</strong>: Essential for tracking how many tokens exist within the system, which helps manage scarcity and ensures that the smart contract knows how many tokens are being circulated.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function totalSupply() public view returns (uint256);
+</code></pre>
+</li>
+<li>
+<p><strong>balanceOf(address account)</strong>:</p>
+<ul>
+<li><strong>Definition</strong>: Provides the balance of a specific address.</li>
+<li><strong>Usage</strong>: Allows users and smart contracts to check how many tokens a given address holds. The balance is stored as an unsigned integer (<code>uint256</code>).</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function balanceOf(address account) public view returns (uint256);
+</code></pre>
+</li>
+<li>
+<p><strong>transfer(address to, uint256 amount)</strong>:</p>
+<ul>
+<li><strong>Definition</strong>: Transfers a specified amount of tokens to another address.</li>
+<li><strong>Usage</strong>: This is the basic method for moving tokens between two addresses.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function transfer(address to, uint256 amount) public returns (bool);
+</code></pre>
+</li>
+<li>
+<p><strong>transferFrom(address from, address to, uint256 amount)</strong>:</p>
+<ul>
+<li><strong>Definition</strong>: Transfers tokens on behalf of an account.</li>
+<li><strong>Usage</strong>: Used in situations like escrow or when allowing a smart contract to spend tokens on behalf of a user.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function transferFrom(address from, address to, uint256 amount) public returns (bool);
+</code></pre>
+</li>
+<li>
+<p><strong>approve(address spender, uint256 amount)</strong>:</p>
+<ul>
+<li><strong>Definition</strong>: Grants another address permission to spend up to a certain number of tokens on the caller’s behalf.</li>
+<li><strong>Usage</strong>: Allows contracts like DEXs or lending protocols to handle tokens on behalf of users.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function approve(address spender, uint256 amount) public returns (bool);
+</code></pre>
+</li>
+<li>
+<p><strong>allowance(address owner, address spender)</strong>:</p>
+<ul>
+<li><strong>Definition</strong>: Returns the amount a spender is allowed to withdraw from the owner’s account.</li>
+<li><strong>Usage</strong>: Useful to check how many tokens a contract or address can spend on behalf of the owner.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function allowance(address owner, address spender) public view returns (uint256);
+</code></pre>
+</li>
+<li>
+<p><strong>Events (Transfer &amp; Approval)</strong>:</p>
+<ul>
+<li><strong>Transfer Event</strong>: Emitted whenever a transfer of tokens occurs, allowing applications to track transactions.</li>
+<li><strong>Approval Event</strong>: Emitted when <code>approve()</code> is called, allowing applications to track approvals.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="erc-721-token-standard-non-fungible-tokens---nfts">3. <strong>ERC-721 Token Standard (Non-Fungible Tokens - NFTs)</strong></h2>
+<h3 id="overview-1">Overview:</h3>
+<ul>
+<li>ERC-721 is used for creating <strong>non-fungible tokens</strong> (NFTs). Unlike ERC-20 tokens, each ERC-721 token is unique and cannot be exchanged on a 1:1 basis with another ERC-721 token.</li>
+<li>Examples: Cryptokitties, digital art, virtual real estate.</li>
+</ul>
+<h3 id="erc-721-functions--events">ERC-721 Functions &amp; Events:</h3>
+<p>ERC-721 includes many of the same functions as ERC-20 but with additional features for managing individual tokens, since each one is unique.</p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Function</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>balanceOf(address owner)</code></td>
+<td>Returns the number of NFTs owned by a specific address.</td>
+</tr>
+<tr>
+<td><code>ownerOf(uint256 tokenId)</code></td>
+<td>Returns the owner of a particular token.</td>
+</tr>
+<tr>
+<td><code>transferFrom(address from, address to, uint256 tokenId)</code></td>
+<td>Transfers ownership of a specific NFT.</td>
+</tr>
+<tr>
+<td><code>approve(address to, uint256 tokenId)</code></td>
+<td>Approves another address to transfer a specific token on behalf of the owner.</td>
+</tr>
+<tr>
+<td><code>getApproved(uint256 tokenId)</code></td>
+<td>Returns the approved address for a specific token.</td>
+</tr>
+<tr>
+<td><code>setApprovalForAll(address operator, bool approved)</code></td>
+<td>Approves or removes an operator (typically for managing multiple tokens).</td>
+</tr>
+<tr>
+<td><code>isApprovedForAll(address owner, address operator)</code></td>
+<td>Checks if an operator is approved to manage all of the owner’s assets.</td>
+</tr>
+<tr>
+<td><strong>Events</strong></td>
+<td>Events help in tracking changes and interactions with the NFTs.</td>
+</tr>
+<tr>
+<td><code>Transfer(address from, address to, uint256 tokenId)</code></td>
+<td>Event triggered when an NFT is transferred.</td>
+</tr>
+<tr>
+<td><code>Approval(address owner, address approved, uint256 tokenId)</code></td>
+<td>Event triggered when an NFT’s approval is updated.</td>
+</tr>
+</tbody>
+</table><h3 id="in-depth-explanation-of-functions-1">In-Depth Explanation of Functions:</h3>
+<ol>
+<li>
+<p><strong>balanceOf(address owner)</strong>:</p>
+<ul>
+<li><strong>Definition</strong>: Returns the number of NFTs owned by an address.</li>
+<li><strong>Usage</strong>: Useful for tracking how many unique NFTs a user possesses.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function balanceOf(address owner) public view returns (uint256);
+</code></pre>
+</li>
+<li>
+<p><strong>ownerOf(uint256 tokenId)</strong>:</p>
+<ul>
+<li><strong>Definition</strong>: Returns the owner of a specific token.</li>
+<li><strong>Usage</strong>: Essential for determining who owns a particular NFT.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function ownerOf(uint256 tokenId) public view returns (address);
+</code></pre>
+</li>
+<li>
+<p><strong>transferFrom(address from, address to, uint256 tokenId)</strong>:</p>
+<ul>
+<li><strong>Definition</strong>: Transfers a specific NFT from one address to another.</li>
+<li><strong>Usage</strong>: Basic function to facilitate the movement of NFTs between users.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function transferFrom(address from, address to, uint256 tokenId) public;
+</code></pre>
+</li>
+<li>
+<p><strong>approve(address to, uint256 tokenId)</strong>:</p>
+<ul>
+<li><strong>Definition</strong>: Approves another address to transfer a particular NFT.</li>
+<li><strong>Usage</strong>: Allows another address or contract to manage a specific NFT.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function approve(address to, uint256 tokenId) public;
+</code></pre>
+</li>
+<li>
+<p><strong>getApproved(uint256 tokenId)</strong>:</p>
+<ul>
+<li><strong>Definition</strong>: Returns the approved address for a specific NFT.</li>
+<li><strong>Usage</strong>: Useful for tracking delegation of ownership or management rights over a specific token.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function getApproved(uint256 tokenId) public view returns (address);
+</code></pre>
+</li>
+<li>
+<p><strong>setApprovalForAll(address operator, bool approved)</strong>:</p>
+<ul>
+<li><strong>Definition</strong>: Allows an operator to manage all of the owner’s NFTs.</li>
+<li><strong>Usage</strong>: Simplifies asset management by allowing an operator to manage all NFTs on behalf of the user.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function setApprovalForAll(address operator, bool approved) public;
+</code></pre>
+</li>
+<li>
+<p><strong>isApprovedForAll(address owner, address operator)</strong>:</p>
+<ul>
+<li><strong>Definition</strong>: Checks if an operator is approved to manage all of the owner’s NFTs.</li>
+<li><strong>Usage</strong>: Used to verify if an operator has universal management rights.</li>
+</ul>
+<pre class=" language-solidity"><code class="prism  language-solidity">function isApprovedForAll(address owner, address operator) public view returns (bool);
+</code></pre>
+</li>
+<li>
+<p><strong>Events (Transfer &amp; Approval)</strong>:</p>
+<ul>
+<li><strong>Transfer Event</strong>: Emitted when ownership of a token changes.</li>
+<li>**Approval Event</li>
+</ul>
+</li>
+</ol>
+<p>**: Emitted when a token’s approved operator is changed.</p>
+<hr>
+<h2 id="differences-between-erc-20-and-erc-721">4. <strong>Differences Between ERC-20 and ERC-721</strong></h2>
+
+<table>
+<thead>
+<tr>
+<th><strong>Aspect</strong></th>
+<th><strong>ERC-20</strong></th>
+<th><strong>ERC-721</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Type of Token</strong></td>
+<td>Fungible</td>
+<td>Non-fungible</td>
+</tr>
+<tr>
+<td><strong>Uniqueness</strong></td>
+<td>Tokens are identical and interchangeable</td>
+<td>Each token is unique and cannot be exchanged on a 1:1 basis</td>
+</tr>
+<tr>
+<td><strong>Use Cases</strong></td>
+<td>Cryptocurrencies, utility tokens</td>
+<td>NFTs, digital art, collectibles</td>
+</tr>
+<tr>
+<td><strong>Divisibility</strong></td>
+<td>Can be fractional (e.g., 0.1 ETH)</td>
+<td>Indivisible, must be transferred as whole tokens</td>
+</tr>
+<tr>
+<td><strong>Metadata</strong></td>
+<td>No unique metadata per token</td>
+<td>Unique metadata for each token</td>
+</tr>
+<tr>
+<td><strong>Events</strong></td>
+<td><code>Transfer</code>, <code>Approval</code></td>
+<td><code>Transfer</code>, <code>Approval</code>, <code>ApprovalForAll</code></td>
+</tr>
+</tbody>
+</table><hr>
+</div>
+</body>
+
+</html>
