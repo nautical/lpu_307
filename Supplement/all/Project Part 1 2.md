@@ -1,4 +1,8 @@
-﻿## Prerequisites
+﻿# Part 1 :
+
+
+
+## Prerequisites
 
 1. Visual Code Editor [(VS code)](https://code.visualstudio.com/) (recommanded)
 2. Node.js and Node Package Manager [(NPM)](https://nodejs.org/en/)
@@ -24,11 +28,7 @@ inside the deploy-your-first-smart-contract-with-truffle directory/ run:
 
 You will see the files and folders created by truffle something like this: you will find the same files and folders inside the starter-project folder of this repo.
 
-
-
 ![image1.png](./image1.png)
-
-
 
 ![image2.png](./image2.png)
 
@@ -166,3 +166,93 @@ that's it you have now deployed on local blockchain and interact with it also. N
 ![image3.png](./image3.png)
 
 **Note: to exit from truffle developer console type .exit**
+
+
+
+
+
+# Part 2
+
+Once above is in working condition , update the contract to have following behaviour :
+
+
+
+Create a Solidity smart contract for a decentralized auction system. The contract should allow the owner to create an auction with a starting price and a duration. Participants can bid during the auction period, and the highest bidder wins when the auction ends. The contract should include the following functionalities:
+
+
+
+- **Auction Creation (`startAuction`):**
+  
+  - Only the owner can create an auction with an item name, a starting price, and a duration.
+  - Resets auction state variables for new auctions.
+
+- **Bidding Mechanism (`bid`):**
+  
+  - Allows participants to place bids if the auction is active and within the specified duration.
+  - Enforces that each bid must be higher than the current highest bid and the starting price.
+  - Refunds the previous highest bidder by adding their bid to the `pendingReturns` mapping.
+
+- **Withdraw Mechanism (`withdraw`):**
+  
+  - Allows non-winning bidders to withdraw their funds securely after the auction ends.
+  - Prevents re-entrancy attacks by resetting the `pendingReturns` balance before transferring Ether.
+
+- **Finalizing the Auction (`finalizeAuction`):**
+  
+  - Allows only the owner to finalize the auction after the duration ends.
+  - Transfers the highest bid amount to the owner and resets the auction state.
+
+```
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract DecentralizedAuction {
+    // State Variables
+    address public owner; // Owner of the contract
+    uint256 public auctionEndTime; // Auction end timestamp
+    string public itemName; // Name of the item being auctioned
+    uint256 public startingPrice; // Starting price of the auction
+    bool public isAuctionActive; // Indicates if the auction is active
+
+    address public highestBidder; // Address of the highest bidder
+    uint256 public highestBid; // Amount of the highest bid
+
+    mapping(address => uint256) public pendingReturns; // Tracks refunds for non-winning bidders
+
+    // Constructor
+    constructor() {
+        // Set the owner of the contract
+    }
+
+    // Modifier: Restrict function access to the contract owner
+    modifier onlyOwner() {
+        _;
+    }
+
+    // Function to start an auction
+    function startAuction(string memory _itemName, uint256 _startingPrice, uint256 _duration) public onlyOwner {
+        // Logic to initialize the auction
+    }
+
+    // Function to place a bid
+    function bid() public payable {
+        // Logic to place a bid
+    }
+
+    // Function to withdraw unsuccessful bid amounts
+    function withdraw() public {
+        // Logic for unsuccessful bidders to withdraw funds
+    }
+
+    // Function to finalize the auction
+    function finalizeAuction() public onlyOwner {
+        // Logic to finalize the auction and transfer funds
+    }
+
+    // View function to check if the auction has ended
+    function hasAuctionEnded() public view returns (bool) {
+        // Return whether the auction duration has elapsed
+    }
+}
+
+```
