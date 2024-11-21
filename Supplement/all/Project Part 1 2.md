@@ -66,7 +66,7 @@ Now change this file code with the below code.
 ```
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
-contract LearnContract {
+contract ContractName {
     string deployer = "LPU";
     function getDeployer() external view returns (string memory) {
         return deployer;
@@ -104,10 +104,10 @@ For deploying multiple smart contract, we need to create a separate migration fi
 paste the following code inside 2_learn_contract.js file:
 
 ```
-const LearnContract = artifacts.require("LearnContract");
+const ContractName = artifacts.require("ContractName");
 
 module.exports = function (deployer) {
-    deployer.deploy(LearnContract);
+    deployer.deploy(ContractName);
 }
 ```
 
