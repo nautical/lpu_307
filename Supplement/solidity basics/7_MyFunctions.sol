@@ -18,10 +18,9 @@ contract MyFunctions {
        return myString;
    }
    
-   function myUpdateFunc() public returns (string memory){
-       myString = "LPU";
-       string memory savedString = myViewFunc();
-       return savedString;
+   function getStringFucntion() public pure returns (string memory){
+       string memory hello = "okok";
+       return hello;
    }
    
    function myReturnsFunc() external view returns (uint256, string memory, bool, uint256[] memory){

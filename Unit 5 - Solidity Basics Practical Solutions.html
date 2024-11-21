@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome file</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><hr>
+<h3 id="constructors-and-inheritance-in-solidity"><strong>1. Constructors and Inheritance in Solidity</strong></h3>
+<p><strong>Question</strong>:<br>
+Write a contract <code>Parent</code> that initializes a public state variable <code>owner</code> to the deployer’s address using a constructor. Then, write a contract <code>Child</code> that inherits from <code>Parent</code> and adds a constructor that accepts an integer <code>age</code> as a parameter and stores it in a public variable <code>age</code>.</p>
+<p><strong>Answer</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// Parent Contract
+pragma solidity ^0.8.0;
+
+contract Parent {
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+}
+
+// Child Contract
+contract Child is Parent {
+    uint public age;
+
+    constructor(uint _age) {
+        age = _age;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="interacting-between-contracts-in-solidity"><strong>2. Interacting Between Contracts in Solidity</strong></h3>
+<p><strong>Question</strong>:<br>
+Write two contracts, <code>Caller</code> and <code>Callee</code>. In <code>Callee</code>, write a public function <code>multiply(uint x, uint y)</code> that returns the product of <code>x</code> and <code>y</code>. In <code>Caller</code>, write a function <code>callMultiply</code> that calls <code>multiply</code> from <code>Callee</code> and returns the result.</p>
+<p><strong>Answer</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// Callee Contract
+pragma solidity ^0.8.0;
+
+contract Callee {
+    function multiply(uint x, uint y) public pure returns (uint) {
+        return x * y;
+    }
+}
+
+// Caller Contract
+contract Caller {
+    function callMultiply(address calleeAddress, uint x, uint y) public view returns (uint) {
+        Callee callee = Callee(calleeAddress);
+        return callee.multiply(x, y);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="errors-checks-and-conditions-in-solidity"><strong>3. Errors, Checks, and Conditions in Solidity</strong></h3>
+<p><strong>Question</strong>:<br>
+Write a function <code>withdraw(uint amount)</code> inside a contract <code>Bank</code> that allows the caller to withdraw ether only if their balance is greater than or equal to <code>amount</code>. If not, it should revert the transaction with a custom error message “Insufficient balance”.</p>
+<p><strong>Answer</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract Bank {
+    mapping(address =&gt; uint) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] &gt;= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="enums-access-control-and-function-updates-in-solidity"><strong>4. Enums, Access Control, and Function Updates in Solidity</strong></h3>
+<p><strong>Question</strong>:<br>
+Write a contract <code>Voting</code> where an enum <code>State</code> has values <code>Created</code>, <code>Voting</code>, and <code>Ended</code>. Implement a modifier <code>onlyOwner</code> that restricts access to the contract owner, and use it in the function <code>startVoting</code> which transitions the state from <code>Created</code> to <code>Voting</code>.</p>
+<p><strong>Answer</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract Voting {
+    address public owner;
+    enum State { Created, Voting, Ended }
+    State public state;
+
+    constructor() {
+        owner = msg.sender;
+        state = State.Created;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not the contract owner");
+        _;
+    }
+
+    function startVoting() public onlyOwner {
+        require(state == State.Created, "Invalid state");
+        state = State.Voting;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="events-in-solidity-emitting-logs"><strong>5. Events in Solidity: Emitting Logs</strong></h3>
+<p><strong>Question</strong>:<br>
+Write a contract <code>Token</code> that allows users to transfer tokens. Emit an event <code>Transfer</code> with parameters <code>from</code>, <code>to</code>, and <code>amount</code> whenever a transfer occurs.</p>
+<p><strong>Answer</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract Token {
+    mapping(address =&gt; uint) public balances;
+
+    event Transfer(address indexed from, address indexed to, uint amount);
+
+    constructor(uint initialSupply) {
+        balances[msg.sender] = initialSupply;
+    }
+
+    function transfer(address to, uint amount) public {
+        require(balances[msg.sender] &gt;= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+        emit Transfer(msg.sender, to, amount);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="functions-in-solidity-types-and-use-cases"><strong>6. Functions in Solidity: Types and Use Cases</strong></h3>
+<p><strong>Question</strong>:<br>
+Write a contract <code>Calculator</code> with two public functions: <code>add(uint a, uint b)</code> and <code>subtract(int a, int b)</code>. The <code>add</code> function should return the sum, and the <code>subtract</code> function should return the difference.</p>
+<p><strong>Answer</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract Calculator {
+    function add(uint a, uint b) public pure returns (uint) {
+        return a + b;
+    }
+
+    function subtract(int a, int b) public pure returns (int) {
+        return a - b;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="inheritance-in-solidity-with-function-overrides"><strong>7. Inheritance in Solidity with Function Overrides</strong></h3>
+<p><strong>Question</strong>:<br>
+Write a contract <code>Animal</code> with a virtual function <code>makeSound</code> that returns <code>"Animal sound"</code>. Then, create a contract <code>Dog</code> that overrides <code>makeSound</code> and returns <code>"Bark!"</code>.</p>
+<p><strong>Answer</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract Animal {
+    function makeSound() public virtual pure returns (string memory) {
+        return "Animal sound";
+    }
+}
+
+contract Dog is Animal {
+    function makeSound() public override pure returns (string memory) {
+        return "Bark!";
+    }
+}
+</code></pre>
+<hr>
+<h3 id="access-control-using-onlyowner-modifier"><strong>8. Access Control: Using <code>onlyOwner</code> Modifier</strong></h3>
+<p><strong>Question</strong>:<br>
+Write a contract <code>Store</code> where only the owner can set the price of a product using the <code>setPrice(uint _price)</code> function. Use the <code>onlyOwner</code> modifier to restrict access.</p>
+<p><strong>Answer</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract Store {
+    address public owner;
+    uint public price;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not the contract owner");
+        _;
+    }
+
+    function setPrice(uint _price) public onlyOwner {
+        price = _price;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="reentrancy-guard-example"><strong>9. Reentrancy Guard Example</strong></h3>
+<p><strong>Question</strong>:<br>
+Write a contract <code>SafeBank</code> where users can deposit and withdraw Ether. Implement a reentrancy guard on the <code>withdraw</code> function to prevent reentrancy attacks.</p>
+<p><strong>Answer</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract SafeBank {
+    mapping(address =&gt; uint) public balances;
+    bool internal locked;
+
+    modifier noReentrancy() {
+        require(!locked, "ReentrancyGuard: reentrant call");
+        locked = true;
+        _;
+        locked = false;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public noReentrancy {
+        require(balances[msg.sender] &gt;= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="using-events-for-logging-function-calls"><strong>10. Using Events for Logging Function Calls</strong></h3>
+<p><strong>Question</strong>:<br>
+Write a contract <code>Counter</code> that has a public function <code>increment</code> which increases a counter by 1. Emit an event <code>Incremented</code> every time the function is called with the new counter value.</p>
+<p><strong>Answer</strong>:</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">pragma solidity ^0.8.0;
+
+contract Counter {
+    uint public count;
+
+    event Incremented(uint newCount);
+
+    function increment() public {
+        count += 1;
+        emit Incremented(count);
+    }
+}
+</code></pre>
+<hr>
+</div>
+</body>
+
+</html>

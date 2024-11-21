@@ -1,0 +1,478 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome file</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><hr>
+<h3 id="slide-1-introduction-to-non-financial-applications-of-blockchain"><strong>Slide 1: Introduction to Non-Financial Applications of Blockchain</strong></h3>
+<ul>
+<li><strong>Explanation:</strong> Blockchain technology is revolutionizing multiple sectors by offering secure, transparent, and decentralized solutions. Key non-financial applications include supply chain management, healthcare, government, education, media, and social impact.</li>
+<li><strong>Benefits of Blockchain in Non-Financial Sectors:</strong>
+<ul>
+<li><strong>Transparency:</strong> Open ledger for tracking activities across sectors.</li>
+<li><strong>Security:</strong> Immutable records prevent data tampering.</li>
+<li><strong>Efficiency:</strong> Automates verification processes, reducing manual checks.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-2-supply-chain-management"><strong>Slide 2: Supply Chain Management</strong></h3>
+<ul>
+<li><strong>Explanation:</strong> Blockchain enables transparent, traceable supply chains, which is vital for industries like pharmaceuticals and luxury goods, where counterfeiting is a major issue.</li>
+<li><strong>Code Sample: Supply Chain Tracking Contract with Role-Based Access Control (RBAC)</strong></li>
+</ul>
+<pre><code>  contract SupplyChain {
+    address public admin;
+    mapping(address =&gt; bool) public authorizedEntities;
+    mapping(address =&gt; uint) public roles; // 0: ADMIN, 1: AUTHORIZER, 2: MANUFACTURER
+
+    struct Product {
+        string name;
+        address manufacturer;
+        bool isVerified;
+    }
+
+    mapping(uint =&gt; Product) public products;
+
+    constructor() {
+        admin = msg.sender;
+        roles[msg.sender] = 0; // Assign admin role to deployer
+    }
+
+    modifier onlyAdmin() {
+        require(roles[msg.sender] == 0, "Only admin can perform this action");
+        _;
+    }
+
+    modifier onlyAuthorized() {
+        require(authorizedEntities[msg.sender] || roles[msg.sender] == 0, "Not authorized");
+        _;
+    }
+
+    modifier onlyManufacturer(uint productId) {
+        require(msg.sender == products[productId].manufacturer || roles[msg.sender] == 0, "Only manufacturer can verify");
+        _;
+    }
+
+    function authorizeEntity(address entity, uint role) public onlyAdmin {
+        authorizedEntities[entity] = true;
+        roles[entity] = role;
+    }
+
+    function addProduct(uint productId, string memory name) public onlyAuthorized {
+        products[productId] = Product(name, msg.sender, false);
+    }
+
+    function verifyProduct(uint productId) public onlyManufacturer(productId) {
+        products[productId].isVerified = true;
+    }
+}
+</code></pre>
+<ul>
+<li><strong>Benefits:</strong>
+<ul>
+<li>Verifiable product history reduces fraud.</li>
+<li>Increases consumer trust through transparent product provenance.</li>
+</ul>
+</li>
+<li><strong>Problems:</strong>
+<ul>
+<li>High gas fees for frequent updates on the blockchain.</li>
+<li>Limited scalability for large, complex supply chains.</li>
+</ul>
+</li>
+<li><strong>Insights:</strong>
+<ul>
+<li><strong>Role-Based Access Control (RBAC):</strong> Ensures that only authorized entities can update shipment status, preventing unauthorized access.</li>
+<li><strong>Decentralized vs. Centralized Tracking:</strong> Fully decentralized systems improve transparency but may be challenging to scale and regulate.</li>
+<li><strong>Oracles in Supply Chains:</strong> Used to securely bring off-chain data (e.g., shipment status) onto the blockchain, though they introduce a risk of manipulation if not managed securely.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-3-healthcare-data-management"><strong>Slide 3: Healthcare Data Management</strong></h3>
+<ul>
+<li><strong>Explanation:</strong> Blockchain enhances security and privacy in healthcare, helping to manage medical records, clinical trial data, and drug traceability.</li>
+<li><strong>Code Sample: Secure Medical Record Storage with Data Validation</strong><pre class=" language-solidity"><code class="prism  language-solidity">contract MedicalRecords {
+    struct Record {
+        string diagnosis;
+        string treatment;
+        uint timestamp;
+    }
+
+    mapping(address =&gt; Record[]) public records;
+
+    function addRecord(string memory diagnosis, string memory treatment) public {
+        require(bytes(diagnosis).length &gt; 0 &amp;&amp; bytes(treatment).length &gt; 0, "Invalid input");
+        records[msg.sender].push(Record(diagnosis, treatment, block.timestamp));
+    }
+}
+</code></pre>
+</li>
+<li><strong>Benefits:</strong>
+<ul>
+<li>Enhances patient privacy and control over health data.</li>
+<li>Improves interoperability between healthcare providers.</li>
+</ul>
+</li>
+<li><strong>Problems:</strong>
+<ul>
+<li>Data immutability makes it challenging to correct errors.</li>
+<li>Compliance with privacy regulations (e.g., HIPAA) can be complex.</li>
+</ul>
+</li>
+<li><strong>Insights:</strong>
+<ul>
+<li><strong>Importance of Input Validation:</strong> Essential in contracts to avoid storing incorrect or malicious data. Improper validation could allow injection of invalid or harmful data, risking patient safety.</li>
+<li><strong>Access Control Mechanisms:</strong> Ensuring only authorized entities can access sensitive data helps maintain patient privacy.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-4-government-applications"><strong>Slide 4: Government Applications</strong></h3>
+<ul>
+<li><strong>Explanation:</strong> Blockchain can securely manage voting systems, identity management, and public records, enhancing transparency and reducing fraud.</li>
+<li><strong>Code Sample: Decentralized Voting with Immutable Records</strong><pre class=" language-solidity"><code class="prism  language-solidity">contract Voting {
+    mapping(address =&gt; bool) public hasVoted;
+    mapping(string =&gt; uint) public votes;
+
+    function vote(string memory candidate) public {
+        require(!hasVoted[msg.sender], "Already voted");
+        votes[candidate]++;
+        hasVoted[msg.sender] = true;
+    }
+}
+</code></pre>
+</li>
+<li><strong>Benefits:</strong>
+<ul>
+<li>Transparent, tamper-proof voting records increase public trust.</li>
+<li>Secures public records from manipulation.</li>
+</ul>
+</li>
+<li><strong>Problems:</strong>
+<ul>
+<li>Balancing voter anonymity with data transparency.</li>
+<li>Scalability for large elections.</li>
+</ul>
+</li>
+<li><strong>Insights:</strong>
+<ul>
+<li><strong>Decentralized Voting:</strong> Blockchain can improve transparency but requires careful management of voter privacy to prevent tracking individual votes.</li>
+<li><strong>Oracles in Government Services:</strong> May be required to bring off-chain data onto the blockchain, such as voter eligibility, but need secure design to avoid manipulation.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-5-education-and-credential-verification"><strong>Slide 5: Education and Credential Verification</strong></h3>
+<ul>
+<li><strong>Explanation:</strong> Blockchain enables tamper-proof storage of academic records, simplifying verification for employers and other institutions.</li>
+<li><strong>Code Sample: Credential Verification System with Access Control</strong><pre class=" language-solidity"><code class="prism  language-solidity">contract CredentialVerification {
+    struct Credential {
+        string degree;
+        string institution;
+        bool verified;
+    }
+
+    mapping(address =&gt; Credential) public credentials;
+
+    function addCredential(string memory degree, string memory institution) public {
+        credentials[msg.sender] = Credential(degree, institution, false);
+    }
+
+    function verifyCredential(address student) public {
+        credentials[student].verified = true;
+    }
+}
+</code></pre>
+</li>
+<li><strong>Benefits:</strong>
+<ul>
+<li>Simplifies credential verification, reducing fraud.</li>
+<li>Streamlines student data management for institutions.</li>
+</ul>
+</li>
+<li><strong>Problems:</strong>
+<ul>
+<li>Privacy concerns with public storage of educational records.</li>
+<li>Complexities with integrating off-chain data.</li>
+</ul>
+</li>
+<li><strong>Insights:</strong>
+<ul>
+<li><strong>Mapping in Solidity:</strong> Used to efficiently store and retrieve ownership and credential data, with each address pointing to specific records.</li>
+<li><strong>Oracles for Off-Chain Data:</strong> Needed to bring data from educational institutions onto the blockchain but must be trusted to avoid data tampering.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-6-media-and-entertainment"><strong>Slide 6: Media and Entertainment</strong></h3>
+<ul>
+<li><strong>Explanation:</strong> Blockchain allows fairer systems for copyright protection and royalty payments, giving artists more control over their work.</li>
+<li><strong>Code Sample: Royalty Payment System</strong><pre class=" language-solidity"><code class="prism  language-solidity">contract Royalty {
+    struct Content {
+        string title;
+        address creator;
+        uint royalty;
+    }
+
+    mapping(uint =&gt; Content) public contentLibrary;
+
+    function addContent(uint id, string memory title, uint royalty) public {
+        contentLibrary[id] = Content(title, msg.sender, royalty);
+    }
+
+    function payRoyalty(uint contentId) public payable {
+        address creator = contentLibrary[contentId].creator;
+        uint amount = contentLibrary[contentId].royalty;
+        payable(creator).transfer(amount);
+    }
+}
+</code></pre>
+</li>
+<li><strong>Benefits:</strong>
+<ul>
+<li>Transparent royalty payments, reducing disputes.</li>
+<li>Enables direct creator-to-consumer models.</li>
+</ul>
+</li>
+<li><strong>Problems:</strong>
+<ul>
+<li>High gas fees for micropayments limit accessibility.</li>
+<li>Ensuring copyright rights on a global scale is complex.</li>
+</ul>
+</li>
+<li><strong>Insights:</strong>
+<ul>
+<li><strong>Escrow and Atomic Swaps in Marketplaces:</strong> Used to manage payments and ownership transfer fairly in decentralized systems.</li>
+<li><strong>Yield Farming vs. Staking:</strong> Yield farming, often used in DeFi, involves providing liquidity to earn rewards, which differs from simple staking by adding layers of complexity and higher returns, though it carries more risk. Yield Farming includes <strong>Liquidity providing</strong> , <strong>Staking</strong> , <strong>Lending</strong></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-7-social-impact-tracking-and-charity-donations"><strong>Slide 7: Social Impact Tracking and Charity Donations</strong></h3>
+<ul>
+<li><strong>Explanation:</strong> Blockchain allows transparent donation tracking, increasing trust in charitable projects and reducing misuse of funds.</li>
+<li><strong>Code Sample: Charity Donation Tracker with Transparency</strong><pre class=" language-solidity"><code class="prism  language-solidity">contract Charity {
+    mapping(address =&gt; uint) public donations;
+    uint public totalDonations;
+
+    function donate() public payable {
+        donations[msg.sender] += msg.value;
+        totalDonations += msg.value;
+    }
+}
+</code></pre>
+</li>
+<li><strong>Benefits:</strong>
+<ul>
+<li>Transparency builds donor trust and accountability.</li>
+<li>Real-time tracking of funds ensures proper allocation.</li>
+</ul>
+</li>
+<li><strong>Problems:</strong>
+<ul>
+<li>Privacy concerns with tracking individual donation amounts.</li>
+<li>Volatility of cryptocurrencies can affect donation values.</li>
+</ul>
+</li>
+<li><strong>Insights:</strong>
+<ul>
+<li><strong>Use of Stablecoins in Charity:</strong> Stablecoins mitigate volatility, making blockchain donations more reliable in value.</li>
+<li><strong>Tracking Social Impact:</strong> Blockchain’s transparency helps verify the allocation of funds, promoting trust and reducing fraud.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-8-land-registry-and-public-records"><strong>Slide 8: Land Registry and Public Records</strong></h3>
+<ul>
+<li><strong>Explanation:</strong> Blockchain-based land registries provide a secure, transparent system for tracking property ownership, reducing disputes.</li>
+<li><strong>Code Sample: Land Registry with Role-Based Access Control</strong><pre class=" language-solidity"><code class="prism  language-solidity">contract LandRegistry {
+    struct Land {
+        uint id;
+        address owner;
+        bool forSale;
+    }
+
+    mapping(uint =&gt; Land) public lands;
+
+    function registerLand(uint id) public {
+        lands[id] = Land(id, msg.sender, false);
+    }
+
+    function transferOwnership(uint id, address newOwner) public {
+        require(msg.sender == lands[id].owner, "Not authorized");
+        lands[id].owner = newOwner;
+    }
+}
+</code></pre>
+</li>
+<li><strong>Benefits:</strong>
+<ul>
+<li>Reduces land ownership disputes with verifiable records.</li>
+<li>Enables quick and secure property transfers.</li>
+</ul>
+</li>
+<li><strong>Problems:</strong>
+<ul>
+<li>Compliance with local property laws can be complex.</li>
+<li>Privacy concerns if owner data is public.</li>
+</ul>
+</li>
+<li><strong>Insights:</strong>
+<ul>
+<li><strong>Role-Based Access Control (RBAC):</strong> Ensures only authorized parties can update ownership information.</li>
+</ul>
+</li>
+</ul>
+<p>Decentralized Marketplaces:** Considerations for secure and fair payment management are crucial to avoid fraud in ownership transfers.</p>
+<hr>
+<h3 id="slide-9-security-in-lending-protocols---preventing-flash-loan-attacks"><strong>Slide 9: Security in Lending Protocols - Preventing Flash Loan Attacks</strong></h3>
+<ul>
+<li>
+<p><strong>Explanation:</strong> Flash loan attacks exploit unsecured lending features in DeFi protocols, allowing attackers to borrow and repay large amounts of funds within a single transaction to manipulate the market, drain liquidity, or cause massive price swings.</p>
+</li>
+<li>
+<p><strong>Code Sample: Guarding Against Flash Loan Attacks with ReentrancyGuard</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+contract SecureLending is ReentrancyGuard {
+    mapping(address =&gt; uint) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public nonReentrant {
+        require(balances[msg.sender] &gt;= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+}
+</code></pre>
+<p><em>This sample uses the <code>nonReentrant</code> modifier to prevent reentrancy attacks, which are common in flash loan exploit strategies.</em></p>
+</li>
+<li>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Protects the protocol from manipulation by ensuring that functions cannot be re-entered during execution.</li>
+<li>Reduces the risk of cascading liquidations and loss of funds due to market manipulation.</li>
+</ul>
+</li>
+<li>
+<p><strong>Problems:</strong></p>
+<ul>
+<li>Adds complexity to the contract code, which can increase gas costs.</li>
+<li>Not all types of flash loan attacks are prevented by reentrancy guards alone; additional checks are needed.</li>
+</ul>
+</li>
+<li>
+<p><strong>Insights:</strong></p>
+<ul>
+<li><strong>How Flash Loan Attacks Occur:</strong> In a flash loan attack, the attacker takes a large, uncollateralized loan, manipulates the market (e.g., by altering token prices on decentralized exchanges), and then repays the loan in the same transaction, profiting from the market manipulation.</li>
+<li><strong>Preventative Steps:</strong>
+<ul>
+<li><strong>Use Price Oracles with Time-Weighted Averages:</strong> This mitigates rapid price manipulation by basing prices on an average over time rather than instantaneous data, making it harder for attackers to manipulate prices briefly.</li>
+<li><strong>Implement Reentrancy Guards:</strong> The <code>nonReentrant</code> modifier prevents recursive calls within the same transaction, which can be crucial in cases where functions affect balances.</li>
+<li><strong>Add Collateralization Checks:</strong> Require collateral for certain high-risk operations, even if only temporary, to limit the potential impact of a flash loan attack.</li>
+<li><strong>Monitor for Suspicious Transactions:</strong> Regularly audit and monitor transactions to catch early signs of potential manipulation attempts.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="slide-10--secure-voting-">** Slide 10 : Secure Voting **</h3>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract Voting {
+    struct Voter {
+        bytes32 commitment; 
+        bool revealed;      
+        uint8 vote;         
+    }
+
+    address public owner;
+    uint256 public commitEndTime;
+    uint256 public revealEndTime;
+    mapping(address =&gt; Voter) public voters;
+    uint256 public yesVotes;
+    uint256 public noVotes;
+
+    event VoteCommitted(address indexed voter);
+    event VoteRevealed(address indexed voter, uint8 vote);
+
+    modifier onlyDuringCommitPhase() {
+        require(block.timestamp &lt; commitEndTime, "Commit phase has ended");
+        _;
+    }
+
+    modifier onlyDuringRevealPhase() {
+        require(block.timestamp &gt;= commitEndTime, "Reveal phase not started");
+        require(block.timestamp &lt; revealEndTime, "Reveal phase has ended");
+        _;
+    }
+
+    constructor(uint256 _commitDuration, uint256 _revealDuration) {
+        owner = msg.sender;
+        commitEndTime = block.timestamp + _commitDuration;
+        revealEndTime = commitEndTime + _revealDuration;
+    }
+
+    function commitVote(bytes32 _commitment) external onlyDuringCommitPhase {
+        require(voters[msg.sender].commitment == bytes32(0), "Already committed");
+
+        voters[msg.sender].commitment = _commitment;
+        emit VoteCommitted(msg.sender);
+    }
+
+    function revealVote(uint8 _vote, string calldata _salt) external onlyDuringRevealPhase {
+        Voter storage voter = voters[msg.sender];
+        require(voter.commitment != bytes32(0), "No commitment found");
+        require(!voter.revealed, "Already revealed");
+        require(_vote == 1 || _vote == 0, "Vote must be 0 or 1");
+
+        bytes32 commitmentCheck = keccak256(abi.encodePacked(_vote, _salt));
+        require(commitmentCheck == voter.commitment, "Commitment does not match");
+
+        voter.vote = _vote;
+        voter.revealed = true;
+
+        if (_vote == 1) {
+            yesVotes++;
+        } else {
+            noVotes++;
+        }
+
+        emit VoteRevealed(msg.sender, _vote);
+    }
+
+    function getVotingResult() external view returns (string memory) {
+        require(block.timestamp &gt;= revealEndTime, "Reveal phase not finished");
+        
+        if (yesVotes &gt; noVotes) {
+            return "Yes wins";
+        } else if (noVotes &gt; yesVotes) {
+            return "No wins";
+        } else {
+            return "Tie";
+        }
+    }
+
+    function generateCommitment(uint8 _vote, string calldata _salt) external pure returns (bytes32) {
+        return keccak256(abi.encodePacked(_vote, _salt));
+    }
+}
+
+</code></pre>
+</div>
+</body>
+
+</html>

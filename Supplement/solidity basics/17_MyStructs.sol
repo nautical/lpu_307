@@ -9,23 +9,6 @@ contract MyStructs {
         uint256 dna;
     }
 
-
-    struct NFT2 {
-        // Every slot in memory storage will be 32 
-        uint128 dna1;
-        uint256 dna2;
-        uint128 dna3;
-    }
-
-
-    struct NFT3 {
-        uint128 dna1;
-        uint128 dna3;
-        uint256 dna2;
-    }
-
-    // NFT("hello", 123)
-
     NFT[] public nftList;
     
     function addNFT(string memory _name, uint256 _dna) public {

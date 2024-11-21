@@ -1,0 +1,559 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome file</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h3 id="slide-1-security-aspects-of-non-financial-blockchain-applications">Slide 1: Security Aspects of Non-Financial Blockchain Applications</h3>
+<p><strong>Overview</strong>: While blockchain enhances security, transparency, and efficiency, various attacks still threaten its applications in non-financial sectors. Security vulnerabilities, if left unaddressed, can lead to data manipulation, unauthorized access, and financial loss.</p>
+<hr>
+<h3 id="slide-2-security-in-supply-chain-management">Slide 2: Security in Supply Chain Management</h3>
+<p><strong>Potential Issues</strong>:</p>
+<ol>
+<li><strong>Unauthorized Access</strong>: Unauthorized entities might attempt to manipulate product data.</li>
+<li><strong>Reentrancy Attacks</strong>: If external functions are called within other functions, they might re-enter in a malicious way.</li>
+</ol>
+<p><strong>Solution</strong>:</p>
+<ol>
+<li><strong>Role-Based Access Control (RBAC)</strong> ensures only specific roles can modify data.</li>
+<li><strong>Use of nonReentrant modifier</strong> to prevent reentrancy attacks.</li>
+</ol>
+<p><strong>Code Sample</strong>: Updated Supply Chain Tracking Contract with Security Enhancements</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+contract SupplyChain is ReentrancyGuard {
+    address public admin;
+    mapping(address =&gt; bool) public authorizedEntities;
+    mapping(address =&gt; uint) public roles; // 0: ADMIN, 1: AUTHORIZER, 2: MANUFACTURER
+
+    struct Product {
+        string name;
+        address manufacturer;
+        bool isVerified;
+    }
+
+    mapping(uint =&gt; Product) public products;
+
+    constructor() {
+        admin = msg.sender;
+        roles[msg.sender] = 0; // Assign admin role to deployer
+    }
+
+    modifier onlyAdmin() {
+        require(roles[msg.sender] == 0, "Only admin can perform this action");
+        _;
+    }
+
+    modifier onlyAuthorized() {
+        require(authorizedEntities[msg.sender] || roles[msg.sender] == 0, "Not authorized");
+        _;
+    }
+
+    modifier onlyManufacturer(uint productId) {
+        require(msg.sender == products[productId].manufacturer || roles[msg.sender] == 0, "Only manufacturer can verify");
+        _;
+    }
+
+    function authorizeEntity(address entity, uint role) public onlyAdmin {
+        authorizedEntities[entity] = true;
+        roles[entity] = role;
+    }
+
+    function addProduct(uint productId, string memory name) public onlyAuthorized nonReentrant {
+        products[productId] = Product(name, msg.sender, false);
+    }
+
+    function verifyProduct(uint productId) public onlyManufacturer(productId) nonReentrant {
+        products[productId].isVerified = true;
+    }
+}
+</code></pre>
+<p><strong>Prevention Insights</strong>:</p>
+<ul>
+<li><strong>RBAC</strong> limits data manipulation rights to specific users.</li>
+<li><strong>ReentrancyGuard</strong> prevents functions from being re-entered in the same transaction.</li>
+</ul>
+<hr>
+<h3 id="slide-3-healthcare-data-management-security">Slide 3: Healthcare Data Management Security</h3>
+<p><strong>Potential Issues</strong>:</p>
+<ol>
+<li><strong>Data Privacy</strong>: Sensitive medical data should be restricted to authorized access.</li>
+<li><strong>Data Immutability</strong>: Incorrect entries are immutable, making error correction difficult.</li>
+</ol>
+<p><strong>Solution</strong>:</p>
+<ol>
+<li><strong>Strict Input Validation</strong>: Validates data before storage.</li>
+<li><strong>Zero-Knowledge Proofs</strong> (Advanced): For selective data visibility.</li>
+</ol>
+<p><strong>Code Sample</strong>: Enhanced Medical Record Storage</p>
+<pre><code>// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
+contract SecureMedicalRecords is AccessControl, ReentrancyGuard {
+    using ECDSA for bytes32;
+
+    // Roles
+    bytes32 public constant DOCTOR_ROLE = keccak256("DOCTOR_ROLE");
+    bytes32 public constant PATIENT_ROLE = keccak256("PATIENT_ROLE");
+
+    struct Record {
+        bytes32 encryptedDiagnosis; // Encrypted with patient’s private key for privacy
+        bytes32 encryptedTreatment;
+        uint256 timestamp;
+    }
+
+    // Mapping of patient addresses to medical records
+    mapping(address =&gt; Record[]) private records;
+
+    // Event logs for monitoring
+    event RecordAdded(address indexed patient, uint256 timestamp);
+
+    constructor() {
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender); // Deployer as admin
+    }
+
+    /**
+     * @notice Adds a new medical record for the patient.
+     * @dev Only the assigned doctor can add records for a patient.
+     * @param patient The address of the patient.
+     * @param encryptedDiagnosis Hashed diagnosis encrypted with patient’s public key.
+     * @param encryptedTreatment Hashed treatment encrypted with patient’s public key.
+     */
+    function addRecord(
+        address patient,
+        bytes32 encryptedDiagnosis,
+        bytes32 encryptedTreatment
+    ) public nonReentrant onlyRole(DOCTOR_ROLE) {
+        require(hasRole(PATIENT_ROLE, patient), "Not a registered patient");
+
+        // Save the record securely
+        records[patient].push(
+            Record(encryptedDiagnosis, encryptedTreatment, block.timestamp)
+        );
+        emit RecordAdded(patient, block.timestamp);
+    }
+
+    /**
+     * @notice Allows a patient to view their own records.
+     * @dev Only the patient can access their records, not doctors.
+     * @return Array of encrypted medical records.
+     */
+    function viewRecords() external view onlyRole(PATIENT_ROLE) returns (Record[] memory) {
+        return records[msg.sender];
+    }
+
+    /**
+     * @notice Grants the doctor role to an address.
+     * @dev Only admins can add doctors.
+     * @param doctor The address to be granted the doctor role.
+     */
+    function addDoctor(address doctor) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        grantRole(DOCTOR_ROLE, doctor);
+    }
+
+    /**
+     * @notice Registers a new patient.
+     * @dev Only admins can register patients.
+     * @param patient The address of the patient.
+     */
+    function registerPatient(address patient) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        grantRole(PATIENT_ROLE, patient);
+    }
+}
+</code></pre>
+<p><strong>Role-Based Access Control</strong>:</p>
+<ul>
+<li>Only doctors (assigned with <code>DOCTOR_ROLE</code>) can add records.</li>
+<li>Only patients (assigned with <code>PATIENT_ROLE</code>) can view their own records, not other patients or doctors.</li>
+</ul>
+<p><strong>Prevention Insights</strong>:</p>
+<ul>
+<li><strong>Data Privacy</strong>: Restricted access and controlled retrieval ensure patient privacy.</li>
+<li><strong>Input Validation</strong>: Prevents injection attacks by enforcing data integrity.</li>
+</ul>
+<hr>
+<h3 id="slide-4-government-applications-security">Slide 4: Government Applications Security</h3>
+<p><strong>Potential Issues</strong>:</p>
+<ol>
+<li><strong>Sybil Attacks</strong>: Fake identities can skew voting results.</li>
+<li><strong>Replay Attacks</strong>: Re-use of valid transactions by malicious actors.</li>
+</ol>
+<p><strong>Solution</strong>:</p>
+<ol>
+<li><strong>Commit-Reveal Voting</strong>: Prevents premature disclosure and enforces anonymity.</li>
+<li><strong>Nonce Mechanism</strong>: Prevents replay attacks by attaching a unique nonce to each vote.</li>
+</ol>
+<p><strong>Code Sample</strong>: Improved Voting System with Commit-Reveal Scheme</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract SecureVoting {
+    struct Voter {
+        bytes32 commitment;
+        bool revealed;
+        uint8 vote;
+    }
+
+    mapping(address =&gt; Voter) private voters;
+    uint256 public yesVotes;
+    uint256 public noVotes;
+    uint256 public commitEndTime;
+    uint256 public revealEndTime;
+
+    modifier onlyDuringCommitPhase() {
+        require(block.timestamp &lt; commitEndTime, "Commit phase has ended");
+        _;
+    }
+
+    modifier onlyDuringRevealPhase() {
+        require(block.timestamp &gt;= commitEndTime &amp;&amp; block.timestamp &lt; revealEndTime, "Reveal phase not active");
+        _;
+    }
+
+    function commitVote(bytes32 _commitment) external onlyDuringCommitPhase {
+        require(voters[msg.sender].commitment == bytes32(0), "Already committed");
+        voters[msg.sender].commitment = _commitment;
+    }
+
+    function revealVote(uint8 _vote, string calldata _salt) external onlyDuringRevealPhase {
+        Voter storage voter = voters[msg.sender];
+        require(!voter.revealed, "Already revealed");
+        require(_vote == 1 || _vote == 0, "Vote must be 0 or 1");
+
+        bytes32 checkCommitment = keccak256(abi.encodePacked(_vote, _salt));
+        require(checkCommitment == voter.commitment, "Commitment mismatch");
+
+        voter.revealed = true;
+        if (_vote == 1) yesVotes++;
+        else noVotes++;
+    }
+
+    function getResults() public view returns (string memory) {
+        if (yesVotes &gt; noVotes) return "Yes Wins";
+        else if (noVotes &gt; yesVotes) return "No Wins";
+        else return "Tie";
+    }
+}
+</code></pre>
+<p><strong>Prevention Insights</strong>:</p>
+<ul>
+<li><strong>Commit-Reveal</strong> scheme anonymizes and secures votes.</li>
+<li><strong>Replay Protection</strong>: Prevents re-use of identical votes through unique hash generation.</li>
+</ul>
+<hr>
+<h3 id="slide-5-mitigating-flash-loan-and-reentrancy-attacks-in-defi">Slide 5: Mitigating Flash Loan and Reentrancy Attacks in DeFi</h3>
+<p><strong>Potential Issues</strong>:</p>
+<ol>
+<li><strong>Flash Loan Attacks</strong>: Exploits temporary loans within a single transaction.</li>
+<li><strong>Reentrancy Attacks</strong>: Recursive calls exploit contract logic to drain funds.</li>
+</ol>
+<p><strong>Solution</strong>:</p>
+<ol>
+<li><strong>Reentrancy Guard</strong> prevents re-entrant calls.</li>
+<li><strong>Oracle-Based Time-Weighted Averages</strong> stabilize prices to prevent flash loan manipulation.</li>
+</ol>
+<p><strong>Code Sample</strong>: Secure Lending Contract with Reentrancy Prevention</p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+contract SecureLending is ReentrancyGuard {
+    mapping(address =&gt; uint) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public nonReentrant {
+        require(balances[msg.sender] &gt;= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+}
+</code></pre>
+<p><strong>Prevention Insights</strong>:</p>
+<ul>
+<li><strong>Reentrancy Guard</strong>: Prevents re-entry by disabling nested function calls in single transactions.</li>
+<li><strong>Oracle Averages</strong>: Secures price stability against flash loans.</li>
+</ul>
+<hr>
+<h2 id="some-generic-attacks">Some Generic Attacks</h2>
+<h3 id="unauthorized-access">1. <strong>Unauthorized Access</strong></h3>
+<p><strong>Problem:</strong> Unauthorized access allows attackers to view, modify, or delete data without permission, which can expose sensitive information or disrupt services.</p>
+<p><strong>Solution:</strong> Implement <strong>Role-Based Access Control (RBAC)</strong>. Assign roles like <code>DOCTOR_ROLE</code> and <code>PATIENT_ROLE</code> to restrict access to certain functions.</p>
+<p><strong>Code Example:</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/access/AccessControl.sol";
+
+contract MedicalRecords is AccessControl {
+    bytes32 public constant DOCTOR_ROLE = keccak256("DOCTOR_ROLE");
+    bytes32 public constant PATIENT_ROLE = keccak256("PATIENT_ROLE");
+
+    struct Record {
+        string diagnosis;
+        string treatment;
+        uint256 timestamp;
+    }
+
+    mapping(address =&gt; Record[]) private records;
+
+    constructor() {
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
+
+    function addDoctor(address doctor) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        grantRole(DOCTOR_ROLE, doctor);
+    }
+
+    function addPatient(address patient) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        grantRole(PATIENT_ROLE, patient);
+    }
+
+    function addRecord(address patient, string memory diagnosis, string memory treatment) public onlyRole(DOCTOR_ROLE) {
+        records[patient].push(Record(diagnosis, treatment, block.timestamp));
+    }
+
+    function viewRecords() public view onlyRole(PATIENT_ROLE) returns (Record[] memory) {
+        return records[msg.sender];
+    }
+}
+</code></pre>
+<p>In this contract, only users with the <code>DOCTOR_ROLE</code> can add medical records, and only those with the <code>PATIENT_ROLE</code> can view their own records.</p>
+<hr>
+<h3 id="reentrancy-attacks">2. <strong>Reentrancy Attacks</strong></h3>
+<p><strong>Problem:</strong> A reentrancy attack happens when a function calls another contract which then calls back into the first contract before the initial execution is completed. This can drain funds or manipulate data.</p>
+<pre class=" language-mermaid"><svg id="mermaid-svg-8wg5sp0JDwFEwxVI" width="100%" xmlns="http://www.w3.org/2000/svg" height="511" style="max-width: 803px;" viewBox="-50 -10 803 511"><style>#mermaid-svg-8wg5sp0JDwFEwxVI{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#000000;}#mermaid-svg-8wg5sp0JDwFEwxVI .error-icon{fill:#552222;}#mermaid-svg-8wg5sp0JDwFEwxVI .error-text{fill:#552222;stroke:#552222;}#mermaid-svg-8wg5sp0JDwFEwxVI .edge-thickness-normal{stroke-width:2px;}#mermaid-svg-8wg5sp0JDwFEwxVI .edge-thickness-thick{stroke-width:3.5px;}#mermaid-svg-8wg5sp0JDwFEwxVI .edge-pattern-solid{stroke-dasharray:0;}#mermaid-svg-8wg5sp0JDwFEwxVI .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-svg-8wg5sp0JDwFEwxVI .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-svg-8wg5sp0JDwFEwxVI .marker{fill:#666;stroke:#666;}#mermaid-svg-8wg5sp0JDwFEwxVI .marker.cross{stroke:#666;}#mermaid-svg-8wg5sp0JDwFEwxVI svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-svg-8wg5sp0JDwFEwxVI .actor{stroke:hsl(0,0%,83%);fill:#eee;}#mermaid-svg-8wg5sp0JDwFEwxVI text.actor > tspan{fill:#333;stroke:none;}#mermaid-svg-8wg5sp0JDwFEwxVI .actor-line{stroke:#666;}#mermaid-svg-8wg5sp0JDwFEwxVI .messageLine0{stroke-width:1.5;stroke-dasharray:none;stroke:#333;}#mermaid-svg-8wg5sp0JDwFEwxVI .messageLine1{stroke-width:1.5;stroke-dasharray:2,2;stroke:#333;}#mermaid-svg-8wg5sp0JDwFEwxVI #arrowhead path{fill:#333;stroke:#333;}#mermaid-svg-8wg5sp0JDwFEwxVI .sequenceNumber{fill:white;}#mermaid-svg-8wg5sp0JDwFEwxVI #sequencenumber{fill:#333;}#mermaid-svg-8wg5sp0JDwFEwxVI #crosshead path{fill:#333;stroke:#333;}#mermaid-svg-8wg5sp0JDwFEwxVI .messageText{fill:#333;stroke:#333;}#mermaid-svg-8wg5sp0JDwFEwxVI .labelBox{stroke:hsl(0,0%,83%);fill:#eee;}#mermaid-svg-8wg5sp0JDwFEwxVI .labelText,#mermaid-svg-8wg5sp0JDwFEwxVI .labelText > tspan{fill:#333;stroke:none;}#mermaid-svg-8wg5sp0JDwFEwxVI .loopText,#mermaid-svg-8wg5sp0JDwFEwxVI .loopText > tspan{fill:#333;stroke:none;}#mermaid-svg-8wg5sp0JDwFEwxVI .loopLine{stroke-width:2px;stroke-dasharray:2,2;stroke:hsl(0,0%,83%);fill:hsl(0,0%,83%);}#mermaid-svg-8wg5sp0JDwFEwxVI .note{stroke:hsl(60,100%,23.3333333333%);fill:#ffa;}#mermaid-svg-8wg5sp0JDwFEwxVI .noteText,#mermaid-svg-8wg5sp0JDwFEwxVI .noteText > tspan{fill:#333;stroke:none;}#mermaid-svg-8wg5sp0JDwFEwxVI .activation0{fill:#f4f4f4;stroke:#666;}#mermaid-svg-8wg5sp0JDwFEwxVI .activation1{fill:#f4f4f4;stroke:#666;}#mermaid-svg-8wg5sp0JDwFEwxVI .activation2{fill:#f4f4f4;stroke:#666;}#mermaid-svg-8wg5sp0JDwFEwxVI:root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}#mermaid-svg-8wg5sp0JDwFEwxVI sequence{fill:apa;}</style><g></g><g><line id="actor36" x1="75" y1="5" x2="75" y2="500" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="0" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="75" dy="0">Attacker</tspan></text></g><g><line id="actor37" x1="366" y1="5" x2="366" y2="500" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="291" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="366" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="366" dy="0">Contract</tspan></text></g><g><line id="actor38" x1="628" y1="5" x2="628" y2="500" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="553" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="628" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="628" dy="0">Victim</tspan></text></g><defs><marker id="arrowhead" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs><defs><marker id="crosshead" markerWidth="15" markerHeight="8" orient="auto" refX="16" refY="4"><path fill="black" stroke="#000000" style="stroke-dasharray: 0px, 0px;" stroke-width="1px" d="M 9,2 V 6 L16,4 Z"></path><path fill="none" stroke="#000000" style="stroke-dasharray: 0px, 0px;" stroke-width="1px" d="M 0,1 L 6,7 M 6,1 L 0,7"></path></marker></defs><defs><marker id="filled-head" refX="18" refY="7" markerWidth="20" markerHeight="28" orient="auto"><path d="M 18,7 L9,13 L14,7 L9,1 Z"></path></marker></defs><defs><marker id="sequencenumber" refX="15" refY="15" markerWidth="60" markerHeight="40" orient="auto"><circle cx="15" cy="15" r="6"></circle></marker></defs><text x="352" y="80" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Calls withdraw()</text><line x1="75" y1="115" x2="628" y2="115" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="497" y="130" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Executes withdraw() logic</text><line x1="628" y1="165" x2="366" y2="165" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="221" y="180" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Sends funds</text><line x1="366" y1="215" x2="75" y2="215" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="352" y="230" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Reenters withdraw() before state change</text><line x1="75" y1="265" x2="628" y2="265" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="497" y="280" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Executes withdraw() again</text><line x1="628" y1="315" x2="366" y2="315" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="221" y="330" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Sends more funds</text><line x1="366" y1="365" x2="75" y2="365" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="221" y="380" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Repeat until funds are drained</text><line x1="75" y1="415" x2="366" y2="415" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><g><rect x="0" y="435" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="467.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="75" dy="0">Attacker</tspan></text></g><g><rect x="291" y="435" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="366" y="467.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="366" dy="0">Contract</tspan></text></g><g><rect x="553" y="435" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="628" y="467.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="628" dy="0">Victim</tspan></text></g></svg></pre>
+<p><strong>Solution:</strong> Use the <code>nonReentrant</code> modifier to prevent functions from being called recursively.</p>
+<p><strong>Code Example:</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+contract SecureBank is ReentrancyGuard {
+    mapping(address =&gt; uint256) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public nonReentrant {
+        require(balances[msg.sender] &gt;= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+}
+</code></pre>
+<p>Here, the <code>nonReentrant</code> modifier prevents reentrancy attacks, as it disallows re-entry into the <code>withdraw</code> function until the current execution is completed.</p>
+<hr>
+<h3 id="strict-input-validation">3. <strong>Strict Input Validation</strong></h3>
+<p><strong>Problem:</strong> Unvalidated inputs can allow for data corruption, injection attacks, and other unintended behaviors.</p>
+<p><strong>Solution:</strong> Implement checks for each input to ensure they meet expected parameters (e.g., non-empty strings, within numerical ranges).</p>
+<p><strong>Code Example:</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract InputValidatedSystem {
+    struct User {
+        string name;
+        uint8 age;
+    }
+
+    mapping(address =&gt; User) public users;
+
+    function registerUser(string memory name, uint8 age) public {
+        require(bytes(name).length &gt; 0, "Name cannot be empty");
+        require(age &gt; 0 &amp;&amp; age &lt; 120, "Invalid age range");
+
+        users[msg.sender] = User(name, age);
+    }
+}
+</code></pre>
+<p>This example ensures the <code>name</code> is not empty and that <code>age</code> is within a reasonable range before adding the user to the system.</p>
+<hr>
+<h3 id="sybil-attacks">4. <strong>Sybil Attacks</strong></h3>
+<p><strong>Problem:</strong> In a Sybil attack, the attacker creates multiple fake identities to gain control or manipulate consensus.</p>
+<pre class=" language-mermaid"><svg id="mermaid-svg-70masJ2sycJuzX3y" width="100%" xmlns="http://www.w3.org/2000/svg" height="641" style="max-width: 1328.5px;" viewBox="-217.5 -10 1328.5 641"><style>#mermaid-svg-70masJ2sycJuzX3y{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#000000;}#mermaid-svg-70masJ2sycJuzX3y .error-icon{fill:#552222;}#mermaid-svg-70masJ2sycJuzX3y .error-text{fill:#552222;stroke:#552222;}#mermaid-svg-70masJ2sycJuzX3y .edge-thickness-normal{stroke-width:2px;}#mermaid-svg-70masJ2sycJuzX3y .edge-thickness-thick{stroke-width:3.5px;}#mermaid-svg-70masJ2sycJuzX3y .edge-pattern-solid{stroke-dasharray:0;}#mermaid-svg-70masJ2sycJuzX3y .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-svg-70masJ2sycJuzX3y .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-svg-70masJ2sycJuzX3y .marker{fill:#666;stroke:#666;}#mermaid-svg-70masJ2sycJuzX3y .marker.cross{stroke:#666;}#mermaid-svg-70masJ2sycJuzX3y svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-svg-70masJ2sycJuzX3y .actor{stroke:hsl(0,0%,83%);fill:#eee;}#mermaid-svg-70masJ2sycJuzX3y text.actor > tspan{fill:#333;stroke:none;}#mermaid-svg-70masJ2sycJuzX3y .actor-line{stroke:#666;}#mermaid-svg-70masJ2sycJuzX3y .messageLine0{stroke-width:1.5;stroke-dasharray:none;stroke:#333;}#mermaid-svg-70masJ2sycJuzX3y .messageLine1{stroke-width:1.5;stroke-dasharray:2,2;stroke:#333;}#mermaid-svg-70masJ2sycJuzX3y #arrowhead path{fill:#333;stroke:#333;}#mermaid-svg-70masJ2sycJuzX3y .sequenceNumber{fill:white;}#mermaid-svg-70masJ2sycJuzX3y #sequencenumber{fill:#333;}#mermaid-svg-70masJ2sycJuzX3y #crosshead path{fill:#333;stroke:#333;}#mermaid-svg-70masJ2sycJuzX3y .messageText{fill:#333;stroke:#333;}#mermaid-svg-70masJ2sycJuzX3y .labelBox{stroke:hsl(0,0%,83%);fill:#eee;}#mermaid-svg-70masJ2sycJuzX3y .labelText,#mermaid-svg-70masJ2sycJuzX3y .labelText > tspan{fill:#333;stroke:none;}#mermaid-svg-70masJ2sycJuzX3y .loopText,#mermaid-svg-70masJ2sycJuzX3y .loopText > tspan{fill:#333;stroke:none;}#mermaid-svg-70masJ2sycJuzX3y .loopLine{stroke-width:2px;stroke-dasharray:2,2;stroke:hsl(0,0%,83%);fill:hsl(0,0%,83%);}#mermaid-svg-70masJ2sycJuzX3y .note{stroke:hsl(60,100%,23.3333333333%);fill:#ffa;}#mermaid-svg-70masJ2sycJuzX3y .noteText,#mermaid-svg-70masJ2sycJuzX3y .noteText > tspan{fill:#333;stroke:none;}#mermaid-svg-70masJ2sycJuzX3y .activation0{fill:#f4f4f4;stroke:#666;}#mermaid-svg-70masJ2sycJuzX3y .activation1{fill:#f4f4f4;stroke:#666;}#mermaid-svg-70masJ2sycJuzX3y .activation2{fill:#f4f4f4;stroke:#666;}#mermaid-svg-70masJ2sycJuzX3y:root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}#mermaid-svg-70masJ2sycJuzX3y sequence{fill:apa;}</style><g></g><g><line id="actor39" x1="75" y1="5" x2="75" y2="630" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="0" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="75" dy="0">Attacker</tspan></text></g><g><line id="actor40" x1="386" y1="5" x2="386" y2="630" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="311" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="386" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="386" dy="0">Contract</tspan></text></g><g><line id="actor41" x1="586" y1="5" x2="586" y2="630" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="511" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="586" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="586" dy="0">Voter1</tspan></text></g><g><line id="actor42" x1="786" y1="5" x2="786" y2="630" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="711" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="786" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="786" dy="0">Voter2</tspan></text></g><g><line id="actor43" x1="986" y1="5" x2="986" y2="630" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="911" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="986" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="986" dy="0">Voter3</tspan></text></g><defs><marker id="arrowhead" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs><defs><marker id="crosshead" markerWidth="15" markerHeight="8" orient="auto" refX="16" refY="4"><path fill="black" stroke="#000000" style="stroke-dasharray: 0px, 0px;" stroke-width="1px" d="M 9,2 V 6 L16,4 Z"></path><path fill="none" stroke="#000000" style="stroke-dasharray: 0px, 0px;" stroke-width="1px" d="M 0,1 L 6,7 M 6,1 L 0,7"></path></marker></defs><defs><marker id="filled-head" refX="18" refY="7" markerWidth="20" markerHeight="28" orient="auto"><path d="M 18,7 L9,13 L14,7 L9,1 Z"></path></marker></defs><defs><marker id="sequencenumber" refX="15" refY="15" markerWidth="60" markerHeight="40" orient="auto"><circle cx="15" cy="15" r="6"></circle></marker></defs><text x="231" y="80" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Creates fake identity (Voter1)</text><line x1="75" y1="115" x2="386" y2="115" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="231" y="130" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Creates fake identity (Voter2)</text><line x1="75" y1="165" x2="386" y2="165" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="231" y="180" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Creates fake identity (Voter3)</text><line x1="75" y1="215" x2="386" y2="215" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="486" y="230" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Casts vote (Yes)</text><line x1="586" y1="265" x2="386" y2="265" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="586" y="280" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Casts vote (Yes)</text><line x1="786" y1="315" x2="386" y2="315" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="686" y="330" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Casts vote (No)</text><line x1="986" y1="365" x2="386" y2="365" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="386" y="380" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Tally votes (Manipulated)</text><path d="M 386,415 C 446,405 446,445 386,435" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></path><text x="231" y="460" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Receives manipulated vote result</text><line x1="386" y1="495" x2="75" y2="495" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><g><rect x="-167.5" y="505" fill="#EDF2AE" stroke="#666" width="485" height="40" rx="0" ry="0" class="note"></rect><text x="75" y="510" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="noteText" dy="1em"><tspan x="75">Manipulated voting outcome by creating multiple fake identities</tspan></text></g><g><rect x="0" y="565" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="597.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="75" dy="0">Attacker</tspan></text></g><g><rect x="311" y="565" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="386" y="597.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="386" dy="0">Contract</tspan></text></g><g><rect x="511" y="565" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="586" y="597.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="586" dy="0">Voter1</tspan></text></g><g><rect x="711" y="565" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="786" y="597.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="786" dy="0">Voter2</tspan></text></g><g><rect x="911" y="565" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="986" y="597.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="986" dy="0">Voter3</tspan></text></g></svg></pre>
+<p><strong>Solution:</strong> Use <strong>Proof of Identity</strong> by requiring verified identity data, or <strong>stake-based requirements</strong> (e.g., requiring deposits or reputation).</p>
+<p><strong>Code Example:</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract StakeBasedVoting {
+    struct Voter {
+        uint256 stake;
+        bool hasVoted;
+        uint8 vote;
+        uint256 lockTimestamp;
+    }
+
+    mapping(address =&gt; Voter) public voters;
+    uint256 public yesVotes;
+    uint256 public noVotes;
+    uint256 public constant MINIMUM_STAKE = 1 ether; // Require 1 ETH stake to vote
+    uint256 public constant WITHDRAW_DELAY = 1 days; // Lock funds for 24 hours after voting ends
+    uint256 public votingEndTime;
+
+    event VoteCasted(address indexed voter, uint8 vote);
+    event StakeWithdrawn(address indexed voter, uint256 amount);
+
+    modifier onlyDuringVoting() {
+        require(block.timestamp &lt; votingEndTime, "Voting has ended");
+        _;
+    }
+
+    modifier onlyAfterVoting() {
+        require(block.timestamp &gt;= votingEndTime, "Voting is still ongoing");
+        _;
+    }
+
+    constructor(uint256 _votingDuration) {
+        votingEndTime = block.timestamp + _votingDuration;
+    }
+
+    function vote(uint8 _vote) external payable onlyDuringVoting {
+        require(_vote == 0 || _vote == 1, "Invalid vote"); // 0 = No, 1 = Yes
+        require(msg.value &gt;= MINIMUM_STAKE, "Minimum stake required");
+        require(!voters[msg.sender].hasVoted, "Already voted");
+
+        voters[msg.sender] = Voter({
+            stake: msg.value,
+            hasVoted: true,
+            vote: _vote,
+            lockTimestamp: block.timestamp + WITHDRAW_DELAY
+        });
+
+        if (_vote == 1) {
+            yesVotes++;
+        } else {
+            noVotes++;
+        }
+
+        emit VoteCasted(msg.sender, _vote);
+    }
+
+    function withdrawStake() external onlyAfterVoting {
+        Voter storage voter = voters[msg.sender];
+        require(voter.hasVoted, "No stake to withdraw");
+        require(block.timestamp &gt;= voter.lockTimestamp, "Stake locked");
+
+        uint256 amount = voter.stake;
+        voter.stake = 0;
+        
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+
+        emit StakeWithdrawn(msg.sender, amount);
+    }
+
+    function getResult() external view returns (string memory) {
+        require(block.timestamp &gt;= votingEndTime, "Voting is still ongoing");
+
+        if (yesVotes &gt; noVotes) {
+            return "Yes wins";
+        } else if (noVotes &gt; yesVotes) {
+            return "No wins";
+        } else {
+            return "It's a tie";
+        }
+    }
+}
+
+</code></pre>
+<p>This example requires voters to deposit funds proportional to their weight, making it costly for attackers to create fake identities.</p>
+<hr>
+<h3 id="replay-attacks">5. <strong>Replay Attacks</strong></h3>
+<p><strong>Problem:</strong> Replay attacks involve resending a previously valid transaction to perform unintended actions.</p>
+<pre class=" language-mermaid"><svg id="mermaid-svg-ZoPOK6lNFS2EpRRl" width="100%" xmlns="http://www.w3.org/2000/svg" height="461" style="max-width: 1326px;" viewBox="-272 -10 1326 461"><style>#mermaid-svg-ZoPOK6lNFS2EpRRl{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#000000;}#mermaid-svg-ZoPOK6lNFS2EpRRl .error-icon{fill:#552222;}#mermaid-svg-ZoPOK6lNFS2EpRRl .error-text{fill:#552222;stroke:#552222;}#mermaid-svg-ZoPOK6lNFS2EpRRl .edge-thickness-normal{stroke-width:2px;}#mermaid-svg-ZoPOK6lNFS2EpRRl .edge-thickness-thick{stroke-width:3.5px;}#mermaid-svg-ZoPOK6lNFS2EpRRl .edge-pattern-solid{stroke-dasharray:0;}#mermaid-svg-ZoPOK6lNFS2EpRRl .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-svg-ZoPOK6lNFS2EpRRl .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-svg-ZoPOK6lNFS2EpRRl .marker{fill:#666;stroke:#666;}#mermaid-svg-ZoPOK6lNFS2EpRRl .marker.cross{stroke:#666;}#mermaid-svg-ZoPOK6lNFS2EpRRl svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-svg-ZoPOK6lNFS2EpRRl .actor{stroke:hsl(0,0%,83%);fill:#eee;}#mermaid-svg-ZoPOK6lNFS2EpRRl text.actor > tspan{fill:#333;stroke:none;}#mermaid-svg-ZoPOK6lNFS2EpRRl .actor-line{stroke:#666;}#mermaid-svg-ZoPOK6lNFS2EpRRl .messageLine0{stroke-width:1.5;stroke-dasharray:none;stroke:#333;}#mermaid-svg-ZoPOK6lNFS2EpRRl .messageLine1{stroke-width:1.5;stroke-dasharray:2,2;stroke:#333;}#mermaid-svg-ZoPOK6lNFS2EpRRl #arrowhead path{fill:#333;stroke:#333;}#mermaid-svg-ZoPOK6lNFS2EpRRl .sequenceNumber{fill:white;}#mermaid-svg-ZoPOK6lNFS2EpRRl #sequencenumber{fill:#333;}#mermaid-svg-ZoPOK6lNFS2EpRRl #crosshead path{fill:#333;stroke:#333;}#mermaid-svg-ZoPOK6lNFS2EpRRl .messageText{fill:#333;stroke:#333;}#mermaid-svg-ZoPOK6lNFS2EpRRl .labelBox{stroke:hsl(0,0%,83%);fill:#eee;}#mermaid-svg-ZoPOK6lNFS2EpRRl .labelText,#mermaid-svg-ZoPOK6lNFS2EpRRl .labelText > tspan{fill:#333;stroke:none;}#mermaid-svg-ZoPOK6lNFS2EpRRl .loopText,#mermaid-svg-ZoPOK6lNFS2EpRRl .loopText > tspan{fill:#333;stroke:none;}#mermaid-svg-ZoPOK6lNFS2EpRRl .loopLine{stroke-width:2px;stroke-dasharray:2,2;stroke:hsl(0,0%,83%);fill:hsl(0,0%,83%);}#mermaid-svg-ZoPOK6lNFS2EpRRl .note{stroke:hsl(60,100%,23.3333333333%);fill:#ffa;}#mermaid-svg-ZoPOK6lNFS2EpRRl .noteText,#mermaid-svg-ZoPOK6lNFS2EpRRl .noteText > tspan{fill:#333;stroke:none;}#mermaid-svg-ZoPOK6lNFS2EpRRl .activation0{fill:#f4f4f4;stroke:#666;}#mermaid-svg-ZoPOK6lNFS2EpRRl .activation1{fill:#f4f4f4;stroke:#666;}#mermaid-svg-ZoPOK6lNFS2EpRRl .activation2{fill:#f4f4f4;stroke:#666;}#mermaid-svg-ZoPOK6lNFS2EpRRl:root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}#mermaid-svg-ZoPOK6lNFS2EpRRl sequence{fill:apa;}</style><g></g><g><line id="actor44" x1="75" y1="5" x2="75" y2="450" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="0" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="75" dy="0">Attacker</tspan></text></g><g><line id="actor45" x1="551" y1="5" x2="551" y2="450" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="476" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="551" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="551" dy="0">Victim</tspan></text></g><g><line id="actor46" x1="929" y1="5" x2="929" y2="450" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="854" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="929" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="929" dy="0">Contract</tspan></text></g><defs><marker id="arrowhead" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs><defs><marker id="crosshead" markerWidth="15" markerHeight="8" orient="auto" refX="16" refY="4"><path fill="black" stroke="#000000" style="stroke-dasharray: 0px, 0px;" stroke-width="1px" d="M 9,2 V 6 L16,4 Z"></path><path fill="none" stroke="#000000" style="stroke-dasharray: 0px, 0px;" stroke-width="1px" d="M 0,1 L 6,7 M 6,1 L 0,7"></path></marker></defs><defs><marker id="filled-head" refX="18" refY="7" markerWidth="20" markerHeight="28" orient="auto"><path d="M 18,7 L9,13 L14,7 L9,1 Z"></path></marker></defs><defs><marker id="sequencenumber" refX="15" refY="15" markerWidth="60" markerHeight="40" orient="auto"><circle cx="15" cy="15" r="6"></circle></marker></defs><text x="313" y="80" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Victim initiates a valid transaction (e.g., transfer funds)</text><line x1="75" y1="115" x2="551" y2="115" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="740" y="130" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Executes valid transaction (transfer funds)</text><line x1="551" y1="165" x2="929" y2="165" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="740" y="180" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Transaction successful</text><line x1="929" y1="215" x2="551" y2="215" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="502" y="230" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Replays the same transaction</text><line x1="75" y1="265" x2="929" y2="265" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="502" y="280" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Executes replayed transaction (fund transfer)</text><line x1="929" y1="315" x2="75" y2="315" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><g><rect x="-222" y="325" fill="#EDF2AE" stroke="#666" width="594" height="40" rx="0" ry="0" class="note"></rect><text x="75" y="330" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="noteText" dy="1em"><tspan x="75">Attacker successfully replays the transaction to steal funds or duplicate actions</tspan></text></g><g><rect x="0" y="385" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="417.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="75" dy="0">Attacker</tspan></text></g><g><rect x="476" y="385" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="551" y="417.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="551" dy="0">Victim</tspan></text></g><g><rect x="854" y="385" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="929" y="417.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="929" dy="0">Contract</tspan></text></g></svg></pre>
+<p><strong>Solution:</strong> Use <strong>nonces</strong> to uniquely identify each transaction and ensure that repeated transactions are invalid.</p>
+<p><strong>Code Example:</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract SecureNonce {
+    mapping(address =&gt; uint256) private nonces;
+
+    function getSecureNonce(address user) public view returns (uint256) {
+        // Generate a secure nonce using keccak256 with a mix of variables
+        return uint256(keccak256(abi.encodePacked(user, nonces[user], block.timestamp)));
+    }
+
+    function executeTransaction(uint256 providedNonce, uint256 amount) public {
+        uint256 expectedNonce = getSecureNonce(msg.sender);
+        require(providedNonce == expectedNonce, "Invalid nonce provided");
+
+        // Increment nonce for user to ensure each transaction is unique
+        nonces[msg.sender]++;
+        
+        // Further transaction logic
+    }
+}
+</code></pre>
+<p>The nonce is a keccak256 hash based on the user’s address, their current nonce count, and the block’s timestamp, creating a more complex and unique identifier.</p>
+<hr>
+<h3 id="flash-loan-attacks">6. <strong>Flash Loan Attacks</strong></h3>
+<p><strong>Problem:</strong> Flash loan attacks exploit quick, uncollateralized loans to manipulate prices or other systems within a single transaction.</p>
+<pre class=" language-mermaid"><svg id="mermaid-svg-TaEyJ5gePq9ushK2" width="100%" xmlns="http://www.w3.org/2000/svg" height="561" style="max-width: 1139px;" viewBox="-263 -10 1139 561"><style>#mermaid-svg-TaEyJ5gePq9ushK2{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#000000;}#mermaid-svg-TaEyJ5gePq9ushK2 .error-icon{fill:#552222;}#mermaid-svg-TaEyJ5gePq9ushK2 .error-text{fill:#552222;stroke:#552222;}#mermaid-svg-TaEyJ5gePq9ushK2 .edge-thickness-normal{stroke-width:2px;}#mermaid-svg-TaEyJ5gePq9ushK2 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-svg-TaEyJ5gePq9ushK2 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-svg-TaEyJ5gePq9ushK2 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-svg-TaEyJ5gePq9ushK2 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-svg-TaEyJ5gePq9ushK2 .marker{fill:#666;stroke:#666;}#mermaid-svg-TaEyJ5gePq9ushK2 .marker.cross{stroke:#666;}#mermaid-svg-TaEyJ5gePq9ushK2 svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-svg-TaEyJ5gePq9ushK2 .actor{stroke:hsl(0,0%,83%);fill:#eee;}#mermaid-svg-TaEyJ5gePq9ushK2 text.actor > tspan{fill:#333;stroke:none;}#mermaid-svg-TaEyJ5gePq9ushK2 .actor-line{stroke:#666;}#mermaid-svg-TaEyJ5gePq9ushK2 .messageLine0{stroke-width:1.5;stroke-dasharray:none;stroke:#333;}#mermaid-svg-TaEyJ5gePq9ushK2 .messageLine1{stroke-width:1.5;stroke-dasharray:2,2;stroke:#333;}#mermaid-svg-TaEyJ5gePq9ushK2 #arrowhead path{fill:#333;stroke:#333;}#mermaid-svg-TaEyJ5gePq9ushK2 .sequenceNumber{fill:white;}#mermaid-svg-TaEyJ5gePq9ushK2 #sequencenumber{fill:#333;}#mermaid-svg-TaEyJ5gePq9ushK2 #crosshead path{fill:#333;stroke:#333;}#mermaid-svg-TaEyJ5gePq9ushK2 .messageText{fill:#333;stroke:#333;}#mermaid-svg-TaEyJ5gePq9ushK2 .labelBox{stroke:hsl(0,0%,83%);fill:#eee;}#mermaid-svg-TaEyJ5gePq9ushK2 .labelText,#mermaid-svg-TaEyJ5gePq9ushK2 .labelText > tspan{fill:#333;stroke:none;}#mermaid-svg-TaEyJ5gePq9ushK2 .loopText,#mermaid-svg-TaEyJ5gePq9ushK2 .loopText > tspan{fill:#333;stroke:none;}#mermaid-svg-TaEyJ5gePq9ushK2 .loopLine{stroke-width:2px;stroke-dasharray:2,2;stroke:hsl(0,0%,83%);fill:hsl(0,0%,83%);}#mermaid-svg-TaEyJ5gePq9ushK2 .note{stroke:hsl(60,100%,23.3333333333%);fill:#ffa;}#mermaid-svg-TaEyJ5gePq9ushK2 .noteText,#mermaid-svg-TaEyJ5gePq9ushK2 .noteText > tspan{fill:#333;stroke:none;}#mermaid-svg-TaEyJ5gePq9ushK2 .activation0{fill:#f4f4f4;stroke:#666;}#mermaid-svg-TaEyJ5gePq9ushK2 .activation1{fill:#f4f4f4;stroke:#666;}#mermaid-svg-TaEyJ5gePq9ushK2 .activation2{fill:#f4f4f4;stroke:#666;}#mermaid-svg-TaEyJ5gePq9ushK2:root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}#mermaid-svg-TaEyJ5gePq9ushK2 sequence{fill:apa;}</style><g></g><g><line id="actor47" x1="75" y1="5" x2="75" y2="550" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="0" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="75" dy="0">Attacker</tspan></text></g><g><line id="actor48" x1="413" y1="5" x2="413" y2="550" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="338" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="413" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="413" dy="0">Contract</tspan></text></g><g><line id="actor49" x1="751" y1="5" x2="751" y2="550" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="676" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="751" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="751" dy="0">DEX</tspan></text></g><defs><marker id="arrowhead" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs><defs><marker id="crosshead" markerWidth="15" markerHeight="8" orient="auto" refX="16" refY="4"><path fill="black" stroke="#000000" style="stroke-dasharray: 0px, 0px;" stroke-width="1px" d="M 9,2 V 6 L16,4 Z"></path><path fill="none" stroke="#000000" style="stroke-dasharray: 0px, 0px;" stroke-width="1px" d="M 0,1 L 6,7 M 6,1 L 0,7"></path></marker></defs><defs><marker id="filled-head" refX="18" refY="7" markerWidth="20" markerHeight="28" orient="auto"><path d="M 18,7 L9,13 L14,7 L9,1 Z"></path></marker></defs><defs><marker id="sequencenumber" refX="15" refY="15" markerWidth="60" markerHeight="40" orient="auto"><circle cx="15" cy="15" r="6"></circle></marker></defs><text x="244" y="80" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Requests flash loan (e.g., 1000 ETH)</text><line x1="75" y1="115" x2="413" y2="115" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="244" y="130" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Provides loan (no collateral)</text><line x1="413" y1="165" x2="75" y2="165" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="413" y="180" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Manipulates token price on DEX (e.g., by swapping tokens)</text><line x1="75" y1="215" x2="751" y2="215" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="413" y="230" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Executes token trade (price manipulation)</text><line x1="751" y1="265" x2="75" y2="265" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="244" y="280" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Repays flash loan (1000 ETH + fees)</text><line x1="75" y1="315" x2="413" y2="315" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="244" y="330" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Loan repayment successful</text><line x1="413" y1="365" x2="75" y2="365" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="413" y="380" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Profits from price manipulation and market arbitrage</text><line x1="75" y1="415" x2="751" y2="415" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><g><rect x="-213" y="425" fill="#EDF2AE" stroke="#666" width="576" height="40" rx="0" ry="0" class="note"></rect><text x="75" y="430" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="noteText" dy="1em"><tspan x="75">Attacker manipulates market, profits, and repays the loan in one transaction</tspan></text></g><g><rect x="0" y="485" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="517.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="75" dy="0">Attacker</tspan></text></g><g><rect x="338" y="485" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="413" y="517.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="413" dy="0">Contract</tspan></text></g><g><rect x="676" y="485" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="751" y="517.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="751" dy="0">DEX</tspan></text></g></svg></pre>
+<p><strong>Solution:</strong> Use <strong>price oracles with time-weighted averages (TWAP)</strong> to prevent price manipulation within a single transaction.</p>
+<p><strong>Code Example:</strong></p>
+<pre class=" language-solidity"><code class="prism  language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+
+contract TWAPPriceFeed {
+    AggregatorV3Interface internal priceFeed;
+    uint256[] private historicalPrices;
+    uint256 constant INTERVAL = 10 minutes;
+    uint256 constant DURATION = 1 hours;
+    
+    constructor(address priceFeedAddress) {
+        priceFeed = AggregatorV3Interface(priceFeedAddress);
+    }
+
+    function updatePrice() public {
+        require(block.timestamp % INTERVAL == 0, "Updates only every 10 minutes");
+        
+        (, int price,,,) = priceFeed.latestRoundData();
+        historicalPrices.push(uint256(price));
+        
+        if (historicalPrices.length &gt; DURATION / INTERVAL) {
+            // Keep only the latest prices within the duration window
+            historicalPrices.pop();
+        }
+    }
+
+    function getTWAP() public view returns (uint256) {
+        require(historicalPrices.length &gt; 0, "No price data available");
+
+        uint256 sumPrices = 0;
+        for (uint256 i = 0; i &lt; historicalPrices.length; i++) {
+            sumPrices += historicalPrices[i];
+        }
+        
+        return sumPrices / historicalPrices.length;
+    }
+}
+
+</code></pre>
+<pre class=" language-mermaid"><svg id="mermaid-svg-Rmr4hwZa2HXpIHII" width="100%" xmlns="http://www.w3.org/2000/svg" height="741" style="max-width: 1529px;" viewBox="-50 -10 1529 741"><style>#mermaid-svg-Rmr4hwZa2HXpIHII{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#000000;}#mermaid-svg-Rmr4hwZa2HXpIHII .error-icon{fill:#552222;}#mermaid-svg-Rmr4hwZa2HXpIHII .error-text{fill:#552222;stroke:#552222;}#mermaid-svg-Rmr4hwZa2HXpIHII .edge-thickness-normal{stroke-width:2px;}#mermaid-svg-Rmr4hwZa2HXpIHII .edge-thickness-thick{stroke-width:3.5px;}#mermaid-svg-Rmr4hwZa2HXpIHII .edge-pattern-solid{stroke-dasharray:0;}#mermaid-svg-Rmr4hwZa2HXpIHII .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-svg-Rmr4hwZa2HXpIHII .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-svg-Rmr4hwZa2HXpIHII .marker{fill:#666;stroke:#666;}#mermaid-svg-Rmr4hwZa2HXpIHII .marker.cross{stroke:#666;}#mermaid-svg-Rmr4hwZa2HXpIHII svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-svg-Rmr4hwZa2HXpIHII .actor{stroke:hsl(0,0%,83%);fill:#eee;}#mermaid-svg-Rmr4hwZa2HXpIHII text.actor > tspan{fill:#333;stroke:none;}#mermaid-svg-Rmr4hwZa2HXpIHII .actor-line{stroke:#666;}#mermaid-svg-Rmr4hwZa2HXpIHII .messageLine0{stroke-width:1.5;stroke-dasharray:none;stroke:#333;}#mermaid-svg-Rmr4hwZa2HXpIHII .messageLine1{stroke-width:1.5;stroke-dasharray:2,2;stroke:#333;}#mermaid-svg-Rmr4hwZa2HXpIHII #arrowhead path{fill:#333;stroke:#333;}#mermaid-svg-Rmr4hwZa2HXpIHII .sequenceNumber{fill:white;}#mermaid-svg-Rmr4hwZa2HXpIHII #sequencenumber{fill:#333;}#mermaid-svg-Rmr4hwZa2HXpIHII #crosshead path{fill:#333;stroke:#333;}#mermaid-svg-Rmr4hwZa2HXpIHII .messageText{fill:#333;stroke:#333;}#mermaid-svg-Rmr4hwZa2HXpIHII .labelBox{stroke:hsl(0,0%,83%);fill:#eee;}#mermaid-svg-Rmr4hwZa2HXpIHII .labelText,#mermaid-svg-Rmr4hwZa2HXpIHII .labelText > tspan{fill:#333;stroke:none;}#mermaid-svg-Rmr4hwZa2HXpIHII .loopText,#mermaid-svg-Rmr4hwZa2HXpIHII .loopText > tspan{fill:#333;stroke:none;}#mermaid-svg-Rmr4hwZa2HXpIHII .loopLine{stroke-width:2px;stroke-dasharray:2,2;stroke:hsl(0,0%,83%);fill:hsl(0,0%,83%);}#mermaid-svg-Rmr4hwZa2HXpIHII .note{stroke:hsl(60,100%,23.3333333333%);fill:#ffa;}#mermaid-svg-Rmr4hwZa2HXpIHII .noteText,#mermaid-svg-Rmr4hwZa2HXpIHII .noteText > tspan{fill:#333;stroke:none;}#mermaid-svg-Rmr4hwZa2HXpIHII .activation0{fill:#f4f4f4;stroke:#666;}#mermaid-svg-Rmr4hwZa2HXpIHII .activation1{fill:#f4f4f4;stroke:#666;}#mermaid-svg-Rmr4hwZa2HXpIHII .activation2{fill:#f4f4f4;stroke:#666;}#mermaid-svg-Rmr4hwZa2HXpIHII:root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}#mermaid-svg-Rmr4hwZa2HXpIHII sequence{fill:apa;}</style><g></g><g><line id="actor50" x1="75" y1="5" x2="75" y2="730" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="0" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="75" dy="0">Attacker</tspan></text></g><g><line id="actor51" x1="651" y1="5" x2="651" y2="730" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="576" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="651" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="651" dy="0">Contract</tspan></text></g><g><line id="actor52" x1="978" y1="5" x2="978" y2="730" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="903" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="978" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="978" dy="0">DEX</tspan></text></g><g><line id="actor53" x1="1354" y1="5" x2="1354" y2="730" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="1279" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="1354" y="32.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="1354" dy="0">PriceFeed</tspan></text></g><defs><marker id="arrowhead" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs><defs><marker id="crosshead" markerWidth="15" markerHeight="8" orient="auto" refX="16" refY="4"><path fill="black" stroke="#000000" style="stroke-dasharray: 0px, 0px;" stroke-width="1px" d="M 9,2 V 6 L16,4 Z"></path><path fill="none" stroke="#000000" style="stroke-dasharray: 0px, 0px;" stroke-width="1px" d="M 0,1 L 6,7 M 6,1 L 0,7"></path></marker></defs><defs><marker id="filled-head" refX="18" refY="7" markerWidth="20" markerHeight="28" orient="auto"><path d="M 18,7 L9,13 L14,7 L9,1 Z"></path></marker></defs><defs><marker id="sequencenumber" refX="15" refY="15" markerWidth="60" markerHeight="40" orient="auto"><circle cx="15" cy="15" r="6"></circle></marker></defs><text x="363" y="80" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Requests flash loan (e.g., 1000 ETH)</text><line x1="75" y1="115" x2="651" y2="115" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="363" y="130" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Provides loan (no collateral)</text><line x1="651" y1="165" x2="75" y2="165" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="527" y="180" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Manipulates token price (instant manipulation with flash loan)</text><line x1="75" y1="215" x2="978" y2="215" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="527" y="230" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Executes token trade (price manipulation)</text><line x1="978" y1="265" x2="75" y2="265" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="1003" y="280" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Get latest price (from Chainlink)</text><line x1="651" y1="315" x2="1354" y2="315" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="1003" y="330" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Returns price (based on multiple data points, not a single price)</text><line x1="1354" y1="365" x2="651" y2="365" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="651" y="380" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Calculate TWAP (time-weighted average price)</text><path d="M 651,415 C 711,405 711,445 651,435" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></path><text x="363" y="460" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Rejects manipulated price (due to TWAP filtering out sudden changes)</text><line x1="651" y1="495" x2="75" y2="495" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="363" y="510" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Repays flash loan (1000 ETH + fees)</text><line x1="75" y1="545" x2="651" y2="545" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><text x="363" y="560" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="messageText" dy="1em">Loan repayment successful (attack fails)</text><line x1="651" y1="595" x2="75" y2="595" class="messageLine0" stroke-width="2" stroke="none" style="fill: none;" marker-end="url(#arrowhead)"></line><g><rect x="374" y="605" fill="#EDF2AE" stroke="#666" width="554" height="40" rx="0" ry="0" class="note"></rect><text x="651" y="610" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif; font-weight: 400;" class="noteText" dy="1em"><tspan x="651">Flash loan attack fails because TWAP mitigates sudden price manipulation</tspan></text></g><g><rect x="0" y="665" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="697.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="75" dy="0">Attacker</tspan></text></g><g><rect x="576" y="665" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="651" y="697.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="651" dy="0">Contract</tspan></text></g><g><rect x="903" y="665" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="978" y="697.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="978" dy="0">DEX</tspan></text></g><g><rect x="1279" y="665" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="1354" y="697.5" style="text-anchor: middle; font-weight: 400; font-family: &quot;Open-Sans&quot;, &quot;sans-serif&quot;;" dominant-baseline="central" alignment-baseline="central" class="actor"><tspan x="1354" dy="0">PriceFeed</tspan></text></g></svg></pre>
+<p>A TWAP oracle mitigates flash loan manipulation by taking average prices over a period, which limits the effects of momentary spikes or dips.</p>
+</div>
+</body>
+
+</html>
