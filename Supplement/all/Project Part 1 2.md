@@ -1,7 +1,5 @@
 ﻿# Part 1 :
 
-
-
 ## Prerequisites
 
 1. Visual Code Editor [(VS code)](https://code.visualstudio.com/) (recommanded)
@@ -167,19 +165,11 @@ that's it you have now deployed on local blockchain and interact with it also. N
 
 **Note: to exit from truffle developer console type .exit**
 
-
-
-
-
 # Part 2
 
 Once above is in working condition , update the contract to have following behaviour :
 
-
-
 Create a Solidity smart contract for a decentralized auction system. The contract should allow the owner to create an auction with a starting price and a duration. Participants can bid during the auction period, and the highest bidder wins when the auction ends. The contract should include the following functionalities:
-
-
 
 - **Auction Creation (`startAuction`):**
   
@@ -254,5 +244,4 @@ contract DecentralizedAuction {
         // Return whether the auction duration has elapsed
     }
 }
-
 ```
