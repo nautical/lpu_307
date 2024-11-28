@@ -1,4 +1,4 @@
-    pragma solidity ^0.8.0;
+ pragma solidity ^0.8.0;
     // SPDX-License-Identifier: MIT
 
     contract Auction{
@@ -9,6 +9,7 @@
         uint public lastBid;
         address public highestBidder;
         mapping(address => uint) bids;
+        mapping(address => bool) blacklisted;
         bool public auctionFinalized;
         constructor() {
             owner = msg.sender;
@@ -17,7 +18,20 @@
             require(msg.sender==owner, "You are not an owner.");
             _;
         }
+
+        function addToBlacklist(address _bidder) public onlyOwner{
+            require(blacklisted[_bidder]==false, "The bidder is already blacklisted");
+            blacklisted[_bidder]=true;
+        }
+
+        function removeFromBlacklist(address _bidder) public onlyOwner{
+            require(blacklisted[_bidder], "The bidder is not in the blacklist");
+            blacklisted[_bidder]=false;
+        }
+
         function startAuction(uint _startingPrice, uint _duration) public onlyOwner {
+            require(_startingPrice!=0, "Starting Price cannot be zero.");
+            require(_duration!=0, "Duration of the auction cannot be zero.");
             startingPrice = _startingPrice;
             starting_Time = block.timestamp;
             endingTime = starting_Time + _duration;
@@ -27,6 +41,7 @@
         function bid() public payable {
             require(msg.value>lastBid,"Bid needs to be bigger than last bid");
             require(block.timestamp<endingTime, "Auction has ended");
+            require(blacklisted[msg.sender]==false,"You are blacklisted and cannot bid.");
             bids[msg.sender] +=msg.value;
             lastBid = msg.value;
             highestBidder = msg.sender;
@@ -37,7 +52,8 @@
             bids[msg.sender] = 0;
             payable(msg.sender).transfer(amount);
         }
-        function finalizeAuction() public onlyOwner returns (address,uint){
+        function finalizeAuction() public payable onlyOwner returns (address,uint){
+            require(auctionFinalized==false, "Auction is already finalized");
             require(block.timestamp>endingTime, "Auction is still going on.");
             if(lastBid==startingPrice){
                 auctionFinalized = true;
@@ -45,13 +61,8 @@
             }
             auctionFinalized = true;
             bids[highestBidder]-=lastBid;
+            payable(owner).transfer(lastBid);
             return (highestBidder,lastBid);
-        }
-        function time() public view returns(uint){
-            return block.timestamp;
-        }
-        function et() public view returns(uint){
-            return endingTime;
         }
 
     }
